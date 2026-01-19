@@ -39,7 +39,7 @@ export default function ContactPage() {
         </div>
 
         <form
-          action="https://formspree.io/f/your-form-id"
+          action="https://formspree.io/f/xlggbvej"
           method="POST"
           className="space-y-8"
         >
