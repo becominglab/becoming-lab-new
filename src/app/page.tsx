@@ -112,18 +112,18 @@ export default function Home() {
               </div>
             </Link>
 
-            {/* 目標達成コーチング */}
+            {/* 目標達成セッション */}
             <Link
-              href="/coaching"
+              href="/session"
               className="group relative overflow-hidden rounded-3xl bg-white border border-gray-100 p-8 md:p-12 hover:shadow-xl hover:border-accent/30 transition-all duration-300"
             >
               <div className="relative z-10">
                 <p className="text-sm tracking-widest text-accent mb-4">COACHING</p>
                 <h3 className="text-2xl md:text-3xl font-bold text-primary mb-4">
-                  目標達成コーチング
+                  目標達成セッション
                 </h3>
                 <p className="text-gray-600 mb-6 leading-relaxed">
-                  頑張らせるコーチングではなく、判断と選択を整えるための1on1対話。
+                  頑張らせるセッションではなく、判断と選択を整えるための1on1対話。
                 </p>
                 <span className="inline-flex items-center gap-2 text-sm font-medium text-primary">
                   詳しく見る

@@ -11,7 +11,7 @@ export default function Header() {
     { href: "/about", label: "About" },
     { href: "/philosophy", label: "Philosophy" },
     { href: "/kamiotto", label: "神夫養成講座" },
-    { href: "/coaching", label: "Coaching" },
+    { href: "/session", label: "Session" },
     { href: "/blog", label: "Blog" },
   ];
 

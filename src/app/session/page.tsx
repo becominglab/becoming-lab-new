@@ -3,11 +3,11 @@ import { Check, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "目標達成コーチング",
-  description: "頑張らせるコーチングではなく、判断と選択を整えるための1on1対話。Becoming Labの目標達成コーチング。",
+  title: "目標達成セッション",
+  description: "頑張らせるセッションではなく、判断と選択を整えるための1on1対話。Becoming Labの目標達成セッション。",
 };
 
-export default function CoachingPage() {
+export default function SessionPage() {
   const features = [
     {
       title: "頑張らせない",
@@ -28,7 +28,7 @@ export default function CoachingPage() {
   ];
 
   const process = [
-    { step: "01", title: "無料相談", desc: "現状と課題をヒアリング。コーチングが合うかどうか確認します。" },
+    { step: "01", title: "無料相談", desc: "現状と課題をヒアリング。セッションが合うかどうか確認します。" },
     { step: "02", title: "目標設定", desc: "3ヶ月後にどうなっていたいか。具体的なゴールを設定します。" },
     { step: "03", title: "定期セッション", desc: "隔週60分のオンラインセッション。対話を通じて気づきを促します。" },
     { step: "04", title: "振り返り", desc: "3ヶ月ごとに進捗を振り返り、次のステップを設計します。" },
@@ -58,15 +58,15 @@ export default function CoachingPage() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <p className="text-sm tracking-widest text-accent mb-4">COACHING</p>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black text-primary leading-tight mb-8">
-            目標達成コーチング
+            目標達成セッション
           </h1>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-12">
-            頑張らせるコーチングではなく、
+            頑張らせるセッションではなく、
             <br />
             判断と選択を整えるための1on1対話。
           </p>
           <Link
-            href="/contact?type=coaching"
+            href="/contact?type=session"
             className="inline-block bg-primary text-white px-8 py-4 rounded-full font-medium hover:bg-secondary transition-all"
           >
             無料相談を申し込む
@@ -106,7 +106,7 @@ export default function CoachingPage() {
           <div className="text-center mb-16">
             <p className="text-sm tracking-widest text-accent mb-4">FEATURES</p>
             <h2 className="text-3xl md:text-4xl font-display font-bold text-primary">
-              Becoming Lab コーチングの特徴
+              Becoming Lab セッションの特徴
             </h2>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
@@ -129,7 +129,7 @@ export default function CoachingPage() {
           <div className="text-center mb-16">
             <p className="text-sm tracking-widest text-accent mb-4">PROCESS</p>
             <h2 className="text-3xl md:text-4xl font-display font-bold text-primary">
-              コーチングの流れ
+              セッションの流れ
             </h2>
           </div>
           <div className="grid md:grid-cols-4 gap-6">
@@ -192,7 +192,7 @@ export default function CoachingPage() {
                   ))}
                 </ul>
                 <Link
-                  href="/contact?type=coaching"
+                  href="/contact?type=session"
                   className={`block text-center py-3 rounded-full font-medium transition-colors ${
                     plan.recommended
                       ? "bg-white text-primary hover:bg-gray-100"
@@ -219,10 +219,10 @@ export default function CoachingPage() {
           <p className="text-white/80 text-lg mb-12">
             無料相談では、現状の課題をヒアリングし、
             <br />
-            コーチングが合うかどうかを一緒に確認します。
+            セッションが合うかどうかを一緒に確認します。
           </p>
           <Link
-            href="/contact?type=coaching"
+            href="/contact?type=session"
             className="inline-block bg-white text-primary px-12 py-5 rounded-full font-bold text-lg hover:bg-gray-100 transition-all"
           >
             無料相談を申し込む

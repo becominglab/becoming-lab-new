@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const contactTypes = [
   { value: "seminar", label: "体験セミナー", emoji: "🎓" },
-  { value: "coaching", label: "無料相談", emoji: "💬" },
+  { value: "session", label: "無料相談", emoji: "💬" },
   { value: "corporate", label: "企業研修", emoji: "🏢" },
   { value: "other", label: "その他", emoji: "📝" },
 ];

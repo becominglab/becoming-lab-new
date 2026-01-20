@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   const milestones = [
-    { year: "2015", event: "トライアスロンを始める", desc: "挑戦と継続の原体験" },
-    { year: "2018", event: "夫婦関係の危機", desc: "「在り方」の重要性に気づく" },
-    { year: "2020", event: "コーチングを学び始める", desc: "対話の力を知る" },
-    { year: "2022", event: "神夫養成講座を開始", desc: "夫婦関係の変革プログラム" },
-    { year: "2024", event: "Becoming Lab設立", desc: "統合的な人生支援へ" },
+    { year: "2020", event: "夫婦関係の危機", desc: "「在り方」の重要性に気づく" },
+    { year: "2020", event: "セッションを学び始める", desc: "対話の力を知る" },
+    { year: "2023", event: "マラソン・トライアスロンを始める", desc: "挑戦と継続の原体験" },
+    { year: "2025", event: "神夫養成講座を開始", desc: "夫婦関係の変革プログラム" },
+    { year: "2026", event: "Becoming Lab設立", desc: "統合的な人生支援へ" },
   ];
 
   const beliefs = [
@@ -61,17 +61,17 @@ export default function AboutPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div className="aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-3xl flex items-center justify-center">
-              <span className="text-9xl">🧑‍💼</span>
+              <img src="/founder.png" alt="Founder" className="w-full h-full object-cover rounded-3xl" />
             </div>
             <div>
               <p className="text-sm tracking-widest text-accent mb-4">FOUNDER</p>
               <h2 className="text-3xl font-display font-bold text-primary mb-6">
-                大塚 貴男
-                <span className="text-lg font-normal text-gray-500 ml-4">Takao Otsuka</span>
+                
+                <span className="text-lg font-normal text-gray-500 ml-4"></span>
               </h2>
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  会社員として働きながら、トライアスロンに挑戦し、家庭を持ち、子育てをしてきました。
+                  会社役員として働きながら、経営者として事業を行いながら、トライアスロンに挑戦し、家庭を持ち、子育てをしてきました。
                 </p>
                 <p>
                   「仕事」「家庭」「挑戦」—この3つを両立させようとする中で、何度も壁にぶつかりました。特に夫婦関係では、どれだけ頑張っても空回りする時期がありました。
@@ -227,12 +227,12 @@ export default function AboutPage() {
               </span>
             </Link>
             <Link
-              href="/coaching"
+              href="/session"
               className="group p-8 rounded-2xl border border-gray-100 hover:border-accent/30 hover:shadow-xl transition-all duration-300"
             >
               <span className="text-4xl block mb-4">🎯</span>
               <h3 className="text-xl font-bold text-primary mb-2 group-hover:text-accent transition-colors">
-                目標達成コーチング
+                目標達成セッション
               </h3>
               <p className="text-gray-600 text-sm mb-4">
                 判断と選択を整えるための1on1対話

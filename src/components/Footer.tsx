@@ -49,8 +49,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/coaching" className="hover:text-white transition-colors">
-                  目標達成コーチング
+                <Link href="/session" className="hover:text-white transition-colors">
+                  目標達成セッション
                 </Link>
               </li>
               <li>

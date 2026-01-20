@@ -223,7 +223,7 @@ export default function BlogPostPage() {
             <div>
               <p className="font-bold text-primary mb-1">Becoming Lab</p>
               <p className="text-sm text-gray-600 mb-4">
-                「自分らしく、更新し続ける」をテーマに、人生・仕事・家庭・挑戦を統合的に扱う事業を運営。神夫養成講座、目標達成コーチング、コミュニティを通じて、更新を重ねる人生を支援しています。
+                「自分らしく、更新し続ける」をテーマに、人生・仕事・家庭・挑戦を統合的に扱う事業を運営。神夫養成講座、目標達成セッション、コミュニティを通じて、更新を重ねる人生を支援しています。
               </p>
             </div>
           </div>
