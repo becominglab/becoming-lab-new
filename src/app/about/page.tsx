@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import { Users, Target, Handshake } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About",
@@ -9,12 +10,16 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   const milestones = [
+    { year: "〜2020", event: "金融からキャリアをスタートし、複数の企業で経営に関与", desc: "キャリアビジョンの重要性に気づく" },
     { year: "2020", event: "夫婦関係の危機", desc: "「在り方」の重要性に気づく" },
     { year: "2020", event: "セッションを学び始める", desc: "対話の力を知る" },
-    { year: "2023", event: "マラソン・トライアスロンを始める", desc: "挑戦と継続の原体験" },
+    { year: "2022", event: "減量に取り組む", desc: "「身体を整える」重要性に気づく" },
+    { year: "2022", event: "マラソンを始める", desc: "ひとり時間と内省の重要性に気づく" },
+    { year: "2023", event: "トライアスロンを始める", desc: "挑戦と継続、バランスの原体験" },
+    { year: "2024", event: "不動産賃貸事業を本格化する", desc: "入居者の幸せと家族の未来の幸せの両立に気づく原体験" },
     { year: "2025", event: "神夫養成講座を開始", desc: "夫婦関係の変革プログラム" },
     { year: "2026", event: "Becoming Lab設立", desc: "統合的な人生支援へ" },
-  ];
+];
 
   const beliefs = [
     {
@@ -214,7 +219,7 @@ export default function AboutPage() {
               href="/kamiotto"
               className="group p-8 rounded-2xl border border-gray-100 hover:border-accent/30 hover:shadow-xl transition-all duration-300"
             >
-              <span className="text-4xl block mb-4">👨‍👩‍👧‍👦</span>
+              <span className="text-4xl block mb-4"><Users className="w-12 h-12 text-primary" /></span>
               <h3 className="text-xl font-bold text-primary mb-2 group-hover:text-accent transition-colors">
                 神夫養成講座
               </h3>
@@ -230,7 +235,7 @@ export default function AboutPage() {
               href="/session"
               className="group p-8 rounded-2xl border border-gray-100 hover:border-accent/30 hover:shadow-xl transition-all duration-300"
             >
-              <span className="text-4xl block mb-4">🎯</span>
+              <span className="text-4xl block mb-4"><Users className="w-12 h-12 text-primary" /></span>
               <h3 className="text-xl font-bold text-primary mb-2 group-hover:text-accent transition-colors">
                 目標達成セッション
               </h3>
@@ -246,7 +251,7 @@ export default function AboutPage() {
               href="/community"
               className="group p-8 rounded-2xl border border-gray-100 hover:border-accent/30 hover:shadow-xl transition-all duration-300"
             >
-              <span className="text-4xl block mb-4">🤝</span>
+              <span className="text-4xl block mb-4"><Handshake className="w-12 h-12 text-primary" /></span>
               <h3 className="text-xl font-bold text-primary mb-2 group-hover:text-accent transition-colors">
                 コミュニティ
               </h3>
