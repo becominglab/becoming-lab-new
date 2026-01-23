@@ -7,7 +7,7 @@ export default function Home() {
       <section className="min-h-[70vh] flex items-center">
         <div className="max-w-3xl mx-auto px-8">
           <h1 className="text-5xl md:text-7xl font-bold text-[#1B6B7A] leading-tight mb-8">
-            更新を重ねる人生を。
+            更新を重ねる<br className="md:hidden" />人生を。
           </h1>
           <p className="text-lg text-gray-600 mb-4">
             未完成のまま、語り続ける。その言葉が、誰かの勇気になる。
@@ -34,10 +34,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 教えない理由〜はじめの一歩（白背景でまとめる） */}
+      {/* 教えない理由〜はじめの一歩 */}
       <section className="py-20">
         <div className="max-w-2xl mx-auto px-8">
-          {/* 教えない理由 */}
           <div className="mb-20">
             <h2 className="text-xl font-bold text-gray-900 mb-8">教えない理由</h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
@@ -46,7 +45,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 何が起きるのか */}
           <div className="mb-20">
             <h2 className="text-xl font-bold text-gray-900 mb-10">何が起きるのか</h2>
             <div className="grid md:grid-cols-3 gap-8">
@@ -77,7 +75,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 語りの循環 */}
           <div className="mb-20">
             <h2 className="text-xl font-bold text-gray-900 mb-8">語りの循環という仕組み</h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
@@ -87,7 +84,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 主な関わり方 */}
           <div className="mb-20">
             <h2 className="text-xl font-bold text-gray-900 mb-8">主な関わり方</h2>
             <div className="space-y-8">
@@ -106,7 +102,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* なぜこの場をつくったのか */}
           <div className="mb-20">
             <h2 className="text-xl font-bold text-gray-900 mb-8">なぜ、この場をつくったのか</h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
@@ -119,7 +114,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* こんな方へ */}
           <div className="mb-20">
             <h2 className="text-xl font-bold text-gray-900 mb-8">こんな方へ</h2>
             <ul className="space-y-2 text-gray-600">
@@ -130,7 +124,6 @@ export default function Home() {
             </ul>
           </div>
 
-          {/* はじめの一歩 */}
           <div>
             <h2 className="text-xl font-bold text-gray-900 mb-8">はじめの一歩</h2>
             <div className="space-y-4">

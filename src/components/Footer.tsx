@@ -1,11 +1,20 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
     <footer className="bg-[#1B6B7A] text-white">
       <div className="max-w-4xl mx-auto px-8 py-16">
         <div className="mb-8">
-          <p className="text-lg font-bold tracking-wide mb-4">becoming lab</p>
+          <Link href="/">
+            <Image
+              src="/images/logo.png"
+              alt="becoming lab"
+              width={160}
+              height={40}
+              className="h-8 w-auto brightness-0 invert mb-4"
+            />
+          </Link>
           <p className="text-sm opacity-80 leading-relaxed">
             更新を重ねる人生を。<br />
             Layering renewal into life.
