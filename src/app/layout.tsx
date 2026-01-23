@@ -1,27 +1,14 @@
 import type { Metadata } from "next";
-import { Noto_Sans_JP, Manrope } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-const notoSansJP = Noto_Sans_JP({
-  variable: "--font-noto-sans-jp",
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "900"],
-});
-
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "800"],
-});
-
 export const metadata: Metadata = {
   title: {
-    default: "Becoming Lab | 自分らしく、更新し続ける",
-    template: "%s | Becoming Lab",
+    default: "becoming lab | 更新を重ねる人生を",
+    template: "%s | becoming lab",
   },
-  description: "完成を目指すのではなく、整え、向き合い、つむぎながら、人生に「厚み」をつくる実験場",
+  description: "人生の途中にいる人が、自分の物語を語り、次の一歩を見つけていくための対話の場です。",
 };
 
 export default function RootLayout({
@@ -31,7 +18,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className={`${notoSansJP.variable} ${manrope.variable} font-sans`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="antialiased bg-white text-gray-800 font-sans">
         <Header />
         <main className="pt-16">{children}</main>
         <Footer />

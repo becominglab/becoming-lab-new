@@ -1,93 +1,37 @@
 import Link from "next/link";
-import { Instagram, Twitter, Youtube } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-primary text-white mt-24">
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-4 gap-12">
-          <div className="md:col-span-2">
-            <h3 className="font-display font-bold text-2xl mb-4">Becoming Lab</h3>
-            <p className="text-gray-300 text-sm leading-relaxed mb-4">
-              自分らしく、更新し続ける。
-              <br />
-              成長・貢献・継続が、循環する人生へ。
-            </p>
-            <div className="flex gap-4">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <Youtube className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Services</h4>
-            <ul className="space-y-2 text-sm text-gray-300">
-              <li>
-                <Link href="/kamiotto" className="hover:text-white transition-colors">
-                  神夫養成講座
-                </Link>
-              </li>
-              <li>
-                <Link href="/session" className="hover:text-white transition-colors">
-                  目標達成セッション
-                </Link>
-              </li>
-              <li>
-                <Link href="/community" className="hover:text-white transition-colors">
-                  コミュニティ
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Company</h4>
-            <ul className="space-y-2 text-sm text-gray-300">
-              <li>
-                <Link href="/about" className="hover:text-white transition-colors">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/philosophy" className="hover:text-white transition-colors">
-                  Philosophy
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="hover:text-white transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-white transition-colors">
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </div>
+    <footer className="bg-[#1B6B7A] text-white">
+      <div className="max-w-4xl mx-auto px-8 py-16">
+        <div className="mb-8">
+          <p className="text-lg font-bold tracking-wide mb-4">becoming lab</p>
+          <p className="text-sm opacity-80 leading-relaxed">
+            更新を重ねる人生を。<br />
+            Layering renewal into life.
+          </p>
         </div>
-        <div className="border-t border-gray-700 mt-12 pt-8 text-center text-sm text-gray-400">
-          <p>&copy; 2026 Becoming Lab. All rights reserved.</p>
+        <div className="flex flex-wrap gap-x-8 gap-y-4 text-sm opacity-70 mb-12">
+          <Link href="/concept" className="hover:opacity-100 transition-opacity">
+            Concept
+          </Link>
+          <Link href="/kataribe" className="hover:opacity-100 transition-opacity">
+            語り部の会
+          </Link>
+          <Link href="/community" className="hover:opacity-100 transition-opacity">
+            Community
+          </Link>
+          <Link href="/service" className="hover:opacity-100 transition-opacity">
+            Service
+          </Link>
+          <Link href="/contact" className="hover:opacity-100 transition-opacity">
+            Contact
+          </Link>
+        </div>
+        <div className="pt-8 border-t border-white/20">
+          <p className="text-xs opacity-50">
+            © 2026 becoming lab
+          </p>
         </div>
       </div>
     </footer>
