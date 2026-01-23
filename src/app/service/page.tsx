@@ -18,13 +18,13 @@ export default function ServicePage() {
           {/* 導入文 */}
           <div className="mb-16">
             <p className="text-gray-600 leading-relaxed">
-              語り部の会だけでなく、1on1 コーチング・講座をご希望の方はこちら。
+              語り部の会だけでなく、1on1 セッション・講座をご希望の方はこちら。
             </p>
           </div>
 
-          {/* 1on1 コーチング */}
+          {/* 1on1 セッション */}
           <div className="mb-16">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">1on1 コーチング</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-6">1on1 セッション</h2>
             <ul className="space-y-2 text-gray-600">
               <li>人生の軸を言葉にする</li>
               <li>判断に確信を持つ</li>

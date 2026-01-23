@@ -97,8 +97,8 @@ export default function ContactPage() {
                   語り部の会
                 </label>
                 <label className="flex items-center gap-3 text-gray-600">
-                  <input type="checkbox" name="interest" value="コーチング" className="w-4 h-4" />
-                  コーチング
+                  <input type="checkbox" name="interest" value="1on1セッション" className="w-4 h-4" />
+                  1on1セッション
                 </label>
                 <label className="flex items-center gap-3 text-gray-600">
                   <input type="checkbox" name="interest" value="神夫養成講座" className="w-4 h-4" />

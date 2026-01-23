@@ -76,9 +76,10 @@ export default function Home() {
           </div>
 
           <div className="mb-20">
-            <h2 className="text-xl font-bold text-gray-900 mb-8">語りの循環という仕組み</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-8">語り部（かたりべ）の循環という仕組み</h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>becoming lab では、一人ひとりが「語り部」になります。</p>
+              <p>語り部とは、完成した人ではありません。途中のまま、自分の物語を語る人のことです。</p>
+              <p>becoming lab では、一人ひとりが語り部になります。</p>
               <p>語る人が、誰かの勇気になる。聴いた人が、次の語り部になる。語りが循環し、成長と貢献が続いていく。</p>
               <p>完成を目指すのではなく、更新を重ねる人生そのものが集まる場です。</p>
             </div>

@@ -47,8 +47,9 @@ export default function CommunityPage() {
                 <p className="text-gray-600 text-sm">肩書きや役割を外し、同じテーブルを囲んで言葉を交わします。</p>
               </div>
               <div>
-                <h3 className="font-bold text-gray-900 mb-2">ランニング・トライアスロン</h3>
-                <p className="text-gray-600 text-sm">皇居ランや練習体験会など、身体を動かしながら、自分と向き合う時間。初心者の方も歓迎しています。</p>
+                <h3 className="font-bold text-gray-900 mb-2">ウォーキング・ランニング・トライアスロン</h3>
+                <p className="text-gray-600 text-sm">ウォーキングや皇居ラン、トライアスロン練習体験会など、身体を動かしながら、自分と向き合う時間。初心者の方も歓迎しています。</p>
+                <p className="text-gray-600 text-sm mt-2">機材のレンタルに対応できることもありますので、お気軽にご相談ください。</p>
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">勉強会・対話会</h3>
@@ -81,7 +82,7 @@ export default function CommunityPage() {
               <li>自分の人生を棚卸ししたい</li>
               <li>関係性や在り方を深めたい</li>
             </ul>
-            <p className="text-gray-500">そう感じたときは、語り部の会や、1on1 コーチング、講座へと自然につながっていきます。</p>
+            <p className="text-gray-500">そう感じたときは、語り部の会や、1on1 セッション、講座へと自然につながっていきます。</p>
           </div>
         </div>
       </section>
