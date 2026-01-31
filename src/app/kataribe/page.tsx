@@ -11,10 +11,9 @@ export default function KataribePage() {
         </div>
       </section>
 
-      {/* メインコンテンツ（白背景でまとめる） */}
+      {/* メインコンテンツ */}
       <section className="pb-20">
         <div className="max-w-2xl mx-auto px-8">
-          {/* 語り部の会とは */}
           <div className="mb-16">
             <h2 className="text-xl font-bold text-gray-900 mb-6">語り部の会とは</h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
@@ -23,7 +22,6 @@ export default function KataribePage() {
             </div>
           </div>
 
-          {/* この場で起きていること */}
           <div className="mb-16">
             <h2 className="text-xl font-bold text-gray-900 mb-6">この場で起きていること</h2>
             <ul className="space-y-2 text-gray-600 mb-4">
@@ -34,7 +32,6 @@ export default function KataribePage() {
             <p className="text-gray-500">ただ、語られ、聴かれる。</p>
           </div>
 
-          {/* 語り部になるという体験 */}
           <div className="mb-16">
             <h2 className="text-xl font-bold text-gray-900 mb-6">語り部になるという体験</h2>
             <p className="text-gray-600 mb-4">語る側にとって、</p>
@@ -46,17 +43,17 @@ export default function KataribePage() {
             <p className="text-gray-500">それ自体が、深い成功体験になります。</p>
           </div>
 
-          {/* これまでの語り部 */}
           <div className="mb-16">
             <h2 className="text-xl font-bold text-gray-900 mb-6">これまでの語り部</h2>
-            <Link href="/kataribe/archive" className="text-[#1B6B7A] hover:opacity-70 transition-opacity">
-              ▶ アーカイブを見る
-            </Link>
+            <div className="space-y-3">
+              <Link href="/kataribe/vol1" className="block text-[#1B6B7A] hover:opacity-70 transition-opacity">
+                ▶ vol.1
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA（ティール背景は最後だけ） */}
       <section className="py-16 bg-[#1B6B7A] text-white">
         <div className="max-w-2xl mx-auto px-8 space-y-4">
           <Link href="/contact" className="block hover:opacity-70 transition-opacity">
