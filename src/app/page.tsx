@@ -1,11 +1,11 @@
 // app/kataribe/vol1/page.tsx
-// 第一回 語り部の会 ページ
+// becoming lab 「自分で選んだ道」
 
 import Link from 'next/link';
 
 export const metadata = {
-  title: '第一回 語り部の会 | becoming lab',
-  description: '国立大卒、ベンチャー新規事業のエース。圧倒的成果を手放し、猟師として自給自足の道を選んだ24歳が語る「志」の物語。2026年3月12日、神田錦町にて開催。',
+  title: 'becoming lab「自分で選んだ道」vol.1 | becoming lab',
+  description: '期待に応えて生きてきた。それが間違いだとは思わない。ただ自分の声を、後回しにしてきた。24歳。キャリアの延長線を離れ、秩父で猟師として生きることを選んだ青年の「志」の物語。2026年3月12日、神田錦町にて開催。',
 };
 
 export default function KataribeVol1() {
@@ -17,15 +17,15 @@ export default function KataribeVol1() {
         <div className="absolute inset-0 bg-gradient-to-b from-stone-100/50 to-white pointer-events-none" />
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <span className="inline-block text-xs tracking-[0.3em] text-stone-500 mb-8 font-medium">
-            KATARIBE vol.1
+            「自分で選んだ道」 vol.1
           </span>
           <h1 className="text-3xl md:text-5xl font-light leading-tight mb-8 tracking-tight">
-            圧倒的成果を手放し、<br />
-            <span className="font-normal">山へ還った24歳</span>
+            キャリアの延長線を離れ、<br />
+            <span className="font-normal">秩父で猟師として生きることを選んだ24歳</span>
           </h1>
           <p className="text-base md:text-lg text-stone-600 leading-relaxed max-w-xl mx-auto">
-            国立大卒・ベンチャー新規事業のエース。<br />
-            その全てを捨て、猟師として自給自足の道を選んだ青年が語る「志」の物語。
+            国立大卒・ベンチャー新規事業のエースが<br />
+            自分の「志」を取り戻した青年が語る物語。
           </p>
         </div>
         
@@ -35,14 +35,14 @@ export default function KataribeVol1() {
         </div>
       </section>
 
-      {/* 語り部の紹介 */}
+      {/* スピーカーの紹介 */}
       <section className="px-6 py-24 bg-stone-50">
         <div className="max-w-2xl mx-auto">
           <span className="text-xs tracking-[0.3em] text-stone-400 block mb-4">
             STORYTELLER
           </span>
           <h2 className="text-2xl font-light mb-12 tracking-tight">
-            語り部について
+            スピーカーについて
           </h2>
           
           <div className="space-y-6 text-stone-700 leading-relaxed">
@@ -59,7 +59,7 @@ export default function KataribeVol1() {
               現在は猟師として山に入り、自給自足の生活を送りながら、近い将来、観光事業にも挑戦しようとしている。
             </p>
             <p className="pt-4 border-t border-stone-200 text-stone-600 italic">
-              「成功」と呼ばれるレールから降り、自分の手で生きることを選んだ彼が、今何を見つめ、何を志しているのか。
+              他人の期待を生きるレールから降り、自分の手で生きることを選んだ彼が、今何を見つめ、何を志しているのか。
             </p>
             <p className="text-stone-500">
               完成された答えではなく、途中のまま語る、その一夜。
