@@ -7,18 +7,29 @@ export default function Home() {
       <section className="min-h-[70vh] flex items-center">
         <div className="max-w-3xl mx-auto px-8">
           <h1 className="text-5xl md:text-7xl font-bold text-[#1B6B7A] leading-tight mb-8">
-            更新を重ねる<br className="md:hidden" />人生を。
+            更新を重ねる<br className="md:hidden" />人生へ。
           </h1>
           <p className="text-lg text-gray-600 mb-4">
-            未完成のまま、語り続ける。その言葉が、誰かの勇気になる。
+            人生は、何度でも選び直せる。
           </p>
           <p className="text-gray-500 mb-8">
-            becoming lab は、人生の途中にいる人が、自分の物語を語り、<br />
-            次の一歩を見つけていくための対話の場です。
+            becoming lab は、ストーリーと対話を通じて<br />
+            自分の生き方を見つめ直すコミュニティです。
           </p>
-          <p className="text-sm text-gray-400 tracking-widest">
-            Layering renewal into life.
-          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link
+              href="/kataribe"
+              className="inline-block px-6 py-3 border border-[#1B6B7A] text-[#1B6B7A] text-sm tracking-wide hover:bg-[#1B6B7A] hover:text-white transition-colors"
+            >
+              次回イベントを見る
+            </Link>
+            <Link
+              href="/community"
+              className="inline-block px-6 py-3 bg-[#1B6B7A] text-white text-sm tracking-wide hover:opacity-80 transition-opacity"
+            >
+              becoming lab に参加する
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -27,118 +38,137 @@ export default function Home() {
         <div className="max-w-2xl mx-auto px-8">
           <h2 className="text-xl font-bold mb-8">becoming lab とは</h2>
           <div className="space-y-4 leading-relaxed opacity-90">
-            <p>人生には、立ち止まりたくなる瞬間があります。このままでいいのか。何を大切にして生きたいのか。自分は何者なのか。</p>
-            <p>becoming lab は、そうした問いに答えを与える場所ではありません。ここは、未完成なままの人生を、言葉にしてみる場所です。</p>
-            <p>語ることで、自分の輪郭が見えてくる。聴くことで、誰かの人生が自分に重なる。その重なりの中で、人は静かに更新されていきます。</p>
+            <p className="font-medium text-lg">
+              becoming lab は<br />
+              「どう生きるか」を問い続ける人のための場です。
+            </p>
+            <p>人生の中で私たちは</p>
+            <p className="pl-4 opacity-80">
+              キャリア・家族・成功・社会の期待
+            </p>
+            <p>さまざまな価値観の中で生きています。</p>
+            <p>しかし、ある瞬間にこう問い始めます。</p>
+            <p className="italic opacity-90">
+              「この道は、本当に自分で選んだ道だろうか？」
+            </p>
+            <p>
+              becoming lab は そんな問いを持つ人たちが集まり、
+              誰かのストーリーを聞き、対話をし、自分の人生を見つめ直す——
+            </p>
+            <p className="font-medium">人生を更新する実験場です。</p>
           </div>
         </div>
       </section>
 
-      {/* 教えない理由〜はじめの一歩 */}
+      {/* becoming lab が大切にしていること */}
       <section className="py-20">
         <div className="max-w-2xl mx-auto px-8">
-          <div className="mb-20">
-            <h2 className="text-xl font-bold text-gray-900 mb-8">教えない理由</h2>
-            <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>becoming lab は、教える場ではありません。なぜなら、ここに集う人たちはすでにそれぞれの人生を生き、答えの「種」を持っているからです。</p>
-              <p>必要なのは、正解ではなく、語る時間と、聴いてもらえる関係。私たちは、場・問い・伴走を提供します。</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-10">
+            becoming lab が大切にしていること
+          </h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <p className="text-xs tracking-widest text-[#1B6B7A] mb-2">STORY</p>
+              <p className="font-medium text-gray-900 mb-1">人生のリアルなストーリー</p>
+              <p className="text-sm text-gray-600">成功談ではなく、迷い、葛藤、決断を語ります。</p>
+            </div>
+            <div>
+              <p className="text-xs tracking-widest text-[#1B6B7A] mb-2">DIALOGUE</p>
+              <p className="font-medium text-gray-900 mb-1">対話</p>
+              <p className="text-sm text-gray-600">正解を教える場ではなく、問いを持ち帰る場です。</p>
+            </div>
+            <div>
+              <p className="text-xs tracking-widest text-[#1B6B7A] mb-2">COURAGE</p>
+              <p className="font-medium text-gray-900 mb-1">勇気ある選択</p>
+              <p className="text-sm text-gray-600">挑戦する人を応援します。</p>
+            </div>
+            <div>
+              <p className="text-xs tracking-widest text-[#1B6B7A] mb-2">COMMUNITY</p>
+              <p className="font-medium text-gray-900 mb-1">志でつながる仲間</p>
+              <p className="text-sm text-gray-600">利害ではなく、価値観でつながるコミュニティです。</p>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="mb-20">
-            <h2 className="text-xl font-bold text-gray-900 mb-10">何が起きるのか</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div>
-                <p className="text-xs tracking-widest text-gray-400 mb-4">参加前</p>
-                <ul className="space-y-2 text-gray-600 text-sm">
-                  <li>経験が点のまま残っている</li>
-                  <li>想いはあるが、言葉にならない</li>
-                  <li>志はあるが、共有できない</li>
-                </ul>
-              </div>
-              <div>
-                <p className="text-xs tracking-widest text-gray-400 mb-4">参加後</p>
-                <ul className="space-y-2 text-gray-600 text-sm">
-                  <li>自分の物語を、自分の言葉で語れる</li>
-                  <li>経験が意味としてつながる</li>
-                  <li>その語りが、誰かの勇気になる</li>
-                </ul>
-              </div>
-              <div>
-                <p className="text-xs tracking-widest text-gray-400 mb-4">継続すると</p>
-                <ul className="space-y-2 text-gray-600 text-sm">
-                  <li>人生の軸が定まる</li>
-                  <li>他者への関わり方が変わる</li>
-                  <li>語ること自体が貢献になる</li>
-                </ul>
-              </div>
+      {/* PROGRAM */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-2xl mx-auto px-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">PROGRAM</h2>
+          <p className="text-gray-600 mb-10">
+            becoming lab では、主に3つのプログラムを行っています。
+          </p>
+          <div className="space-y-8">
+            <div>
+              <p className="text-xs tracking-widest text-[#1B6B7A] mb-2">TALK SESSION</p>
+              <p className="font-medium text-gray-900">人生の選択をした人のストーリー</p>
+            </div>
+            <div>
+              <p className="text-xs tracking-widest text-[#1B6B7A] mb-2">DIALOGUE</p>
+              <p className="font-medium text-gray-900">参加者同士の対話</p>
+            </div>
+            <div>
+              <p className="text-xs tracking-widest text-[#1B6B7A] mb-2">COMMUNITY</p>
+              <p className="font-medium text-gray-900">継続的なつながり</p>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="mb-20">
-            <h2 className="text-xl font-bold text-gray-900 mb-8">語り部（かたりべ）の循環という仕組み</h2>
-            <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>語り部とは、完成した人ではありません。途中のまま、自分の物語を語る人のことです。</p>
-              <p>becoming lab では、一人ひとりが語り部になります。</p>
-              <p>語る人が、誰かの勇気になる。聴いた人が、次の語り部になる。語りが循環し、成長と貢献が続いていく。</p>
-              <p>完成を目指すのではなく、更新を重ねる人生そのものが集まる場です。</p>
-            </div>
-          </div>
-
-          <div className="mb-20">
-            <h2 className="text-xl font-bold text-gray-900 mb-8">主な関わり方</h2>
-            <div className="space-y-8">
-              <div>
-                <p className="font-medium text-gray-900 mb-1">1｜語り部の会（聴く）</p>
-                <p className="text-sm text-gray-600">月に一度、人生・挑戦・家族・仕事などをテーマに、一人の語り部の話を聴きます。</p>
-              </div>
-              <div>
-                <p className="font-medium text-gray-900 mb-1">2｜セッション（話す）</p>
-                <p className="text-sm text-gray-600">自分の経験や想いを棚卸し、言葉にしていく対話の時間です。</p>
-              </div>
-              <div>
-                <p className="font-medium text-gray-900 mb-1">3｜深める（継続）</p>
-                <p className="text-sm text-gray-600">コーチングや講座を通じて、人生の軸や関係性を深めていきます。</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mb-20">
-            <h2 className="text-xl font-bold text-gray-900 mb-8">なぜ、この場をつくったのか</h2>
-            <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>私は、仕事・家庭・挑戦（トライアスロン）を同時に抱えながら、何度も立ち止まり、迷ってきました。</p>
-              <p>転機は、「やり方」ではなく「在り方」を見つめ直したことでした。整え、向き合い、つむぎ直す。そのプロセスが、人生全体を変えていったのです。</p>
-              <p>becoming lab は、その経験と学びを、同じように悩む人と分かち合うための場として生まれました。</p>
-            </div>
-            <p className="mt-8 pt-6 border-t border-gray-200 text-gray-500 text-sm">
-              この場への関わりは、語りが次へと手渡されていく循環への参加です。
+      {/* 次回イベント */}
+      <section className="py-20">
+        <div className="max-w-2xl mx-auto px-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-10">次回イベント</h2>
+          <div className="border border-gray-200 p-8">
+            <p className="text-xs tracking-widest text-[#1B6B7A] mb-4">NEXT EVENT</p>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              「自分で選んだ道 vol.2」
+            </h3>
+            <p className="text-gray-600 mb-6">
+              テーマ：「トライアスリートのロールモデルを目指して」
             </p>
-          </div>
-
-          <div className="mb-20">
-            <h2 className="text-xl font-bold text-gray-900 mb-8">こんな方へ</h2>
-            <ul className="space-y-2 text-gray-600">
-              <li>未完成だと感じているが、志がある</li>
-              <li>人生を次のフェーズに進めたい</li>
-              <li>自分の経験を、誰かの役に立てたい</li>
-              <li>教えられるより、対話したい</li>
-            </ul>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-8">はじめの一歩</h2>
-            <div className="space-y-4">
-              <Link href="/kataribe" className="block text-[#1B6B7A] hover:opacity-70 transition-opacity">
-                ▶ 語り部の会に参加する
-              </Link>
-              <Link href="/contact" className="block text-[#1B6B7A] hover:opacity-70 transition-opacity">
-                ▶ 話してみる
-              </Link>
-              <Link href="/contact" className="block text-[#1B6B7A] hover:opacity-70 transition-opacity">
-                ▶ 開催情報を受け取る
-              </Link>
+            <div className="space-y-2 text-sm text-gray-600 mb-8">
+              <p>📅 2026年4月22日（水）19:30〜</p>
+              <p>📍 神田SDGsコネクション 3階</p>
+              <p>🎤 スピーカー：プロトライアスロン選手 山岸穂高さん</p>
             </div>
+            <Link
+              href="/kataribe"
+              className="inline-block px-6 py-3 bg-[#1B6B7A] text-white text-sm tracking-wide hover:opacity-80 transition-opacity"
+            >
+              参加する
+            </Link>
           </div>
+        </div>
+      </section>
+
+      {/* こんな人に来てほしい */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-2xl mx-auto px-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-8">こんな人に来てほしい</h2>
+          <ul className="space-y-3 text-gray-600">
+            <li>・自分の人生を自分で選びたい人</li>
+            <li>・キャリアや生き方を見つめ直している人</li>
+            <li>・志を持って生きたい人</li>
+            <li>・挑戦する人を応援したい人</li>
+            <li>・本音で話せる仲間に出会いたい人</li>
+          </ul>
+        </div>
+      </section>
+
+      {/* JOIN US */}
+      <section className="py-20 bg-[#1B6B7A] text-white">
+        <div className="max-w-2xl mx-auto px-8 text-center">
+          <h2 className="text-xl font-bold mb-4">JOIN US</h2>
+          <p className="opacity-90 mb-2">人生を更新する時間を</p>
+          <p className="opacity-90 mb-8">一緒に作りませんか。</p>
+          <p className="opacity-80 mb-8 text-sm">次回イベントにぜひご参加ください。</p>
+          <Link
+            href="/kataribe"
+            className="inline-block px-8 py-3 border border-white text-white text-sm tracking-wide hover:bg-white hover:text-[#1B6B7A] transition-colors"
+          >
+            参加する
+          </Link>
         </div>
       </section>
     </>
