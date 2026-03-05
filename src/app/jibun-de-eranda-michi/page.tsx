@@ -44,7 +44,7 @@ export default function KataribePage() {
           <div className="mb-16">
             <h2 className="text-xl font-bold text-gray-900 mb-6">これまでの語り部</h2>
             <div className="space-y-3">
-              <Link href="/kataribe/vol1" className="block text-[#1B6B7A] hover:opacity-70 transition-opacity">
+              <Link href="/jibun-de-eranda-michi/vol1" className="block text-[#1B6B7A] hover:opacity-70 transition-opacity">
                 ▶ vol.1
               </Link>
             </div>
