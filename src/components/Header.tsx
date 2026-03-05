@@ -10,7 +10,7 @@ export default function Header() {
 
   const navItems = [
     { href: "/concept", label: "Concept" },
-    { href: "/kataribe", label: "語り部（かたりべ）の会" },
+    { href: "/kataribe", label: "自分で選んだ道" },
     { href: "/community", label: "Community" },
     { href: "/service", label: "Service" },
     { href: "/contact", label: "Contact" },

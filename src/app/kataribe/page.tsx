@@ -3,19 +3,17 @@ import Link from "next/link";
 export default function KataribePage() {
   return (
     <>
-      {/* ヘッダー */}
       <section className="pt-32 pb-12">
         <div className="max-w-2xl mx-auto px-8">
-          <p className="text-xs tracking-widest text-gray-400 mb-4">KATARIBE</p>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">語り部の会</h1>
+          <p className="text-xs tracking-widest text-gray-400 mb-4">自分で選んだ道</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">自分で選んだ道</h1>
         </div>
       </section>
 
-      {/* メインコンテンツ */}
       <section className="pb-20">
         <div className="max-w-2xl mx-auto px-8">
           <div className="mb-16">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">語り部の会とは</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-6">自分で選んだ道とは</h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
               <p>月に一度、一人の語り部が人生の途中を語ります。</p>
               <p>成功談ではありません。未完成のままの物語です。</p>
@@ -57,7 +55,7 @@ export default function KataribePage() {
       <section className="py-16 bg-[#1B6B7A] text-white">
         <div className="max-w-2xl mx-auto px-8 space-y-4">
           <Link href="/contact" className="block hover:opacity-70 transition-opacity">
-            ▶ 語り部の会に参加する
+            ▶ 自分で選んだ道に参加する
           </Link>
           <Link href="/contact" className="block hover:opacity-70 transition-opacity">
             ▶ 開催情報を受け取る
