@@ -31,7 +31,7 @@ export default function KataribeVol1() {
         </div>
       </section>
 
-      {/* 語り部の紹介 */}
+      {/* スピーカーの紹介 */}
       <section className="px-6 py-24 bg-stone-50">
         <div className="max-w-2xl mx-auto">
           <span className="text-xs tracking-[0.3em] text-stone-400 block mb-4">STORYTELLER</span>

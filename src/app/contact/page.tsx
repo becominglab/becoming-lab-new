@@ -94,7 +94,7 @@ export default function ContactPage() {
               <div className="space-y-2">
                 <label className="flex items-center gap-3 text-gray-600">
                   <input type="checkbox" name="interest" value="自分で選んだ道" className="w-4 h-4" />
-                  語り部の会
+                  自分で選んだ道
                 </label>
                 <label className="flex items-center gap-3 text-gray-600">
                   <input type="checkbox" name="interest" value="1on1セッション" className="w-4 h-4" />
