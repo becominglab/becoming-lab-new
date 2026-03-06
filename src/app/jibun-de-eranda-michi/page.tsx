@@ -31,7 +31,7 @@ export default function KataribePage() {
           </div>
 
           <div className="mb-16">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">語り部になるという体験</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-6">スピーカーになるという体験</h2>
             <p className="text-gray-600 mb-4">語る側にとって、</p>
             <ul className="space-y-2 text-gray-600 mb-4">
               <li>人生が整理される</li>
@@ -46,6 +46,9 @@ export default function KataribePage() {
             <div className="space-y-3">
               <Link href="/jibun-de-eranda-michi/vol1" className="block text-[#1B6B7A] hover:opacity-70 transition-opacity">
                 ▶ vol.1
+              </Link>
+              <Link href="/jibun-de-eranda-michi/vol2" className="block text-[#1B6B7A] hover:opacity-70 transition-opacity">
+                ▶ vol.2
               </Link>
             </div>
           </div>
