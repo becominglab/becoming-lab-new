@@ -24,8 +24,8 @@ export default function Footer() {
           <Link href="/concept" className="hover:opacity-100 transition-opacity">
             Concept
           </Link>
-          <Link href="/kataribe" className="hover:opacity-100 transition-opacity">
-            語り部の会
+          <Link href="/jibun-de-eranda-michi" className="hover:opacity-100 transition-opacity">
+            自分で選んだ道
           </Link>
           <Link href="/community" className="hover:opacity-100 transition-opacity">
             Community
