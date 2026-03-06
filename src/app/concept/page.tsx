@@ -51,11 +51,11 @@ export default function ConceptPage() {
             </div>
           </div>
 
-          {/* 語り部という在り方 */}
+          {/* スピーカーという在り方 */}
           <div className="mb-16">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">語り部という在り方</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-6">スピーカーという在り方</h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>語り部は、完成した人ではありません。途中のまま語る人です。</p>
+              <p>スピーカーは、完成した人ではありません。途中のまま語る人です。</p>
               <p>語ることで輪郭が生まれ、聴くことで重なり、次の語りが生まれます。</p>
             </div>
           </div>
