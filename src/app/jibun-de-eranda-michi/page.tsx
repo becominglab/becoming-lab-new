@@ -15,7 +15,7 @@ export default function KataribePage() {
           <div className="mb-16">
             <h2 className="text-xl font-bold text-gray-900 mb-6">自分で選んだ道とは</h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>月に一度、一人の語り部が人生の途中を語ります。</p>
+              <p>月に一度、一人のスピーカーが人生の途中を語ります。</p>
               <p>成功談ではありません。未完成のままの物語です。</p>
             </div>
           </div>
@@ -42,7 +42,7 @@ export default function KataribePage() {
           </div>
 
           <div className="mb-16">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">これまでの語り部</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-6">これまでのスピーカー</h2>
             <div className="space-y-3">
               <Link href="/jibun-de-eranda-michi/vol1" className="block text-[#1B6B7A] hover:opacity-70 transition-opacity">
                 ▶ vol.1

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: '第一回 語り部の会 | becoming lab',
+  title: '第一回 自分で選んだ道 | becoming lab',
   description: '国立大卒、ベンチャー新規事業のエース。圧倒的成果を手放し、猟師として自給自足の道を選んだ24歳が語る「志」の物語。2026年3月12日、神田錦町にて開催。',
 };
 
@@ -35,7 +35,7 @@ export default function KataribeVol1() {
       <section className="px-6 py-24 bg-stone-50">
         <div className="max-w-2xl mx-auto">
           <span className="text-xs tracking-[0.3em] text-stone-400 block mb-4">STORYTELLER</span>
-          <h2 className="text-2xl font-light mb-12 tracking-tight">語り部について</h2>
+          <h2 className="text-2xl font-light mb-12 tracking-tight">スピーカーについて</h2>
           <div className="space-y-6 text-stone-700 leading-relaxed">
             <p className="text-lg font-light">24歳。国立大学農学部卒業。</p>
             <p>在学中からベンチャー企業でインターンを経験し、卒業後は新入社員として入社。新規事業部門で圧倒的な成果を出し、周囲の期待を集めていた。</p>
@@ -99,7 +99,7 @@ export default function KataribeVol1() {
             <p>この3年間、彼と過ごしてきました。</p>
             <p>周りが羨むような成果を出してきた日々。<br />そして、全てを手放す決断をしたときの、澄んだ目。</p>
             <p>彼の熱い思いを受け取ったとき、becoming lab をこのような形で始めたいと思いました。</p>
-            <p className="py-4 text-stone-600 italic border-l-2 border-stone-300 pl-6">語り部は、完成した人ではありません。<br />途中のまま語る人です。</p>
+            <p className="py-4 text-stone-600 italic border-l-2 border-stone-300 pl-6">スピーカーは、完成した人ではありません。<br />途中のまま語る人です。</p>
             <p>彼の言葉が、誰かの問いになり、<br />その問いが、また誰かの語りになる。</p>
             <p>そんな循環の、最初の一歩。<br />大切な第一回目を、一緒に過ごしませんか。</p>
             <p className="pt-8 text-sm text-stone-500">becoming lab 主宰</p>

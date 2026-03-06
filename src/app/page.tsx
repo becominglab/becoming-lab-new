@@ -168,7 +168,7 @@ export default function KataribeVol1() {
               彼の熱い思いを受け取ったとき、becoming lab をこのような形で始めたいと思いました。
             </p>
             <p className="py-4 text-stone-600 italic border-l-2 border-stone-300 pl-6">
-              語り部は、完成した人ではありません。<br />
+              スピーカーは、完成した人ではありません。<br />
               途中のまま語る人です。
             </p>
             <p>

@@ -18,7 +18,7 @@ export default function ServicePage() {
           {/* 導入文 */}
           <div className="mb-16">
             <p className="text-gray-600 leading-relaxed">
-              語り部の会だけでなく、1on1 セッション・講座をご希望の方はこちら。
+              自分で選んだ道だけでなく、1on1 セッション・講座をご希望の方はこちら。
             </p>
           </div>
 
