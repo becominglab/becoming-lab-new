@@ -1,5 +1,10 @@
 import Link from "next/link";
 
+export const metadata = {
+  title: "サービス",
+  description: "1on1セッション・神夫養成講座。自分の在り方を整え、人生の軸を見つけるプログラム。becoming lab。",
+};
+
 export default function ServicePage() {
   return (
     <>

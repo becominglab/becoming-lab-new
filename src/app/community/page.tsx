@@ -1,5 +1,10 @@
 import Link from "next/link";
 
+export const metadata = {
+  title: "コミュニティ",
+  description: "語り、聴き、一緒に過ごす場。becoming labのコミュニティで、日常が少しずつ更新されていく。",
+};
+
 export default function CommunityPage() {
   return (
     <>
