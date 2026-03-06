@@ -18,7 +18,7 @@ export default function CommunityPage() {
           {/* コミュニティとは */}
           <div className="mb-16">
             <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>becoming lab のコミュニティは、語り部の会で生まれた言葉や気づきが、日常の時間へとゆっくり溶け込んでいく場です。</p>
+              <p>becoming lab のコミュニティは、自分で選んだ道で生まれた言葉や気づきが、日常の時間へとゆっくり溶け込んでいく場です。</p>
               <p>語る／聴く、だけで終わらず、一緒に過ごし、動き、対話する中で、人生が少しずつ更新されていきます。</p>
             </div>
           </div>
@@ -39,7 +39,7 @@ export default function CommunityPage() {
             <h2 className="text-xl font-bold text-gray-900 mb-8">主な活動</h2>
             <div className="space-y-8">
               <div>
-                <h3 className="font-bold text-gray-900 mb-2">語り部の会（月1回）</h3>
+                <h3 className="font-bold text-gray-900 mb-2">自分で選んだ道（月1回）</h3>
                 <p className="text-gray-600 text-sm">人生の途中を語り、聴き合う時間。すべての活動の起点です。</p>
               </div>
               <div>
@@ -82,7 +82,7 @@ export default function CommunityPage() {
               <li>自分の人生を棚卸ししたい</li>
               <li>関係性や在り方を深めたい</li>
             </ul>
-            <p className="text-gray-500">そう感じたときは、語り部の会や、1on1 セッション、講座へと自然につながっていきます。</p>
+            <p className="text-gray-500">そう感じたときは、自分で選んだ道や、1on1 セッション、講座へと自然につながっていきます。</p>
           </div>
         </div>
       </section>
