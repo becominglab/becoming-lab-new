@@ -1,3 +1,8 @@
+export const metadata = {
+  title: "自分で選んだ道",
+  description: "誰かの選択が、あなたの問いになる。月1回開催のトークイベントシリーズ。東京・神田錦町、becoming lab。",
+};
+
 import Link from "next/link";
 
 export default function KataribePage() {
