@@ -67,6 +67,19 @@ export default function ServicePage() {
                 </ul>
               </div>
             </div>
+            </div>
+              <div>
+                <p className="font-medium text-gray-700 mb-3">こんな方へ</p>
+                <ul className="space-y-2">
+                  {['夫婦関係をもっと穏やかにしたい', '自分を大切にできるようになりたい', '子どもに誇れる夫婦でありたい', '我慢ではなく愛でつながりたい', '本当は、もっと幸せになりたい'].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <span className="w-1 h-1 rounded-full bg-gray-400 mt-2.5 flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </section>
