@@ -35,7 +35,7 @@ export default function ServicePage() {
           {/* 神夫養成講座 */}
           <div className="mb-16">
             <h2 className="text-xl font-bold text-gray-900 mb-6">神夫養成講座</h2>
-            <p className="text-sm text-gray-500 mb-6">by 大塚昌代 / 神夫養成研究所</p>
+            <p className="text-sm text-gray-400 mb-6">by 大塚昌代 / 神夫養成研究所</p>
             <div className="space-y-6 text-gray-600 leading-relaxed">
               <p>家族という最も近い関係性から、人生を整える。<br />12週間の伴走型プログラム。ノウハウではなく、在り方を。</p>
               <p className="py-4 border-l-2 border-gray-200 pl-6 text-gray-500 italic">
