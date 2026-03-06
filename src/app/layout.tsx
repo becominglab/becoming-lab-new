@@ -10,6 +10,9 @@ export const metadata: Metadata = {
     template: "%s | becoming lab",
   },
   description: "人生の途中にいる人が、自分の物語を語り、次の一歩を見つけていくための対話の場です。",
+  verification: {
+    google: "grgFKqkwOPmHyXiBsIxG8o3Upo0FlbVa28IEjgc84jo",
+  },
 };
 
 export default function RootLayout({
