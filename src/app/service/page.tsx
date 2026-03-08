@@ -76,6 +76,32 @@ export default function ServicePage() {
         </div>
       </section>
 
+
+          {/* AI勉強会 */}
+          <div className="mb-16">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">AI勉強会</h2>
+            <div className="space-y-6 text-gray-600 leading-relaxed">
+              <p>AIは、道具です。<br />
+              でも、道具を手にしたとき、人は問われます。<br />
+              ——あなたは、何のために使うのか？</p>
+              <p>becoming labのAI勉強会は、技術の習得よりも先に、その問いを大切にします。</p>
+              <ul className="space-y-2">
+                {['AIを通じて、自分の時間を取り戻す。', 'AIを通じて、自分がやりたいことに集中できる。', 'AIを通じて、自分で選んだ道を、もっと自分らしく歩く。'].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="w-1 h-1 rounded-full bg-gray-400 mt-2.5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <p>ここで学ぶのは、操作の仕方だけではありません。<br />
+              「AIを使って、自分はどんな人生を創りたいのか」を、一緒に考える場です。</p>
+              <p className="py-4 border-l-2 border-gray-200 pl-6 text-gray-500 italic">
+                完成した答えは、持ってこなくていい。<br />
+                試しながら、問いながら、更新していく。<br />
+                それが、becoming lab のスタイルです。
+              </p>
+            </div>
+          </div>
       {/* CTA */}
       <section className="py-16 bg-[#1B6B7A] text-white">
         <div className="max-w-2xl mx-auto px-8">
