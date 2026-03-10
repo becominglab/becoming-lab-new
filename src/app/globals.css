@@ -19,3 +19,8 @@ body {
   background-color: #1B6B7A;
   color: white;
 }
+
+
+h1, h2, h3 {
+    font-family: "Noto Serif JP", serif;
+}
