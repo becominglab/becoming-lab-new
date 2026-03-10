@@ -32,6 +32,7 @@ export default function ServicePage() {
               <li>判断に確信を持つ</li>
               <li>在り方を整える</li>
             </ul>
+            <Link href="/session" className="inline-block mt-6 text-sm text-[#1B6B7A] hover:opacity-70 transition-opacity">▶ セッション詳細・ご予約</Link>
           </div>
 
           <div className="mb-16">
