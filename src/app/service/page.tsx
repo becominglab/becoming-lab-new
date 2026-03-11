@@ -129,6 +129,7 @@ export default function ServicePage() {
                 </p>
               </div>
             </div>
+            <a href="https://kamiotto.jp/koza" target="_blank" rel="noopener noreferrer" className="inline-block mt-6 text-sm text-[#1B6B7A] hover:opacity-70 transition-opacity">▶ 講座の詳細はこちら</a>
           </div>
 
           <div className="mb-16">
