@@ -16,31 +16,51 @@ export default function Footer() {
             />
           </Link>
           <p className="text-sm opacity-80 leading-relaxed">
-            更新を重ねる人生を。<br />
-            Layering renewal into life.
+            挑戦の途中を、生きる人へ。
+            <br />
+            For those living in the middle of their challenge.
           </p>
         </div>
         <div className="flex flex-wrap gap-x-8 gap-y-4 text-sm opacity-70 mb-12">
-          <Link href="/concept" className="hover:opacity-100 transition-opacity">
+          <Link
+            href="/home"
+            className="hover:opacity-100 transition-opacity"
+          >
+            挑戦フィード
+          </Link>
+          <Link
+            href="/concept"
+            className="hover:opacity-100 transition-opacity"
+          >
             Concept
           </Link>
-          <Link href="/jibun-de-eranda-michi" className="hover:opacity-100 transition-opacity">
-            自分で選んだ道
+          <Link
+            href="/members"
+            className="hover:opacity-100 transition-opacity"
+          >
+            Members
           </Link>
-          <Link href="/community" className="hover:opacity-100 transition-opacity">
+          <Link
+            href="/community"
+            className="hover:opacity-100 transition-opacity"
+          >
             Community
           </Link>
-          <Link href="/service" className="hover:opacity-100 transition-opacity">
+          <Link
+            href="/service"
+            className="hover:opacity-100 transition-opacity"
+          >
             Service
           </Link>
-          <Link href="/contact" className="hover:opacity-100 transition-opacity">
+          <Link
+            href="/contact"
+            className="hover:opacity-100 transition-opacity"
+          >
             Contact
           </Link>
         </div>
         <div className="pt-8 border-t border-white/20">
-          <p className="text-xs opacity-50">
-            © 2026 becoming lab
-          </p>
+          <p className="text-xs opacity-50">© 2026 becoming lab</p>
         </div>
       </div>
     </footer>

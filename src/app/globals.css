@@ -2,6 +2,16 @@
 
 :root {
   --color-brand: #1B6B7A;
+  --color-primary: #1B6B7A;
+  --color-secondary: #155a67;
+  --color-accent: #1B6B7A;
+}
+
+@theme {
+  --color-primary: #1B6B7A;
+  --color-secondary: #155a67;
+  --color-accent: #1B6B7A;
+  --font-display: "Noto Sans JP", sans-serif;
 }
 
 html {

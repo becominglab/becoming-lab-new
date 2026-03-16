@@ -9,11 +9,11 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
+    { href: "/home", label: "挑戦フィード" },
     { href: "/concept", label: "Concept" },
-    { href: "/jibun-de-eranda-michi", label: "自分で選んだ道" },
     { href: "/community", label: "Community" },
     { href: "/service", label: "Service" },
-    { href: "/contact", label: "Contact" },
+    { href: "/mypage", label: "マイページ" },
   ];
 
   return (
