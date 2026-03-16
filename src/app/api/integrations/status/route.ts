@@ -20,7 +20,7 @@ export async function GET() {
     .select("provider, connected_at, token_expires_at, athlete_id")
     .eq("user_id", user.id);
 
-  const result = (integrations ?? []).map((i) => ({
+  const result = (integrations ?? []).map((i: { provider: string; connected_at: string; token_expires_at: string | null; athlete_id: string | null }) => ({
     provider: i.provider,
     connected: true,
     connectedAt: i.connected_at,
