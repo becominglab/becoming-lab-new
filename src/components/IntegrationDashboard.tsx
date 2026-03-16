@@ -29,6 +29,7 @@ type HealthPlanetEntry = {
   date: string;
   label: string;
   unit: string;
+  change?: number;
 };
 
 const PROVIDERS = [
@@ -38,7 +39,6 @@ const PROVIDERS = [
     icon: "🚴",
     connectLabel: "Strava と連携する",
     authPath: "/api/strava/auth",
-    color: "orange",
   },
   {
     key: "healthplanet",
@@ -46,23 +46,6 @@ const PROVIDERS = [
     icon: "🏥",
     connectLabel: "HealthPlanet と連携する",
     authPath: "/api/healthplanet/auth",
-    color: "teal",
-  },
-  {
-    key: "garmin",
-    label: "Garmin",
-    icon: "⌚",
-    connectLabel: "Garmin と連携する",
-    authPath: "/api/garmin/auth",
-    color: "blue",
-  },
-  {
-    key: "coros",
-    label: "COROS",
-    icon: "🏃",
-    connectLabel: "COROS と連携する",
-    authPath: "/api/coros/auth",
-    color: "purple",
   },
 ] as const;
 
@@ -172,6 +155,12 @@ export default function IntegrationDashboard() {
     syncAll();
   }, [syncAll]);
 
+  // HealthPlanet 主要4値
+  const primaryHealthTags = ["体重", "体脂肪率", "筋肉量", "基礎代謝量"];
+  const primaryHealth = healthData.filter((e) =>
+    primaryHealthTags.includes(e.label)
+  );
+
   return (
     <div className="space-y-10">
       {/* 同期ステータス */}
@@ -203,7 +192,7 @@ export default function IntegrationDashboard() {
       </div>
 
       {/* 連携カード一覧 */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {PROVIDERS.map((p) => {
           const status = statuses.find((s) => s.provider === p.key);
           const isConnected = !!status;
@@ -257,9 +246,17 @@ export default function IntegrationDashboard() {
             <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
               🚴 最近のアクティビティ
             </h3>
-            {stravaLoading && (
-              <span className="text-xs text-stone-400">読み込み中...</span>
-            )}
+            <div className="flex items-center gap-3">
+              {stravaLoading && (
+                <span className="text-xs text-stone-400">読み込み中...</span>
+              )}
+              <Link
+                href="/mypage/activities"
+                className="text-xs text-[#1B6B7A] hover:opacity-70 transition-opacity"
+              >
+                すべて見る →
+              </Link>
+            </div>
           </div>
 
           {activities.length > 0 ? (
@@ -290,8 +287,8 @@ export default function IntegrationDashboard() {
                 </div>
               </div>
 
-              {/* アクティビティ一覧 */}
-              {activities.map((a) => (
+              {/* 最新3件のみ表示 */}
+              {activities.slice(0, 3).map((a) => (
                 <div
                   key={a.id}
                   className="flex items-center gap-4 p-4 border border-stone-100 rounded-lg hover:bg-stone-50 transition-colors"
@@ -321,9 +318,17 @@ export default function IntegrationDashboard() {
             </div>
           ) : (
             !stravaLoading && (
-              <p className="text-sm text-stone-400 p-4 border border-dashed border-stone-200 rounded-lg text-center">
-                アクティビティデータがまだありません
-              </p>
+              <div className="text-center p-6 border border-dashed border-stone-200 rounded-lg">
+                <p className="text-sm text-stone-400 mb-2">
+                  アクティビティデータがまだありません
+                </p>
+                <Link
+                  href="/mypage/activities"
+                  className="text-xs text-[#1B6B7A] hover:opacity-70"
+                >
+                  手動でアクティビティを記録する →
+                </Link>
+              </div>
             )
           )}
         </div>
@@ -336,14 +341,39 @@ export default function IntegrationDashboard() {
             <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
               🏥 体組成データ（TANITA）
             </h3>
-            {healthLoading && (
-              <span className="text-xs text-stone-400">読み込み中...</span>
-            )}
+            <div className="flex items-center gap-3">
+              {healthLoading && (
+                <span className="text-xs text-stone-400">読み込み中...</span>
+              )}
+              <Link
+                href="/mypage/health"
+                className="text-xs text-[#1B6B7A] hover:opacity-70 transition-opacity"
+              >
+                詳細を見る →
+              </Link>
+            </div>
           </div>
 
-          {healthData.length > 0 ? (
+          {primaryHealth.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {primaryHealth.map((entry, i) => (
+                <div
+                  key={i}
+                  className="p-4 bg-stone-50 rounded-lg text-center"
+                >
+                  <p className="text-xs text-stone-400 mb-1">{entry.label}</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {entry.value}
+                  </p>
+                  {entry.unit && (
+                    <p className="text-xs text-stone-500">{entry.unit}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : healthData.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {healthData.map((entry, i) => (
+              {healthData.slice(0, 4).map((entry, i) => (
                 <div
                   key={i}
                   className="p-4 bg-stone-50 rounded-lg text-center"
@@ -360,34 +390,19 @@ export default function IntegrationDashboard() {
             </div>
           ) : (
             !healthLoading && (
-              <p className="text-sm text-stone-400 p-4 border border-dashed border-stone-200 rounded-lg text-center">
-                体組成データがまだありません
-              </p>
+              <div className="text-center p-6 border border-dashed border-stone-200 rounded-lg">
+                <p className="text-sm text-stone-400 mb-2">
+                  体組成データがまだありません
+                </p>
+                <Link
+                  href="/mypage/health"
+                  className="text-xs text-[#1B6B7A] hover:opacity-70"
+                >
+                  手動で体組成データを記録する →
+                </Link>
+              </div>
             )
           )}
-        </div>
-      )}
-
-      {/* Garmin / COROS 連携済みの場合のプレースホルダー */}
-      {connectedProviders.has("garmin") && (
-        <div className="p-6 bg-stone-50 rounded-lg">
-          <h3 className="text-sm font-bold text-gray-900 mb-2">
-            ⌚ Garmin データ
-          </h3>
-          <p className="text-xs text-stone-400">
-            Garmin Connect からのデータ同期は準備中です。連携は完了しています。
-          </p>
-        </div>
-      )}
-
-      {connectedProviders.has("coros") && (
-        <div className="p-6 bg-stone-50 rounded-lg">
-          <h3 className="text-sm font-bold text-gray-900 mb-2">
-            🏃 COROS データ
-          </h3>
-          <p className="text-xs text-stone-400">
-            COROS からのデータ同期は準備中です。連携は完了しています。
-          </p>
         </div>
       )}
 

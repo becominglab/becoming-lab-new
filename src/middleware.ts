@@ -19,7 +19,8 @@ export const config = {
     "/profile/:path*",
     "/api/strava/:path*",
     "/api/healthplanet/:path*",
-    "/api/garmin/:path*",
-    "/api/coros/:path*",
+    "/api/integrations/:path*",
+    "/api/activities/:path*",
+    "/api/health/:path*",
   ],
 };

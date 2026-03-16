@@ -32,16 +32,22 @@ export default async function MyPage() {
         <div className="max-w-2xl mx-auto px-8 pt-12">
           {!user && (
             <div className="mb-12 p-6 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-amber-800 text-sm leading-relaxed">
+              <p className="text-amber-800 text-sm leading-relaxed mb-3">
                 ログインすると、デバイス連携や挑戦ログが利用できます。
               </p>
+              <Link
+                href="/login"
+                className="inline-block px-4 py-2 bg-[#1B6B7A] text-white rounded-lg text-xs font-medium hover:bg-[#155a67] transition-colors"
+              >
+                ログインする
+              </Link>
             </div>
           )}
 
           {/* デバイス連携ダッシュボード */}
           <IntegrationDashboard />
 
-          {/* 挑戦ログ */}
+          {/* わたしの挑戦ログ */}
           <div className="mt-16 mb-16">
             <p className="text-xs tracking-[0.3em] text-stone-400 mb-4">
               MY CHALLENGE LOG
@@ -53,13 +59,35 @@ export default async function MyPage() {
               あなたの挑戦の記録がここに表示されます。
             </p>
 
-            <div className="border border-dashed border-stone-300 rounded-lg p-8 text-center">
-              <p className="text-stone-400 text-sm mb-4">
-                まだ挑戦ログがありません
-              </p>
-              <p className="text-stone-400 text-xs">
-                デバイスを連携するか、手動で挑戦を記録してみましょう。
-              </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Link
+                href="/mypage/activities"
+                className="flex items-center gap-4 p-5 border border-stone-200 rounded-xl hover:border-[#1B6B7A] hover:bg-[#1B6B7A]/5 transition-colors group"
+              >
+                <span className="text-2xl">📊</span>
+                <div>
+                  <p className="text-sm font-bold text-gray-900 group-hover:text-[#1B6B7A] transition-colors">
+                    アクティビティ履歴
+                  </p>
+                  <p className="text-xs text-stone-400 mt-0.5">
+                    Strava連携 & 手動記録
+                  </p>
+                </div>
+              </Link>
+              <Link
+                href="/mypage/health"
+                className="flex items-center gap-4 p-5 border border-stone-200 rounded-xl hover:border-[#1B6B7A] hover:bg-[#1B6B7A]/5 transition-colors group"
+              >
+                <span className="text-2xl">🏥</span>
+                <div>
+                  <p className="text-sm font-bold text-gray-900 group-hover:text-[#1B6B7A] transition-colors">
+                    体組成データ
+                  </p>
+                  <p className="text-xs text-stone-400 mt-0.5">
+                    TANITA連携 & 手動記録
+                  </p>
+                </div>
+              </Link>
             </div>
           </div>
 
