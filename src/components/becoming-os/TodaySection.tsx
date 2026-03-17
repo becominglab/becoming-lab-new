@@ -9,38 +9,8 @@ interface TodayData {
   streak: number;
 }
 
-const DAILY_QUOTES = [
-  "完璧を目指すより、まず終わらせろ。",
-  "昨日の自分を超えることだけに集中する。",
-  "小さな一歩が、やがて大きな旅になる。",
-  "変化を恐れるな。変わらないことを恐れろ。",
-  "今日やらなかったことは、明日もやらない。",
-  "習慣は、第二の天性である。",
-  "始めることが、すでに半分を終えたこと。",
-  "自分を信じろ。他の誰もあなたにはなれない。",
-  "失敗とは、やめた時にだけ起こるものだ。",
-  "一日一日が、自分を編集するチャンス。",
-  "走れない日は歩け。歩けない日は立て。",
-  "迷ったときは、より勇気のいる方を選べ。",
-  "過程を楽しめる者が、最も遠くへ行ける。",
-  "考えすぎるな。動け。",
-  "いまの自分は、過去の選択の結果だ。",
-  "できない理由ではなく、できる方法を探せ。",
-  "継続は力なり。しかし、正しい方向にのみ。",
-  "自分のペースでいい。でも止まるな。",
-  "限界は、自分が決めているだけだ。",
-  "昨日植えた木が、明日の日陰を作る。",
-  "準備ができてから始めるのでは遅い。",
-  "人生に正解はない。あるのは選択だけだ。",
-  "体を動かすと、心も動き出す。",
-  "記録は嘘をつかない。",
-  "静かに、しかし確実に、前へ。",
-  "弱さを知ることが、強さの始まり。",
-  "今日の汗は、明日の自信になる。",
-  "言葉にすることで、意志は力を持つ。",
-  "不安は、挑戦している証拠だ。",
-  "更新を重ねることが、生きるということ。",
-];
+// Fallback quote (used while AI loads or if AI is unavailable)
+const FALLBACK_QUOTE = "更新を重ねることが、生きるということ。";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -58,15 +28,6 @@ function formatJapaneseDate(date: Date): string {
   return `${date.getFullYear()}年${m}月${d}日（${w}）`;
 }
 
-function getDailyQuote(): string {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor(
-    (now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  return DAILY_QUOTES[dayOfYear % DAILY_QUOTES.length];
-}
-
 interface TodaySectionProps {
   userName?: string | null;
   pinnedDeclaration?: string | null;
@@ -78,9 +39,21 @@ export default function TodaySection({
 }: TodaySectionProps) {
   const [data, setData] = useState<TodayData | null>(null);
   const [now, setNow] = useState<Date>(new Date());
+  const [quote, setQuote] = useState<string>(FALLBACK_QUOTE);
+  const [aiSource, setAiSource] = useState<"ai" | "fallback">("fallback");
 
   useEffect(() => {
     setNow(new Date());
+    // Fetch AI-generated daily quote
+    fetch("/api/ai/daily")
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => {
+        if (d?.quote) {
+          setQuote(d.quote);
+          setAiSource(d.source || "fallback");
+        }
+      })
+      .catch(() => { /* keep fallback */ });
   }, []);
 
   useEffect(() => {
@@ -145,7 +118,6 @@ export default function TodaySection({
 
   const greeting = getGreeting();
   const dateStr = formatJapaneseDate(now);
-  const quote = getDailyQuote();
 
   return (
     <section className="relative">
@@ -170,9 +142,16 @@ export default function TodaySection({
 
       {/* Daily Quote */}
       <div className="bg-stone-50/80 rounded-xl p-5 mb-8 border-l-2 border-[#1B6B7A]">
-        <p className="text-[10px] tracking-[0.2em] text-stone-400 mb-2">
-          TODAY&apos;S WORD
-        </p>
+        <div className="flex items-center gap-2 mb-2">
+          <p className="text-[10px] tracking-[0.2em] text-stone-400">
+            TODAY&apos;S WORD
+          </p>
+          {aiSource === "ai" && (
+            <span className="text-[8px] px-1.5 py-0.5 rounded bg-[#1B6B7A]/10 text-[#1B6B7A]">
+              AI
+            </span>
+          )}
+        </div>
         <p className="text-sm text-gray-700 font-light italic leading-relaxed">
           &ldquo;{quote}&rdquo;
         </p>
