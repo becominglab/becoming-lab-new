@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ReflectionEntry {
   id: string;
@@ -42,19 +42,26 @@ const MOCK_REFLECTIONS: ReflectionEntry[] = [
   },
 ];
 
-const PROMPTS = [
-  "今日、心に残ったことは？",
-  "最近の自分に、一言かけるなら？",
-  "いま、手放したいものは何？",
-  "明日の自分に期待することは？",
-];
+const FALLBACK_PROMPT = "今日、心に残ったことは？";
 
 export default function ReflectionSection() {
   const [reflections] = useState<ReflectionEntry[]>(MOCK_REFLECTIONS);
   const [showInput, setShowInput] = useState(false);
   const [inputText, setInputText] = useState("");
+  const [todayPrompt, setTodayPrompt] = useState(FALLBACK_PROMPT);
+  const [promptSource, setPromptSource] = useState<"ai" | "fallback">("fallback");
 
-  const todayPrompt = PROMPTS[new Date().getDay() % PROMPTS.length];
+  useEffect(() => {
+    fetch("/api/ai/daily")
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => {
+        if (d?.prompt) {
+          setTodayPrompt(d.prompt);
+          setPromptSource(d.source || "fallback");
+        }
+      })
+      .catch(() => { /* keep fallback */ });
+  }, []);
 
   return (
     <section>
@@ -75,9 +82,16 @@ export default function ReflectionSection() {
         className="bg-stone-50/80 rounded-xl p-6 mb-8 cursor-pointer hover:bg-stone-100/80 transition-colors"
         onClick={() => setShowInput(!showInput)}
       >
-        <p className="text-[10px] tracking-[0.2em] text-stone-400 mb-3">
-          TODAY&apos;S PROMPT
-        </p>
+        <div className="flex items-center gap-2 mb-3">
+          <p className="text-[10px] tracking-[0.2em] text-stone-400">
+            TODAY&apos;S PROMPT
+          </p>
+          {promptSource === "ai" && (
+            <span className="text-[8px] px-1.5 py-0.5 rounded bg-[#1B6B7A]/10 text-[#1B6B7A]">
+              AI
+            </span>
+          )}
+        </div>
         <p className="text-base text-gray-700 font-light italic">
           &ldquo;{todayPrompt}&rdquo;
         </p>
