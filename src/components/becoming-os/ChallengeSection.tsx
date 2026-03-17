@@ -1,66 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+
+interface Milestone {
+  label: string;
+  done: boolean;
+}
 
 interface Challenge {
   id: string;
   title: string;
-  description: string;
-  startDate: string;
-  targetDate: string | null;
-  progress: number; // 0-100
+  description: string | null;
+  start_date: string;
+  target_date: string | null;
+  progress: number;
   status: "active" | "completed" | "paused";
-  milestones: { label: string; done: boolean }[];
+  milestones: Milestone[];
 }
-
-const MOCK_CHALLENGES: Challenge[] = [
-  {
-    id: "c1",
-    title: "フルマラソン完走",
-    description:
-      "2026年秋のマラソン大会に向けて、週4回のランニング習慣を確立する。",
-    startDate: "2026-01-15",
-    targetDate: "2026-10-18",
-    progress: 35,
-    status: "active",
-    milestones: [
-      { label: "月間100km達成", done: true },
-      { label: "ハーフマラソン完走", done: false },
-      { label: "30km走クリア", done: false },
-      { label: "フルマラソン完走", done: false },
-    ],
-  },
-  {
-    id: "c2",
-    title: "毎朝の内省を30日続ける",
-    description: "朝5分の振り返り習慣。自分との対話を日課にする。",
-    startDate: "2026-03-01",
-    targetDate: "2026-03-31",
-    progress: 56,
-    status: "active",
-    milestones: [
-      { label: "7日連続", done: true },
-      { label: "14日連続", done: true },
-      { label: "21日連続", done: false },
-      { label: "30日完走", done: false },
-    ],
-  },
-  {
-    id: "c3",
-    title: "体脂肪率15%以下",
-    description: "食事改善とトレーニングで体組成を最適化する。",
-    startDate: "2026-02-01",
-    targetDate: "2026-06-30",
-    progress: 20,
-    status: "active",
-    milestones: [
-      { label: "食事記録を始める", done: true },
-      { label: "体脂肪率18%", done: false },
-      { label: "体脂肪率16%", done: false },
-      { label: "体脂肪率15%達成", done: false },
-    ],
-  },
-];
 
 function daysRemaining(target: string | null): string | null {
   if (!target) return null;
@@ -76,7 +32,124 @@ function daysRemaining(target: string | null): string | null {
 }
 
 export default function ChallengeSection() {
-  const [challenges] = useState<Challenge[]>(MOCK_CHALLENGES);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [formTitle, setFormTitle] = useState("");
+  const [formDesc, setFormDesc] = useState("");
+  const [formTarget, setFormTarget] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const fetchChallenges = useCallback(async () => {
+    try {
+      const res = await fetch("/api/challenges");
+      if (res.ok) {
+        const data = await res.json();
+        setChallenges(data.challenges || []);
+      }
+    } catch {
+      // keep empty
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchChallenges();
+  }, [fetchChallenges]);
+
+  const handleCreate = async () => {
+    if (!formTitle.trim() || saving) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/challenges", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formTitle.trim(),
+          description: formDesc.trim() || null,
+          target_date: formTarget || null,
+        }),
+      });
+      if (res.ok) {
+        setFormTitle("");
+        setFormDesc("");
+        setFormTarget("");
+        setShowForm(false);
+        await fetchChallenges();
+      }
+    } catch {
+      // ignore
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleProgressClick = async (
+    challenge: Challenge,
+    e: React.MouseEvent<HTMLDivElement>
+  ) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const newProgress = Math.round((x / rect.width) * 100);
+    try {
+      const res = await fetch("/api/challenges", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: challenge.id, progress: newProgress }),
+      });
+      if (res.ok) {
+        setChallenges((prev) =>
+          prev.map((c) =>
+            c.id === challenge.id
+              ? { ...c, progress: Math.min(100, Math.max(0, newProgress)) }
+              : c
+          )
+        );
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleMilestoneToggle = async (
+    challenge: Challenge,
+    milestoneIndex: number
+  ) => {
+    const newMilestones = challenge.milestones.map((m, i) =>
+      i === milestoneIndex ? { ...m, done: !m.done } : m
+    );
+    try {
+      const res = await fetch("/api/challenges", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: challenge.id, milestones: newMilestones }),
+      });
+      if (res.ok) {
+        setChallenges((prev) =>
+          prev.map((c) =>
+            c.id === challenge.id ? { ...c, milestones: newMilestones } : c
+          )
+        );
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/challenges?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setChallenges((prev) => prev.filter((c) => c.id !== id));
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  const activeChallenges = challenges.filter((c) => c.status === "active");
+  const completedChallenges = challenges.filter((c) => c.status === "completed");
 
   return (
     <section>
@@ -92,78 +165,205 @@ export default function ChallengeSection() {
         </p>
       </div>
 
-      <div className="space-y-4">
-        {challenges.map((c) => {
-          const remaining = daysRemaining(c.targetDate);
-          const doneMilestones = c.milestones.filter((m) => m.done).length;
-          return (
-            <div
-              key={c.id}
-              className="border border-stone-200 rounded-xl p-6 hover:border-stone-300 transition-colors"
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h3 className="text-base font-medium text-gray-900">
-                    {c.title}
-                  </h3>
-                  <p className="text-xs text-stone-400 mt-1 font-light">
-                    {c.description}
-                  </p>
-                </div>
-                {remaining && (
-                  <span className="text-[10px] text-stone-400 bg-stone-50 px-2.5 py-1 rounded-full whitespace-nowrap">
-                    {remaining}
-                  </span>
-                )}
-              </div>
+      {/* Loading */}
+      {loading && (
+        <div className="text-center py-8">
+          <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1B6B7A] rounded-full animate-spin mx-auto" />
+        </div>
+      )}
 
-              {/* Progress Bar */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] text-stone-400">進捗</span>
-                  <span className="text-[10px] text-stone-500 font-medium">
-                    {c.progress}%
-                  </span>
+      {!loading && (
+        <>
+          {/* Empty State */}
+          {challenges.length === 0 && !showForm && (
+            <div className="text-center py-12">
+              <p className="text-sm text-stone-400 font-light">
+                まだ挑戦がありません。
+              </p>
+              <p className="text-xs text-stone-300 mt-2">
+                新しい挑戦を始めて、成長の記録を残しましょう。
+              </p>
+            </div>
+          )}
+
+          {/* Active Challenges */}
+          <div className="space-y-4">
+            {activeChallenges.map((c) => {
+              const remaining = daysRemaining(c.target_date);
+              const doneMilestones = c.milestones.filter((m) => m.done).length;
+              return (
+                <div
+                  key={c.id}
+                  className="group border border-stone-200 rounded-xl p-6 hover:border-stone-300 transition-colors"
+                >
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="text-base font-medium text-gray-900">
+                        {c.title}
+                      </h3>
+                      {c.description && (
+                        <p className="text-xs text-stone-400 mt-1 font-light">
+                          {c.description}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {remaining && (
+                        <span className="text-[10px] text-stone-400 bg-stone-50 px-2.5 py-1 rounded-full whitespace-nowrap">
+                          {remaining}
+                        </span>
+                      )}
+                      <button
+                        onClick={() => handleDelete(c.id)}
+                        className="text-[10px] text-stone-300 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                      >
+                        削除
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar (clickable) */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] text-stone-400">
+                        進捗（クリックで更新）
+                      </span>
+                      <span className="text-[10px] text-stone-500 font-medium">
+                        {c.progress}%
+                      </span>
+                    </div>
+                    <div
+                      className="h-2 bg-stone-100 rounded-full overflow-hidden cursor-pointer hover:bg-stone-200 transition-colors"
+                      onClick={(e) => handleProgressClick(c, e)}
+                    >
+                      <div
+                        className="h-full rounded-full transition-all duration-300 ease-out"
+                        style={{
+                          width: `${c.progress}%`,
+                          backgroundColor: "#1B6B7A",
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Milestones (clickable) */}
+                  {c.milestones.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {c.milestones.map((m, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleMilestoneToggle(c, i)}
+                          className={`text-[10px] px-2.5 py-1 rounded-full transition-colors cursor-pointer hover:opacity-80 ${
+                            m.done
+                              ? "bg-[#1B6B7A]/10 text-[#1B6B7A]"
+                              : "bg-stone-50 text-stone-400 hover:bg-stone-100"
+                          }`}
+                        >
+                          {m.done ? "✓ " : "○ "}
+                          {m.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Bottom meta */}
+                  {c.milestones.length > 0 && (
+                    <div className="flex items-center gap-4 mt-4 pt-3 border-t border-stone-100">
+                      <span className="text-[10px] text-stone-300">
+                        {doneMilestones}/{c.milestones.length} マイルストーン
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+              );
+            })}
+          </div>
+
+          {/* Completed Challenges */}
+          {completedChallenges.length > 0 && (
+            <div className="mt-8">
+              <p className="text-[10px] tracking-[0.2em] text-stone-400 mb-3">
+                COMPLETED
+              </p>
+              <div className="space-y-2">
+                {completedChallenges.map((c) => (
                   <div
-                    className="h-full rounded-full transition-all duration-700 ease-out"
-                    style={{
-                      width: `${c.progress}%`,
-                      backgroundColor: "#1B6B7A",
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Milestones */}
-              <div className="flex flex-wrap gap-2">
-                {c.milestones.map((m, i) => (
-                  <span
-                    key={i}
-                    className={`text-[10px] px-2.5 py-1 rounded-full transition-colors ${
-                      m.done
-                        ? "bg-[#1B6B7A]/10 text-[#1B6B7A]"
-                        : "bg-stone-50 text-stone-400"
-                    }`}
+                    key={c.id}
+                    className="p-4 rounded-xl bg-stone-50/60 text-stone-400"
                   >
-                    {m.done ? "✓ " : ""}
-                    {m.label}
-                  </span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-light line-through">
+                        {c.title}
+                      </span>
+                      <span className="text-[10px]">✓ 達成</span>
+                    </div>
+                  </div>
                 ))}
               </div>
+            </div>
+          )}
 
-              {/* Bottom meta */}
-              <div className="flex items-center gap-4 mt-4 pt-3 border-t border-stone-100">
-                <span className="text-[10px] text-stone-300">
-                  {doneMilestones}/{c.milestones.length} マイルストーン
-                </span>
+          {/* Add New Challenge */}
+          {!showForm ? (
+            <button
+              onClick={() => setShowForm(true)}
+              className="w-full mt-6 p-5 rounded-xl border border-dashed border-stone-200 hover:border-stone-400 transition-colors text-center group"
+            >
+              <p className="text-sm text-stone-400 group-hover:text-stone-600 transition-colors">
+                新しい挑戦を始める
+              </p>
+            </button>
+          ) : (
+            <div className="mt-6 animate-fadeIn border border-stone-200 rounded-xl p-6">
+              <input
+                type="text"
+                value={formTitle}
+                onChange={(e) => setFormTitle(e.target.value)}
+                placeholder="挑戦のタイトル"
+                className="w-full bg-transparent text-base text-gray-900 placeholder:text-stone-300 focus:outline-none mb-3"
+                autoFocus
+              />
+              <textarea
+                value={formDesc}
+                onChange={(e) => setFormDesc(e.target.value)}
+                placeholder="詳細（任意）"
+                className="w-full bg-transparent text-sm text-gray-700 placeholder:text-stone-300 focus:outline-none resize-none leading-relaxed mb-3"
+                rows={2}
+              />
+              <div className="flex items-center gap-4 mb-4">
+                <label className="text-[10px] text-stone-400">目標日</label>
+                <input
+                  type="date"
+                  value={formTarget}
+                  onChange={(e) => setFormTarget(e.target.value)}
+                  className="text-xs text-gray-700 bg-transparent border-b border-stone-200 focus:outline-none focus:border-stone-400 pb-1"
+                />
+              </div>
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  onClick={() => {
+                    setShowForm(false);
+                    setFormTitle("");
+                    setFormDesc("");
+                    setFormTarget("");
+                  }}
+                  className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
+                >
+                  キャンセル
+                </button>
+                <button
+                  onClick={handleCreate}
+                  className="text-xs px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-40"
+                  disabled={!formTitle.trim() || saving}
+                >
+                  {saving ? "作成中..." : "挑戦を作成"}
+                </button>
               </div>
             </div>
-          );
-        })}
-      </div>
+          )}
+        </>
+      )}
     </section>
   );
 }

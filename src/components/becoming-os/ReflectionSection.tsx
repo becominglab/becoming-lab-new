@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface ReflectionEntry {
   id: string;
   date: string;
   content: string;
-  mood: "calm" | "energized" | "thoughtful" | "grateful" | "struggling";
+  mood: string;
+  prompt: string | null;
 }
 
 const MOOD_MAP: Record<string, { label: string; color: string }> = {
@@ -17,51 +18,86 @@ const MOOD_MAP: Record<string, { label: string; color: string }> = {
   struggling: { label: "もがいている", color: "#EF4444" },
 };
 
-// Mock data for reflection
-const MOCK_REFLECTIONS: ReflectionEntry[] = [
-  {
-    id: "r1",
-    date: "2026-03-17",
-    content:
-      "朝ランのあと、いつもの公園のベンチに座って考えた。「何のために走っているのか」という問いに、まだうまく答えられない。でも、走り終えたあとの清々しさが、ひとつの答えなのかもしれない。",
-    mood: "thoughtful",
-  },
-  {
-    id: "r2",
-    date: "2026-03-15",
-    content:
-      "チームの打ち上げで、思いがけず感謝の言葉をもらった。自分では当たり前にやっていたことが、誰かの支えになっていたらしい。小さな行動の積み重ねを、もっと信じていいのかもしれない。",
-    mood: "grateful",
-  },
-  {
-    id: "r3",
-    date: "2026-03-13",
-    content:
-      "新しいプロジェクトの方向性がまだ見えない。焦りはあるけれど、こういう「わからない時間」を丁寧に過ごすことが大事だと、過去の自分が教えてくれている。",
-    mood: "struggling",
-  },
-];
-
 const FALLBACK_PROMPT = "今日、心に残ったことは？";
 
 export default function ReflectionSection() {
-  const [reflections] = useState<ReflectionEntry[]>(MOCK_REFLECTIONS);
+  const [reflections, setReflections] = useState<ReflectionEntry[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showInput, setShowInput] = useState(false);
   const [inputText, setInputText] = useState("");
+  const [selectedMood, setSelectedMood] = useState<string>("thoughtful");
+  const [saving, setSaving] = useState(false);
   const [todayPrompt, setTodayPrompt] = useState(FALLBACK_PROMPT);
   const [promptSource, setPromptSource] = useState<"ai" | "fallback">("fallback");
 
+  const fetchReflections = useCallback(async () => {
+    try {
+      const res = await fetch("/api/reflections?limit=10");
+      if (res.ok) {
+        const data = await res.json();
+        setReflections(data.reflections || []);
+      }
+    } catch {
+      // keep empty
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchReflections();
+  }, [fetchReflections]);
+
   useEffect(() => {
     fetch("/api/ai/daily")
-      .then((r) => r.ok ? r.json() : null)
+      .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         if (d?.prompt) {
           setTodayPrompt(d.prompt);
           setPromptSource(d.source || "fallback");
         }
       })
-      .catch(() => { /* keep fallback */ });
+      .catch(() => {
+        /* keep fallback */
+      });
   }, []);
+
+  const handleSave = async () => {
+    if (!inputText.trim() || saving) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/reflections", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: inputText.trim(),
+          mood: selectedMood,
+          prompt: todayPrompt,
+        }),
+      });
+      if (res.ok) {
+        setInputText("");
+        setShowInput(false);
+        setSelectedMood("thoughtful");
+        await fetchReflections();
+      }
+    } catch {
+      // show nothing for now
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/reflections?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setReflections((prev) => prev.filter((r) => r.id !== id));
+      }
+    } catch {
+      // ignore
+    }
+  };
 
   return (
     <section>
@@ -113,12 +149,20 @@ export default function ReflectionSection() {
             rows={4}
           />
           <div className="flex items-center justify-between mt-3">
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {Object.entries(MOOD_MAP).map(([key, { label, color }]) => (
                 <button
                   key={key}
-                  className="text-[10px] px-2.5 py-1 rounded-full border border-stone-200 text-stone-400 hover:text-stone-600 transition-colors"
-                  style={{ borderColor: `${color}30` }}
+                  onClick={() => setSelectedMood(key)}
+                  className={`text-[10px] px-2.5 py-1 rounded-full border transition-colors ${
+                    selectedMood === key
+                      ? "text-white"
+                      : "text-stone-400 hover:text-stone-600"
+                  }`}
+                  style={{
+                    borderColor: selectedMood === key ? color : `${color}30`,
+                    backgroundColor: selectedMood === key ? color : "transparent",
+                  }}
                   title={label}
                 >
                   {label}
@@ -126,12 +170,32 @@ export default function ReflectionSection() {
               ))}
             </div>
             <button
+              onClick={handleSave}
               className="text-xs px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-40"
-              disabled={!inputText.trim()}
+              disabled={!inputText.trim() || saving}
             >
-              記録する
+              {saving ? "保存中..." : "記録する"}
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Loading */}
+      {loading && (
+        <div className="text-center py-8">
+          <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1B6B7A] rounded-full animate-spin mx-auto" />
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && reflections.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-sm text-stone-400 font-light">
+            まだ内省の記録がありません。
+          </p>
+          <p className="text-xs text-stone-300 mt-2">
+            上のプロンプトをタップして、最初の記録を書いてみましょう。
+          </p>
         </div>
       )}
 
@@ -166,6 +230,12 @@ export default function ReflectionSection() {
                     >
                       {mood?.label}
                     </span>
+                    <button
+                      onClick={() => handleDelete(r.id)}
+                      className="text-[10px] text-stone-300 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 ml-auto"
+                    >
+                      削除
+                    </button>
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed font-light">
                     {r.content}
