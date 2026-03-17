@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-// ── Types ──
 interface StoryEntry {
   id: string;
   date: string;
@@ -30,7 +29,6 @@ export default function BookProjectSection() {
         const data = await res.json();
         const stories: StoryEntry[] = data.stories || [];
 
-        // Group by chapter and compute summaries
         const chapterMap: Record<
           string,
           { pages: number; firstDate: string; lastDate: string }
@@ -53,14 +51,11 @@ export default function BookProjectSection() {
           }
         });
 
-        const summaries = Object.entries(chapterMap).map(
-          ([name, data]) => ({
-            name,
-            ...data,
-          })
-        );
+        const summaries = Object.entries(chapterMap).map(([name, data]) => ({
+          name,
+          ...data,
+        }));
 
-        // Sort by first date (earliest first)
         summaries.sort((a, b) => a.firstDate.localeCompare(b.firstDate));
 
         setChapters(summaries);
@@ -77,29 +72,26 @@ export default function BookProjectSection() {
     fetchStories();
   }, [fetchStories]);
 
-  // Find max pages for proportional bar
   const maxPages = Math.max(...chapters.map((c) => c.pages), 1);
 
   return (
     <section>
       {/* Section Header */}
-      <div className="mb-8">
-        <p
-          className="text-[10px] tracking-[0.35em] uppercase mb-3"
-          style={{ color: "var(--gold, #B8A88A)" }}
-        >
-          Your Book
-        </p>
-        <h2
-          className="text-xl md:text-2xl font-light"
-          style={{ color: "var(--ink, #1A1A1A)" }}
-        >
-          あなたの本
-        </h2>
-        <p className="text-sm text-stone-400 mt-2 font-light italic">
-          まだ書かれていない章がある。
-        </p>
-      </div>
+      <p
+        className="text-[10px] tracking-[0.35em] uppercase mb-3"
+        style={{ color: "var(--gold, #B8A88A)" }}
+      >
+        Your Book
+      </p>
+      <h2
+        className="text-xl md:text-2xl font-light"
+        style={{ color: "var(--ink, #1A1A1A)" }}
+      >
+        あなたの本
+      </h2>
+      <p className="text-sm text-stone-400 mt-2 font-light mb-8">
+        日々の記録は、やがて一冊の本になります。
+      </p>
 
       {loading && (
         <div className="text-center py-8">
@@ -108,11 +100,17 @@ export default function BookProjectSection() {
       )}
 
       {!loading && chapters.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-sm text-stone-400 font-light">
-            まだ物語がありません。
+        <div
+          className="text-center py-14 rounded-2xl"
+          style={{ backgroundColor: "rgba(184, 168, 138, 0.06)" }}
+        >
+          <p
+            className="text-lg font-light italic mb-2"
+            style={{ color: "var(--ink, #1A1A1A)" }}
+          >
+            まだ途中にいる
           </p>
-          <p className="text-xs text-stone-300 mt-2">
+          <p className="text-xs text-stone-400">
             あなたの本は、最初の1ページから始まります。
           </p>
         </div>
@@ -120,28 +118,39 @@ export default function BookProjectSection() {
 
       {!loading && chapters.length > 0 && (
         <>
+          {/* Book Title */}
+          <div
+            className="rounded-2xl p-8 mb-8 text-center"
+            style={{ backgroundColor: "rgba(184, 168, 138, 0.06)" }}
+          >
+            <p className="text-[10px] tracking-[0.2em] text-stone-400 mb-3">
+              仮タイトル
+            </p>
+            <p
+              className="text-lg md:text-xl font-light italic"
+              style={{ color: "var(--ink, #1A1A1A)" }}
+            >
+              『まだ途中にいる』
+            </p>
+          </div>
+
           {/* Chapter List */}
-          <div className="space-y-4">
+          <div className="space-y-5 mb-8">
             {chapters.map((chapter, index) => {
               const barWidth = Math.max(
                 (chapter.pages / maxPages) * 100,
                 8
               );
-              const firstD = new Date(chapter.firstDate + "T00:00:00");
-              const lastD = new Date(chapter.lastDate + "T00:00:00");
 
               return (
-                <div key={chapter.name} className="group">
+                <div key={chapter.name}>
                   <div className="flex items-center gap-4">
-                    {/* Chapter number */}
                     <span
                       className="text-[10px] tracking-wider shrink-0 w-10 text-right"
                       style={{ color: "var(--gold, #B8A88A)" }}
                     >
                       Ch.{index + 1}
                     </span>
-
-                    {/* Chapter info + bar */}
                     <div className="flex-1">
                       <div className="flex items-baseline justify-between mb-1.5">
                         <h3
@@ -154,8 +163,6 @@ export default function BookProjectSection() {
                           {chapter.pages} ページ
                         </span>
                       </div>
-
-                      {/* Progress bar */}
                       <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all duration-500 ease-out"
@@ -165,25 +172,6 @@ export default function BookProjectSection() {
                           }}
                         />
                       </div>
-
-                      {/* Date range */}
-                      <div className="flex items-center gap-2 mt-1">
-                        <time className="text-[10px] text-stone-300">
-                          {firstD.toLocaleDateString("ja-JP", {
-                            month: "short",
-                            day: "numeric",
-                          })}
-                          {chapter.firstDate !== chapter.lastDate && (
-                            <>
-                              {" — "}
-                              {lastD.toLocaleDateString("ja-JP", {
-                                month: "short",
-                                day: "numeric",
-                              })}
-                            </>
-                          )}
-                        </time>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -191,35 +179,33 @@ export default function BookProjectSection() {
             })}
           </div>
 
-          {/* Summary */}
-          <div
-            className="mt-8 p-5 rounded-xl text-center"
-            style={{ backgroundColor: "rgba(184, 168, 138, 0.08)" }}
-          >
-            <div className="flex items-center justify-center gap-6">
+          {/* Summary + Actions */}
+          <div className="flex items-center justify-between p-5 rounded-xl" style={{ backgroundColor: "rgba(184, 168, 138, 0.06)" }}>
+            <div className="flex items-center gap-6">
               <div>
-                <p
-                  className="text-2xl font-light"
-                  style={{ color: "var(--ink, #1A1A1A)" }}
-                >
+                <p className="text-xl font-light" style={{ color: "var(--ink, #1A1A1A)" }}>
                   {totalPages}
                 </p>
-                <p className="text-[10px] text-stone-400 mt-1">ページ</p>
+                <p className="text-[10px] text-stone-400">ページ</p>
               </div>
-              <div
-                className="w-px h-8"
-                style={{ backgroundColor: "var(--gold, #B8A88A)40" }}
-              />
+              <div className="w-px h-6 bg-stone-200" />
               <div>
-                <p
-                  className="text-2xl font-light"
-                  style={{ color: "var(--ink, #1A1A1A)" }}
-                >
+                <p className="text-xl font-light" style={{ color: "var(--ink, #1A1A1A)" }}>
                   {chapters.length}
                 </p>
-                <p className="text-[10px] text-stone-400 mt-1">チャプター</p>
+                <p className="text-[10px] text-stone-400">チャプター</p>
               </div>
             </div>
+
+            <button
+              className="text-[10px] tracking-wide px-4 py-2 rounded-full border transition-colors hover:bg-stone-50"
+              style={{
+                borderColor: "var(--gold, #B8A88A)",
+                color: "var(--ink, #1A1A1A)",
+              }}
+            >
+              下書きを生成する
+            </button>
           </div>
         </>
       )}
