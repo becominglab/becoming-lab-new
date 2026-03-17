@@ -12,21 +12,28 @@ export default function Header() {
   const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
-    const supabase = createClient();
+    try {
+      const supabase = createClient();
 
-    // 初回ロード時にセッション取得
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user ? { email: user.email ?? undefined } : null);
-    });
+      // 初回ロード時にセッション取得
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        setUser(user ? { email: user.email ?? undefined } : null);
+      }).catch(() => {
+        setUser(null);
+      });
 
-    // 認証状態の変更を監視
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ? { email: session.user.email ?? undefined } : null);
-    });
+      // 認証状態の変更を監視
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ? { email: session.user.email ?? undefined } : null);
+      });
 
-    return () => subscription.unsubscribe();
+      return () => subscription.unsubscribe();
+    } catch {
+      // Supabase client initialization failed
+      setUser(null);
+    }
   }, []);
 
   const handleLogout = async () => {
@@ -71,7 +78,7 @@ export default function Header() {
               </Link>
             </li>
           ))}
-          <li>
+          <li suppressHydrationWarning>
             {user ? (
               <button
                 onClick={handleLogout}
@@ -115,7 +122,7 @@ export default function Header() {
                 </Link>
               </li>
             ))}
-            <li>
+            <li suppressHydrationWarning>
               {user ? (
                 <button
                   onClick={() => {
