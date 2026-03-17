@@ -21,13 +21,25 @@ export async function POST() {
     .eq("user_id", user.id)
     .order("date", { ascending: true });
 
-  const stories: {
+  // Map DB fields: body → content, title/chapter → chapter
+  interface StoryRow {
     id: string;
     date: string;
-    chapter: string;
-    content: string;
+    chapter?: string;
+    title?: string;
+    content?: string;
+    body?: string;
     entry_type: string;
-  }[] = data || [];
+    [key: string]: unknown;
+  }
+  const stories: { id: string; date: string; chapter: string; content: string; entry_type: string }[] =
+    (data || []).map((s: StoryRow) => ({
+      id: s.id,
+      date: s.date,
+      chapter: s.chapter || s.title || "無題の章",
+      content: s.body || s.content || "",
+      entry_type: s.entry_type,
+    }));
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

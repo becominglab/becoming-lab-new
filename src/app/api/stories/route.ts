@@ -14,7 +14,27 @@ export async function GET() {
     .order("date", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ stories: data });
+
+  // Map DB fields to frontend expected fields
+  // DB has: body, title, chapter, entry_type, date
+  // Frontend expects: content, chapter (non-empty)
+  interface StoryRow {
+    id: string;
+    body?: string;
+    content?: string;
+    title?: string;
+    chapter?: string;
+    entry_type?: string;
+    date?: string;
+    [key: string]: unknown;
+  }
+  const stories = (data || []).map((s: StoryRow) => ({
+    ...s,
+    content: s.body || s.content || "",
+    chapter: s.chapter || s.title || "無題の章",
+  }));
+
+  return NextResponse.json({ stories });
 }
 
 // POST /api/stories
@@ -34,7 +54,8 @@ export async function POST(request: NextRequest) {
     .from("stories")
     .insert({
       user_id: user.id,
-      content: content.trim(),
+      body: content.trim(),
+      title: chapter.trim(),
       chapter: chapter.trim(),
       entry_type: entry_type || "everyday",
       date: date || new Date().toISOString().split("T")[0],
