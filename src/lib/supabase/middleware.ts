@@ -25,7 +25,43 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const pathname = request.nextUrl.pathname;
+
+  // 保護されたページで未認証 → ログインへリダイレクト
+  const protectedPages = ["/home", "/mypage", "/profile"];
+  const isProtectedPage = protectedPages.some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
+  );
+
+  if (!user && isProtectedPage) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(url);
+  }
+
+  // 保護されたAPIで未認証 → 401
+  const protectedApis = [
+    "/api/strava",
+    "/api/healthplanet",
+    "/api/integrations",
+    "/api/activities",
+    "/api/health",
+  ];
+  const isProtectedApi = protectedApis.some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
+  );
+
+  if (!user && isProtectedApi) {
+    return NextResponse.json(
+      { error: "not_authenticated" },
+      { status: 401 }
+    );
+  }
 
   return supabaseResponse;
 }

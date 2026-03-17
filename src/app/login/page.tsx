@@ -1,9 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="pt-32 text-center text-sm text-stone-400">読み込み中...</div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/home";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"login" | "signup" | "magic">("login");
@@ -48,18 +60,7 @@ export default function LoginPage() {
     setMessage("");
 
     try {
-      const { createClient } = await import("@supabase/supabase-js");
-
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-      if (!supabaseUrl || !supabaseKey) {
-        setMessage("認証サービスが設定されていません。管理者にお問い合わせください。");
-        setLoading(false);
-        return;
-      }
-
-      const supabase = createClient(supabaseUrl, supabaseKey);
+      const supabase = createClient();
 
       if (mode === "magic") {
         const { error } = await supabase.auth.signInWithOtp({ email });
@@ -91,7 +92,9 @@ export default function LoginPage() {
               : error.message
           );
         } else {
-          window.location.href = "/home";
+          // SSR互換のcookieベース認証を使用しているため、
+          // router.pushではなくfull reloadで遷移
+          window.location.href = redirectTo;
         }
       }
     } catch {

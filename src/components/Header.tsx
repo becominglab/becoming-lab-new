@@ -2,11 +2,43 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, X, LogOut } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    // 初回ロード時にセッション取得
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user ? { email: user.email ?? undefined } : null);
+    });
+
+    // 認証状態の変更を監視
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ? { email: session.user.email ?? undefined } : null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    } catch {
+      setLoggingOut(false);
+    }
+  };
 
   const navItems = [
     { href: "/home", label: "挑戦フィード" },
@@ -41,12 +73,23 @@ export default function Header() {
             </li>
           ))}
           <li>
-            <Link
-              href="/login"
-              className="px-4 py-2 bg-[#1B6B7A] text-white rounded hover:bg-[#155a67] transition-colors text-xs"
-            >
-              ログイン
-            </Link>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="flex items-center gap-1.5 px-4 py-2 border border-stone-300 text-stone-600 rounded hover:bg-stone-50 transition-colors text-xs disabled:opacity-50"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                {loggingOut ? "..." : "ログアウト"}
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-2 bg-[#1B6B7A] text-white rounded hover:bg-[#155a67] transition-colors text-xs"
+              >
+                ログイン
+              </Link>
+            )}
           </li>
         </ul>
 
@@ -74,13 +117,27 @@ export default function Header() {
               </li>
             ))}
             <li>
-              <Link
-                href="/login"
-                className="inline-block px-4 py-2 bg-[#1B6B7A] text-white rounded hover:bg-[#155a67] transition-colors text-sm"
-                onClick={() => setIsOpen(false)}
-              >
-                ログイン
-              </Link>
+              {user ? (
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleLogout();
+                  }}
+                  disabled={loggingOut}
+                  className="flex items-center gap-1.5 px-4 py-2 border border-stone-300 text-stone-600 rounded hover:bg-stone-50 transition-colors text-sm disabled:opacity-50"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  {loggingOut ? "..." : "ログアウト"}
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="inline-block px-4 py-2 bg-[#1B6B7A] text-white rounded hover:bg-[#155a67] transition-colors text-sm"
+                  onClick={() => setIsOpen(false)}
+                >
+                  ログイン
+                </Link>
+              )}
             </li>
           </ul>
         </div>

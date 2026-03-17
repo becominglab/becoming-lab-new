@@ -25,24 +25,16 @@ export default async function MyPage() {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             マイページ
           </h1>
+          {user && (
+            <p className="text-sm text-stone-500 mt-2">
+              {user.email}
+            </p>
+          )}
         </div>
       </section>
 
       <section className="pb-20">
         <div className="max-w-2xl mx-auto px-8 pt-12">
-          {!user && (
-            <div className="mb-12 p-6 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-amber-800 text-sm leading-relaxed mb-3">
-                ログインすると、デバイス連携や挑戦ログが利用できます。
-              </p>
-              <Link
-                href="/login"
-                className="inline-block px-4 py-2 bg-[#1B6B7A] text-white rounded-lg text-xs font-medium hover:bg-[#155a67] transition-colors"
-              >
-                ログインする
-              </Link>
-            </div>
-          )}
 
           {/* デバイス連携ダッシュボード */}
           <IntegrationDashboard />
