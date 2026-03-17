@@ -41,11 +41,10 @@ export default function Header() {
   };
 
   const navItems = [
-    { href: "/home", label: "挑戦フィード" },
+    { href: "/mypage", label: "マイページ" },
     { href: "/concept", label: "Concept" },
     { href: "/community", label: "Community" },
     { href: "/service", label: "Service" },
-    { href: "/mypage", label: "マイページ" },
   ];
 
   return (

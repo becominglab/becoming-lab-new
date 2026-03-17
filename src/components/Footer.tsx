@@ -23,10 +23,10 @@ export default function Footer() {
         </div>
         <div className="flex flex-wrap gap-x-8 gap-y-4 text-sm opacity-70 mb-12">
           <Link
-            href="/home"
+            href="/mypage"
             className="hover:opacity-100 transition-opacity"
           >
-            挑戦フィード
+            マイページ
           </Link>
           <Link
             href="/concept"

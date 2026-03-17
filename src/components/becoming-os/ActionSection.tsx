@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import HealthSnapshotCards from "../mypage/HealthSnapshotCards";
 
 interface Activity {
   id: string;
@@ -213,14 +214,37 @@ export default function ActionSection() {
         </div>
       )}
 
-      {/* Link to full history */}
-      <div className="mt-6 text-center">
+      {/* Health Snapshot */}
+      <div className="mt-10">
+        <p className="text-[10px] tracking-[0.35em] text-stone-400 uppercase mb-4">
+          BODY DATA
+        </p>
+        <HealthSnapshotCards />
+      </div>
+
+      {/* Sub-page Links */}
+      <div className="grid grid-cols-2 gap-3 mt-8">
         <Link
           href="/mypage/activities"
-          className="inline-flex items-center gap-1 text-xs text-stone-400 hover:text-[#1B6B7A] transition-colors"
+          className="p-4 rounded-xl bg-stone-50/80 hover:bg-stone-100/80 transition-colors text-center group"
         >
-          すべてのアクティビティを見る
-          <span className="text-[10px]">→</span>
+          <p className="text-[10px] tracking-[0.2em] text-stone-400 mb-1">
+            HISTORY
+          </p>
+          <p className="text-sm text-gray-700 group-hover:text-[#1B6B7A] transition-colors">
+            アクティビティ履歴
+          </p>
+        </Link>
+        <Link
+          href="/mypage/health"
+          className="p-4 rounded-xl bg-stone-50/80 hover:bg-stone-100/80 transition-colors text-center group"
+        >
+          <p className="text-[10px] tracking-[0.2em] text-stone-400 mb-1">
+            HEALTH
+          </p>
+          <p className="text-sm text-gray-700 group-hover:text-[#1B6B7A] transition-colors">
+            体組成データ詳細
+          </p>
         </Link>
       </div>
     </section>
