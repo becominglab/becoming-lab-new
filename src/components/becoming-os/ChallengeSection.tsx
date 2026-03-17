@@ -154,10 +154,10 @@ export default function ChallengeSection() {
   return (
     <section>
       <div className="mb-8">
-        <p className="text-[10px] tracking-[0.35em] text-stone-400 uppercase mb-3">
+        <p className="text-[10px] tracking-[0.35em] uppercase mb-3" style={{ color: "var(--gold, #B8A88A)" }}>
           CHALLENGE
         </p>
-        <h2 className="text-xl md:text-2xl font-light text-gray-900">
+        <h2 className="text-xl md:text-2xl font-light" style={{ color: "var(--ink, #1A1A1A)" }}>
           いま挑んでいること
         </h2>
         <p className="text-sm text-stone-400 mt-2 font-light">
@@ -321,7 +321,7 @@ export default function ChallengeSection() {
                 type="text"
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
-                placeholder="挑戦のタイトル"
+                placeholder="例：フルマラソン完走"
                 className="w-full bg-transparent text-base text-gray-900 placeholder:text-stone-300 focus:outline-none mb-3"
                 autoFocus
               />
@@ -355,7 +355,8 @@ export default function ChallengeSection() {
                 </button>
                 <button
                   onClick={handleCreate}
-                  className="text-xs px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-40"
+                  className="text-xs px-4 py-2 text-white rounded-lg transition-colors disabled:opacity-40"
+                  style={{ backgroundColor: "var(--navy, #1C2D3F)" }}
                   disabled={!formTitle.trim() || saving}
                 >
                   {saving ? "作成中..." : "挑戦を作成"}

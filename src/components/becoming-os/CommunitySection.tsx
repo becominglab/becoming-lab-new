@@ -49,10 +49,10 @@ export default function CommunitySection() {
   return (
     <section>
       <div className="mb-8">
-        <p className="text-[10px] tracking-[0.35em] text-stone-400 uppercase mb-3">
+        <p className="text-[10px] tracking-[0.35em] uppercase mb-3" style={{ color: "var(--gold, #B8A88A)" }}>
           COMMUNITY
         </p>
-        <h2 className="text-xl md:text-2xl font-light text-gray-900">
+        <h2 className="text-xl md:text-2xl font-light" style={{ color: "var(--ink, #1A1A1A)" }}>
           仲間の挑戦
         </h2>
         <p className="text-sm text-stone-400 mt-2 font-light">
@@ -119,9 +119,10 @@ export default function CommunitySection() {
       <div className="grid grid-cols-2 gap-3 mt-8">
         <Link
           href="/members"
-          className="p-4 rounded-xl bg-stone-50/80 hover:bg-stone-100/80 transition-colors text-center group"
+          className="p-4 rounded-xl hover:bg-stone-100/80 transition-colors text-center group"
+          style={{ backgroundColor: "rgba(184, 168, 138, 0.08)" }}
         >
-          <p className="text-[10px] tracking-[0.2em] text-stone-400 mb-1">
+          <p className="text-[10px] tracking-[0.2em] mb-1" style={{ color: "var(--gold, #B8A88A)" }}>
             PEOPLE
           </p>
           <p className="text-sm text-gray-700 group-hover:text-[#1B6B7A] transition-colors">
@@ -130,9 +131,10 @@ export default function CommunitySection() {
         </Link>
         <Link
           href="/community"
-          className="p-4 rounded-xl bg-stone-50/80 hover:bg-stone-100/80 transition-colors text-center group"
+          className="p-4 rounded-xl hover:bg-stone-100/80 transition-colors text-center group"
+          style={{ backgroundColor: "rgba(184, 168, 138, 0.08)" }}
         >
-          <p className="text-[10px] tracking-[0.2em] text-stone-400 mb-1">
+          <p className="text-[10px] tracking-[0.2em] mb-1" style={{ color: "var(--gold, #B8A88A)" }}>
             ABOUT
           </p>
           <p className="text-sm text-gray-700 group-hover:text-[#1B6B7A] transition-colors">
