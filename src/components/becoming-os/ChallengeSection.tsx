@@ -116,7 +116,7 @@ export default function ChallengeSection() {
     challenge: Challenge,
     milestoneIndex: number
   ) => {
-    const newMilestones = challenge.milestones.map((m, i) =>
+    const newMilestones = (challenge.milestones || []).map((m, i) =>
       i === milestoneIndex ? { ...m, done: !m.done } : m
     );
     try {
@@ -190,7 +190,8 @@ export default function ChallengeSection() {
           <div className="space-y-4">
             {activeChallenges.map((c) => {
               const remaining = daysRemaining(c.target_date);
-              const doneMilestones = c.milestones.filter((m) => m.done).length;
+              const milestones = c.milestones || [];
+              const doneMilestones = milestones.filter((m) => m.done).length;
               return (
                 <div
                   key={c.id}
@@ -248,9 +249,9 @@ export default function ChallengeSection() {
                   </div>
 
                   {/* Milestones (clickable) */}
-                  {c.milestones.length > 0 && (
+                  {milestones.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {c.milestones.map((m, i) => (
+                      {milestones.map((m, i) => (
                         <button
                           key={i}
                           onClick={() => handleMilestoneToggle(c, i)}
@@ -268,10 +269,10 @@ export default function ChallengeSection() {
                   )}
 
                   {/* Bottom meta */}
-                  {c.milestones.length > 0 && (
+                  {milestones.length > 0 && (
                     <div className="flex items-center gap-4 mt-4 pt-3 border-t border-stone-100">
                       <span className="text-[10px] text-stone-300">
-                        {doneMilestones}/{c.milestones.length} マイルストーン
+                        {doneMilestones}/{milestones.length} マイルストーン
                       </span>
                     </div>
                   )}
