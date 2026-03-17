@@ -22,12 +22,29 @@ const TYPE_STYLES: Record<
   insight: { label: "気づき", color: "#8B5CF6", bg: "#8B5CF610" },
 };
 
+const ENTRY_TYPES = [
+  { value: "everyday", label: "日常" },
+  { value: "insight", label: "気づき" },
+  { value: "turning_point", label: "転機" },
+  { value: "milestone", label: "節目" },
+] as const;
+
 export default function StoryArchiveSection() {
   const [stories, setStories] = useState<StoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(
     new Set()
   );
+
+  // ── Story Input State ──
+  const [showInput, setShowInput] = useState(false);
+  const [inputContent, setInputContent] = useState("");
+  const [inputType, setInputType] = useState<string>("everyday");
+  const [inputChapter, setInputChapter] = useState("");
+  const [isNewChapter, setIsNewChapter] = useState(false);
+  const [newChapterName, setNewChapterName] = useState("");
+  const [suggestingTitle, setSuggestingTitle] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const fetchStories = useCallback(async () => {
     try {
@@ -52,6 +69,19 @@ export default function StoryArchiveSection() {
     fetchStories();
   }, [fetchStories]);
 
+  // Get unique chapter names (ordered by most recent)
+  const chapterNames = stories.reduce<string[]>((acc, s) => {
+    if (!acc.includes(s.chapter)) acc.push(s.chapter);
+    return acc;
+  }, []);
+
+  // Set default chapter when stories load
+  useEffect(() => {
+    if (chapterNames.length > 0 && !inputChapter) {
+      setInputChapter(chapterNames[0]);
+    }
+  }, [chapterNames, inputChapter]);
+
   const handleDelete = async (id: string) => {
     try {
       const res = await fetch(`/api/stories?id=${id}`, { method: "DELETE" });
@@ -60,6 +90,61 @@ export default function StoryArchiveSection() {
       }
     } catch {
       // ignore
+    }
+  };
+
+  const handleSaveStory = async () => {
+    if (!inputContent.trim() || saving) return;
+    const chapter = isNewChapter ? newChapterName.trim() : inputChapter;
+    if (!chapter) return;
+
+    setSaving(true);
+    try {
+      const res = await fetch("/api/stories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: inputContent.trim(),
+          chapter,
+          entry_type: inputType,
+        }),
+      });
+      if (res.ok) {
+        setInputContent("");
+        setInputType("everyday");
+        setIsNewChapter(false);
+        setNewChapterName("");
+        setShowInput(false);
+        await fetchStories();
+      }
+    } catch {
+      // ignore
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSuggestChapterTitle = async () => {
+    setSuggestingTitle(true);
+    try {
+      const res = await fetch("/api/ai/chapter-title", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recentContent: inputContent.trim() || undefined,
+          existingChapters: chapterNames,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.title) {
+          setNewChapterName(data.title);
+        }
+      }
+    } catch {
+      // ignore
+    } finally {
+      setSuggestingTitle(false);
     }
   };
 
@@ -85,7 +170,7 @@ export default function StoryArchiveSection() {
     {} as Record<string, StoryEntry[]>
   );
 
-  const chapterNames = Object.keys(chapters);
+  const chapterKeys = Object.keys(chapters);
 
   return (
     <section>
@@ -108,30 +193,183 @@ export default function StoryArchiveSection() {
         </p>
       </div>
 
+      {/* ── Story Input Form ── */}
+      {!showInput ? (
+        <button
+          onClick={() => setShowInput(true)}
+          className="w-full mb-8 p-5 rounded-xl border border-dashed border-stone-200 hover:border-stone-400 transition-colors text-center group"
+        >
+          <p className="text-sm text-stone-400 group-hover:text-stone-600 transition-colors">
+            今日の1ページを書く
+          </p>
+        </button>
+      ) : (
+        <div className="mb-8 border border-stone-200 rounded-xl p-6 animate-fadeIn">
+          <p
+            className="text-[10px] tracking-[0.25em] uppercase mb-4"
+            style={{ color: "var(--gold, #B8A88A)" }}
+          >
+            Today&apos;s Page
+          </p>
+
+          {/* Chapter Selection */}
+          <div className="mb-4">
+            <div className="flex items-center gap-3 mb-2">
+              <label className="text-[10px] text-stone-400 tracking-wide">
+                章
+              </label>
+              {!isNewChapter ? (
+                <div className="flex items-center gap-2 flex-1">
+                  <select
+                    value={inputChapter}
+                    onChange={(e) => setInputChapter(e.target.value)}
+                    className="flex-1 text-xs bg-transparent border-b border-stone-200 pb-1 focus:outline-none focus:border-stone-400 text-gray-700"
+                  >
+                    {chapterNames.map((ch) => (
+                      <option key={ch} value={ch}>
+                        {ch}
+                      </option>
+                    ))}
+                    {chapterNames.length === 0 && (
+                      <option value="">章がありません</option>
+                    )}
+                  </select>
+                  <button
+                    onClick={() => setIsNewChapter(true)}
+                    className="text-[10px] text-stone-400 hover:text-[#1B6B7A] transition-colors whitespace-nowrap"
+                  >
+                    + 新しい章
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 flex-1">
+                  <input
+                    type="text"
+                    value={newChapterName}
+                    onChange={(e) => setNewChapterName(e.target.value)}
+                    placeholder="新しい章のタイトル"
+                    className="flex-1 text-xs bg-transparent border-b border-stone-200 pb-1 focus:outline-none focus:border-stone-400 text-gray-700 placeholder:text-stone-300"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleSuggestChapterTitle}
+                    disabled={suggestingTitle}
+                    className="text-[10px] px-2.5 py-1 rounded-full border border-stone-200 text-stone-400 hover:text-[#1B6B7A] hover:border-[#1B6B7A] transition-colors whitespace-nowrap disabled:opacity-40"
+                  >
+                    {suggestingTitle ? "考え中..." : "AIで提案"}
+                  </button>
+                  {chapterNames.length > 0 && (
+                    <button
+                      onClick={() => {
+                        setIsNewChapter(false);
+                        setNewChapterName("");
+                      }}
+                      className="text-[10px] text-stone-300 hover:text-stone-500 transition-colors"
+                    >
+                      戻る
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Entry Type */}
+          <div className="flex items-center gap-2 mb-4">
+            <label className="text-[10px] text-stone-400 tracking-wide mr-1">
+              種類
+            </label>
+            {ENTRY_TYPES.map((t) => (
+              <button
+                key={t.value}
+                onClick={() => setInputType(t.value)}
+                className={`text-[10px] px-2.5 py-1 rounded-full transition-colors ${
+                  inputType === t.value
+                    ? "text-white"
+                    : "text-stone-400 bg-stone-50 hover:bg-stone-100"
+                }`}
+                style={
+                  inputType === t.value
+                    ? {
+                        backgroundColor:
+                          TYPE_STYLES[t.value]?.color || "#6B7280",
+                      }
+                    : undefined
+                }
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Content */}
+          <textarea
+            value={inputContent}
+            onChange={(e) => setInputContent(e.target.value)}
+            placeholder="今日何があったか、何を感じたか..."
+            className="w-full bg-transparent text-sm text-gray-700 placeholder:text-stone-300 focus:outline-none resize-none leading-relaxed mb-4"
+            style={{ color: "var(--ink, #1A1A1A)" }}
+            rows={3}
+          />
+
+          {/* Actions */}
+          <div className="flex items-center justify-end gap-3">
+            <button
+              onClick={() => {
+                setShowInput(false);
+                setInputContent("");
+                setInputType("everyday");
+                setIsNewChapter(false);
+                setNewChapterName("");
+              }}
+              className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
+            >
+              キャンセル
+            </button>
+            <button
+              onClick={handleSaveStory}
+              className="text-xs px-4 py-2 text-white rounded-lg transition-colors disabled:opacity-40"
+              style={{ backgroundColor: "var(--navy, #1C2D3F)" }}
+              disabled={
+                !inputContent.trim() ||
+                (!isNewChapter && !inputChapter) ||
+                (isNewChapter && !newChapterName.trim()) ||
+                saving
+              }
+            >
+              {saving ? "保存中..." : "物語に追加する"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Loading ── */}
       {loading && (
         <div className="text-center py-8">
           <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1B6B7A] rounded-full animate-spin mx-auto" />
         </div>
       )}
 
+      {/* ── Empty State ── */}
       {!loading && stories.length === 0 && (
         <div className="text-center py-12">
           <p className="text-sm text-stone-400 font-light">
             まだ物語がありません。
           </p>
           <p className="text-xs text-stone-300 mt-2">
-            「紡ぐ」セクションから、最初の1ページを書き始めましょう。
+            上のボタンから、最初の1ページを書き始めましょう。
           </p>
         </div>
       )}
 
+      {/* ── Timeline ── */}
       {!loading && stories.length > 0 && (
         <div className="relative">
           {/* Timeline Line */}
           <div className="absolute left-[7px] top-2 bottom-2 w-px bg-stone-200" />
 
           <div className="space-y-6">
-            {chapterNames.map((chapter) => {
+            {chapterKeys.map((chapter) => {
               const entries = chapters[chapter];
               const isExpanded = expandedChapters.has(chapter);
 
