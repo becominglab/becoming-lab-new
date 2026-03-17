@@ -4,10 +4,17 @@ import OpenAI from "openai";
 export async function POST(request: NextRequest) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    return NextResponse.json(
-      { title: "新しい章" },
-      { status: 200 }
-    );
+    const fallbacks = [
+      "新しい地平",
+      "転機の予感",
+      "静かな始まり",
+      "問い直す季節",
+      "覚悟の時",
+      "変化の兆し",
+      "自分への帰還",
+    ];
+    const title = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    return NextResponse.json({ title }, { status: 200 });
   }
 
   try {
