@@ -2,41 +2,39 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-// ── Types ──
-interface StoryEntry {
+interface Declaration {
   id: string;
-  date: string;
-  chapter: string;
   content: string;
-  entry_type: "milestone" | "turning_point" | "everyday" | "insight";
+  created_at: string;
+  pinned: boolean;
 }
 
-// ── Constants ──
-const TYPE_STYLES: Record<
-  string,
-  { label: string; color: string; bg: string }
-> = {
-  everyday: { label: "日常", color: "#6B7280", bg: "#6B728010" },
-  insight: { label: "気づき", color: "#8B5CF6", bg: "#8B5CF610" },
-  turning_point: { label: "転機", color: "#D97706", bg: "#D9770610" },
-  milestone: { label: "節目", color: "#1B6B7A", bg: "#1B6B7A10" },
-};
+interface StoryEntry {
+  id: string;
+  chapter: string;
+}
 
 export default function WeaveSection() {
+  const [declarations, setDeclarations] = useState<Declaration[]>([]);
   const [stories, setStories] = useState<StoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [formChapter, setFormChapter] = useState("");
-  const [formContent, setFormContent] = useState("");
-  const [formType, setFormType] = useState<string>("everyday");
+  const [showDeclInput, setShowDeclInput] = useState(false);
+  const [declText, setDeclText] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const fetchStories = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const res = await fetch("/api/stories");
-      if (res.ok) {
-        const data = await res.json();
-        setStories(data.stories || []);
+      const [declRes, storyRes] = await Promise.all([
+        fetch("/api/declarations"),
+        fetch("/api/stories"),
+      ]);
+      if (declRes.ok) {
+        const d = await declRes.json();
+        setDeclarations(d.declarations || []);
+      }
+      if (storyRes.ok) {
+        const s = await storyRes.json();
+        setStories(s.stories || []);
       }
     } catch {
       // keep empty
@@ -46,28 +44,31 @@ export default function WeaveSection() {
   }, []);
 
   useEffect(() => {
-    fetchStories();
-  }, [fetchStories]);
+    fetchData();
+  }, [fetchData]);
 
-  const handleCreate = async () => {
-    if (!formContent.trim() || !formChapter.trim() || saving) return;
+  const handleSaveDeclaration = async () => {
+    if (!declText.trim() || saving) return;
     setSaving(true);
     try {
-      const res = await fetch("/api/stories", {
+      const res = await fetch("/api/declarations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chapter: formChapter.trim(),
-          content: formContent.trim(),
-          entry_type: formType,
-        }),
+        body: JSON.stringify({ content: declText.trim() }),
       });
       if (res.ok) {
-        setFormChapter("");
-        setFormContent("");
-        setFormType("everyday");
-        setShowForm(false);
-        await fetchStories();
+        // Auto-pin the new declaration
+        const data = await res.json();
+        if (data.declaration?.id) {
+          await fetch("/api/declarations", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: data.declaration.id, pinned: true }),
+          });
+        }
+        setDeclText("");
+        setShowDeclInput(false);
+        await fetchData();
       }
     } catch {
       // ignore
@@ -76,230 +77,110 @@ export default function WeaveSection() {
     }
   };
 
-  // Get existing chapters for the dropdown
-  const existingChapters = [
-    ...new Set(stories.map((s) => s.chapter)),
-  ];
+  const pinned = declarations.find((d) => d.pinned);
 
-  // Recent 3 entries
-  const recentEntries = stories.slice(0, 3);
+  // Current chapter = most recent chapter from stories
+  const currentChapter = stories.length > 0 ? stories[0].chapter : null;
 
   return (
     <section>
-      {/* Section Header */}
-      <div className="mb-8">
+      {/* Section Label */}
+      <p
+        className="text-[10px] tracking-[0.35em] uppercase mb-8"
+        style={{ color: "var(--gold, #B8A88A)" }}
+      >
+        紡ぐ
+      </p>
+
+      {/* Declaration Block — the emotional peak */}
+      <div
+        className="rounded-2xl p-10 md:p-12 text-center relative"
+        style={{ backgroundColor: "var(--navy, #1C2D3F)" }}
+      >
         <p
-          className="text-[10px] tracking-[0.35em] uppercase mb-3"
+          className="text-[10px] tracking-[0.3em] uppercase mb-6"
           style={{ color: "var(--gold, #B8A88A)" }}
         >
-          Weave
+          My Declaration
         </p>
-        <h2
-          className="text-xl md:text-2xl font-light"
-          style={{ color: "var(--ink, #1A1A1A)" }}
-        >
-          紡ぐ
-        </h2>
-        <p className="text-sm text-stone-400 mt-2 font-light">
-          今日の1ページを、自分の物語として書く。
-        </p>
+
+        {loading ? (
+          <div className="py-8">
+            <div className="w-5 h-5 border-2 border-stone-600 border-t-stone-400 rounded-full animate-spin mx-auto" />
+          </div>
+        ) : pinned ? (
+          <>
+            <blockquote
+              className="text-xl md:text-2xl text-white font-light leading-relaxed"
+            >
+              私は今、「{pinned.content}」
+            </blockquote>
+
+            {currentChapter && (
+              <p className="text-[11px] text-stone-500 mt-6">
+                {currentChapter}
+              </p>
+            )}
+
+            <div className="mt-8 flex items-center justify-center gap-4">
+              <button
+                onClick={() => setShowDeclInput(true)}
+                className="text-[10px] tracking-wide px-4 py-2 rounded-full border border-stone-600 text-stone-400 hover:text-stone-300 hover:border-stone-500 transition-colors"
+              >
+                宣言を更新する
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-base text-stone-400 font-light mb-6">
+              まだ宣言がありません。
+            </p>
+            <p className="text-sm text-stone-500 font-light mb-8">
+              自分への宣言を書いて、意志を形にしましょう。
+            </p>
+            <button
+              onClick={() => setShowDeclInput(true)}
+              className="text-[10px] tracking-wide px-4 py-2 rounded-full border border-stone-600 text-stone-400 hover:text-stone-300 hover:border-stone-500 transition-colors"
+            >
+              最初の宣言を書く
+            </button>
+          </>
+        )}
       </div>
 
-      {loading && (
-        <div className="text-center py-8">
-          <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1B6B7A] rounded-full animate-spin mx-auto" />
-        </div>
-      )}
-
-      {!loading && (
-        <>
-          {/* ── Write Today's Page ── */}
-          {!showForm ? (
+      {/* Declaration Input */}
+      {showDeclInput && (
+        <div className="mt-6 animate-fadeIn">
+          <textarea
+            value={declText}
+            onChange={(e) => setDeclText(e.target.value)}
+            placeholder="自分に宣言する..."
+            className="w-full bg-white border border-stone-200 rounded-xl p-5 text-sm placeholder:text-stone-300 focus:outline-none focus:border-stone-400 transition-colors resize-none leading-relaxed"
+            style={{ color: "var(--ink, #1A1A1A)" }}
+            rows={2}
+            autoFocus
+          />
+          <div className="flex items-center justify-end gap-3 mt-3">
             <button
-              onClick={() => setShowForm(true)}
-              className="w-full p-8 rounded-xl border border-dashed transition-colors text-center group"
-              style={{ borderColor: "var(--gold, #B8A88A)40" }}
+              onClick={() => {
+                setShowDeclInput(false);
+                setDeclText("");
+              }}
+              className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
             >
-              <p
-                className="text-[10px] tracking-[0.25em] uppercase mb-2"
-                style={{ color: "var(--gold, #B8A88A)" }}
-              >
-                Today&apos;s Page
-              </p>
-              <p className="text-sm text-stone-400 group-hover:text-stone-600 transition-colors">
-                今日の1ページを書く
-              </p>
+              キャンセル
             </button>
-          ) : (
-            <div
-              className="animate-fadeIn border rounded-xl p-6"
-              style={{ borderColor: "var(--gold, #B8A88A)30" }}
+            <button
+              onClick={handleSaveDeclaration}
+              className="text-xs px-4 py-2 text-white rounded-lg transition-colors disabled:opacity-40"
+              style={{ backgroundColor: "var(--navy, #1C2D3F)" }}
+              disabled={!declText.trim() || saving}
             >
-              <p
-                className="text-[10px] tracking-[0.25em] uppercase mb-4"
-                style={{ color: "var(--gold, #B8A88A)" }}
-              >
-                Today&apos;s Page
-              </p>
-
-              {/* Chapter selector */}
-              <div className="mb-4">
-                <label className="text-[10px] text-stone-400 block mb-1.5">
-                  章
-                </label>
-                {existingChapters.length > 0 ? (
-                  <div className="flex gap-2 items-center">
-                    <select
-                      value={formChapter}
-                      onChange={(e) => setFormChapter(e.target.value)}
-                      className="flex-1 bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-stone-400 transition-colors"
-                      style={{ color: "var(--ink, #1A1A1A)" }}
-                    >
-                      <option value="">選択してください</option>
-                      {existingChapters.map((ch) => (
-                        <option key={ch} value={ch}>
-                          {ch}
-                        </option>
-                      ))}
-                      <option value="__new__">＋ 新しい章</option>
-                    </select>
-                    {formChapter === "__new__" && (
-                      <input
-                        type="text"
-                        placeholder="章タイトル"
-                        className="flex-1 bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-stone-400 transition-colors"
-                        style={{ color: "var(--ink, #1A1A1A)" }}
-                        onChange={(e) => setFormChapter(e.target.value)}
-                        autoFocus
-                      />
-                    )}
-                  </div>
-                ) : (
-                  <input
-                    type="text"
-                    value={formChapter}
-                    onChange={(e) => setFormChapter(e.target.value)}
-                    placeholder="例：第1章：始まり"
-                    className="w-full bg-white border border-stone-200 rounded-lg px-3 py-2 text-sm placeholder:text-stone-300 focus:outline-none focus:border-stone-400 transition-colors"
-                    style={{ color: "var(--ink, #1A1A1A)" }}
-                    autoFocus
-                  />
-                )}
-              </div>
-
-              {/* Entry Type Selector */}
-              <div className="flex gap-2 mb-4">
-                {Object.entries(TYPE_STYLES).map(([key, { label, color }]) => (
-                  <button
-                    key={key}
-                    onClick={() => setFormType(key)}
-                    className={`text-[10px] px-2.5 py-1 rounded-full border transition-colors ${
-                      formType === key
-                        ? "text-white"
-                        : "text-stone-400 hover:text-stone-600"
-                    }`}
-                    style={{
-                      borderColor: formType === key ? color : `${color}40`,
-                      backgroundColor:
-                        formType === key ? color : "transparent",
-                    }}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Content */}
-              <textarea
-                value={formContent}
-                onChange={(e) => setFormContent(e.target.value)}
-                placeholder="今日何があったか、何を感じたか..."
-                className="w-full bg-white border border-stone-200 rounded-xl p-5 text-sm placeholder:text-stone-300 focus:outline-none focus:border-stone-400 transition-colors resize-none leading-relaxed"
-                style={{ color: "var(--ink, #1A1A1A)" }}
-                rows={4}
-              />
-
-              <div className="flex items-center justify-end gap-3 mt-4">
-                <button
-                  onClick={() => {
-                    setShowForm(false);
-                    setFormChapter("");
-                    setFormContent("");
-                    setFormType("everyday");
-                  }}
-                  className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
-                >
-                  キャンセル
-                </button>
-                <button
-                  onClick={handleCreate}
-                  className="text-xs px-4 py-2 text-white rounded-lg transition-colors disabled:opacity-40"
-                  style={{ backgroundColor: "var(--navy, #1C2D3F)" }}
-                  disabled={
-                    !formChapter.trim() ||
-                    formChapter === "__new__" ||
-                    !formContent.trim() ||
-                    saving
-                  }
-                >
-                  {saving ? "保存中..." : "物語に追加する"}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* ── Recent Pages ── */}
-          {recentEntries.length > 0 && (
-            <div className="mt-8">
-              <p className="text-[10px] tracking-[0.2em] text-stone-400 mb-3">
-                RECENT PAGES
-              </p>
-              <div className="space-y-2">
-                {recentEntries.map((entry) => {
-                  const style = TYPE_STYLES[entry.entry_type];
-                  const d = new Date(entry.date + "T00:00:00");
-                  return (
-                    <div
-                      key={entry.id}
-                      className="flex items-start gap-3 p-3 rounded-xl hover:bg-stone-50/60 transition-colors"
-                    >
-                      <div className="pt-1.5">
-                        <div
-                          className="w-2 h-2 rounded-full"
-                          style={{
-                            backgroundColor: style?.color || "#9CA3AF",
-                          }}
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <time className="text-[10px] text-stone-400">
-                            {d.toLocaleDateString("ja-JP", {
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </time>
-                          <span
-                            className="text-[10px] px-2 py-0.5 rounded-full"
-                            style={{
-                              color: style?.color,
-                              backgroundColor: style?.bg,
-                            }}
-                          >
-                            {style?.label}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 leading-relaxed font-light line-clamp-2">
-                          {entry.content}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </>
+              {saving ? "保存中..." : "宣言する"}
+            </button>
+          </div>
+        </div>
       )}
     </section>
   );

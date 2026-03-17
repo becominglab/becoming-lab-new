@@ -18,79 +18,62 @@ function formatJapaneseDate(date: Date): string {
   return `${date.getFullYear()}年${m}月${d}日（${w}）`;
 }
 
-const FALLBACK_QUOTE = "更新を重ねることが、生きるということ。";
-
 interface HeroMorningSectionProps {
   userName?: string | null;
+  onScrollToWrite?: () => void;
 }
 
 export default function HeroMorningSection({
   userName,
+  onScrollToWrite,
 }: HeroMorningSectionProps) {
   const [now, setNow] = useState<Date>(new Date());
-  const [quote, setQuote] = useState<string>(FALLBACK_QUOTE);
-  const [aiSource, setAiSource] = useState<"ai" | "fallback">("fallback");
 
   useEffect(() => {
     setNow(new Date());
-
-    fetch("/api/ai/daily")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d?.quote) {
-          setQuote(d.quote);
-          setAiSource(d.source || "fallback");
-        }
-      })
-      .catch(() => {
-        /* keep fallback */
-      });
   }, []);
 
   const greeting = getGreeting();
   const dateStr = formatJapaneseDate(now);
 
   return (
-    <section className="relative">
-      {/* Date */}
+    <section className="relative pt-4 pb-8">
+      {/* Date — small, quiet */}
       <time
-        className="block text-xs tracking-widest mb-6"
+        className="block text-[11px] tracking-[0.3em] mb-10"
         style={{ color: "var(--gold, #B8A88A)" }}
       >
         {dateStr}
       </time>
 
-      {/* Greeting */}
-      <h1 className="text-3xl md:text-4xl font-light leading-snug" style={{ color: "var(--ink, #1A1A1A)" }}>
+      {/* Greeting — large, warm */}
+      <h1
+        className="text-3xl md:text-[2.5rem] font-light leading-snug tracking-tight"
+        style={{ color: "var(--ink, #1A1A1A)" }}
+      >
         {greeting}
         {userName && (
           <span className="text-stone-400">、{userName}さん</span>
         )}
       </h1>
 
-      <p className="text-sm text-stone-400 mt-4 font-light leading-relaxed">
-        今日もあなたの物語が、一行ずつ更新されていく。
+      {/* Hero copy */}
+      <p className="text-[15px] text-stone-400 mt-5 font-light leading-relaxed">
+        今日も、あなたの物語が更新されます。
       </p>
 
-      {/* Daily Quote */}
-      <div className="mt-8 rounded-xl p-6 border-l-2" style={{ borderColor: "var(--gold, #B8A88A)", backgroundColor: "var(--bg-cream, #F7F6F3)" }}>
-        <div className="flex items-center gap-2 mb-2">
-          <p
-            className="text-[10px] tracking-[0.25em] uppercase"
-            style={{ color: "var(--gold, #B8A88A)" }}
-          >
-            Today&apos;s Word
-          </p>
-          {aiSource === "ai" && (
-            <span className="text-[8px] px-1.5 py-0.5 rounded bg-[#1B6B7A]/10 text-[#1B6B7A]">
-              AI
-            </span>
-          )}
-        </div>
-        <p className="text-sm font-light italic leading-relaxed" style={{ color: "var(--ink, #1A1A1A)" }}>
-          &ldquo;{quote}&rdquo;
-        </p>
-      </div>
+      {/* CTA — gentle, not pushy */}
+      <button
+        onClick={onScrollToWrite}
+        className="mt-10 inline-flex items-center gap-2 text-xs tracking-wide px-5 py-2.5 rounded-full border transition-all hover:bg-stone-50"
+        style={{
+          borderColor: "var(--gold, #B8A88A)",
+          color: "var(--ink, #1A1A1A)",
+        }}
+      >
+        今日の一行を書く
+        <span className="text-stone-300">→</span>
+      </button>
     </section>
   );
 }
