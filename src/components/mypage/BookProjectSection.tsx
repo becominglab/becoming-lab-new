@@ -22,6 +22,12 @@ export default function BookProjectSection() {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Draft generation state
+  const [generating, setGenerating] = useState(false);
+  const [draft, setDraft] = useState<string | null>(null);
+  const [showDraft, setShowDraft] = useState(false);
+  const [draftError, setDraftError] = useState<string | null>(null);
+
   const fetchStories = useCallback(async () => {
     try {
       const res = await fetch("/api/stories");
@@ -72,7 +78,75 @@ export default function BookProjectSection() {
     fetchStories();
   }, [fetchStories]);
 
+  const handleGenerateDraft = async () => {
+    if (generating) return;
+    setGenerating(true);
+    setDraftError(null);
+
+    try {
+      const res = await fetch("/api/ai/book-draft", {
+        method: "POST",
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setDraft(data.draft);
+        setShowDraft(true);
+      } else {
+        const data = await res.json();
+        if (data.error === "no_stories") {
+          setDraftError("物語がまだありません。先にストーリーを書きましょう。");
+        } else {
+          setDraftError("生成に失敗しました。しばらくしてからお試しください。");
+        }
+      }
+    } catch {
+      setDraftError("ネットワークエラーが発生しました。");
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   const maxPages = Math.max(...chapters.map((c) => c.pages), 1);
+
+  // Simple markdown-to-JSX renderer for the draft
+  const renderDraft = (text: string) => {
+    return text.split("\n").map((line, i) => {
+      if (line.startsWith("# ")) {
+        return (
+          <h3
+            key={i}
+            className="text-base font-medium mt-6 mb-3 first:mt-0"
+            style={{ color: "var(--ink, #1A1A1A)" }}
+          >
+            {line.replace("# ", "")}
+          </h3>
+        );
+      }
+      if (line.startsWith("## ")) {
+        return (
+          <h4
+            key={i}
+            className="text-sm font-medium mt-5 mb-2"
+            style={{ color: "var(--ink, #1A1A1A)" }}
+          >
+            {line.replace("## ", "")}
+          </h4>
+        );
+      }
+      if (line.trim() === "") {
+        return <div key={i} className="h-3" />;
+      }
+      return (
+        <p
+          key={i}
+          className="text-sm text-gray-600 leading-relaxed font-light"
+        >
+          {line}
+        </p>
+      );
+    });
+  };
 
   return (
     <section>
@@ -180,17 +254,26 @@ export default function BookProjectSection() {
           </div>
 
           {/* Summary + Actions */}
-          <div className="flex items-center justify-between p-5 rounded-xl" style={{ backgroundColor: "rgba(184, 168, 138, 0.06)" }}>
+          <div
+            className="flex items-center justify-between p-5 rounded-xl"
+            style={{ backgroundColor: "rgba(184, 168, 138, 0.06)" }}
+          >
             <div className="flex items-center gap-6">
               <div>
-                <p className="text-xl font-light" style={{ color: "var(--ink, #1A1A1A)" }}>
+                <p
+                  className="text-xl font-light"
+                  style={{ color: "var(--ink, #1A1A1A)" }}
+                >
                   {totalPages}
                 </p>
                 <p className="text-[10px] text-stone-400">ページ</p>
               </div>
               <div className="w-px h-6 bg-stone-200" />
               <div>
-                <p className="text-xl font-light" style={{ color: "var(--ink, #1A1A1A)" }}>
+                <p
+                  className="text-xl font-light"
+                  style={{ color: "var(--ink, #1A1A1A)" }}
+                >
                   {chapters.length}
                 </p>
                 <p className="text-[10px] text-stone-400">チャプター</p>
@@ -198,15 +281,84 @@ export default function BookProjectSection() {
             </div>
 
             <button
-              className="text-[10px] tracking-wide px-4 py-2 rounded-full border transition-colors hover:bg-stone-50"
+              onClick={handleGenerateDraft}
+              disabled={generating}
+              className="text-[10px] tracking-wide px-4 py-2 rounded-full border transition-colors hover:bg-stone-50 disabled:opacity-40"
               style={{
                 borderColor: "var(--gold, #B8A88A)",
                 color: "var(--ink, #1A1A1A)",
               }}
             >
-              下書きを生成する
+              {generating ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-3 h-3 border border-stone-400 border-t-transparent rounded-full animate-spin" />
+                  生成中...
+                </span>
+              ) : (
+                "下書きを生成する"
+              )}
             </button>
           </div>
+
+          {/* Draft Error */}
+          {draftError && (
+            <div className="mt-4 p-4 rounded-xl bg-red-50 text-center">
+              <p className="text-xs text-red-400">{draftError}</p>
+            </div>
+          )}
+
+          {/* Generated Draft */}
+          {showDraft && draft && (
+            <div className="mt-8 animate-fadeIn">
+              <div className="flex items-center justify-between mb-4">
+                <p
+                  className="text-[10px] tracking-[0.25em] uppercase"
+                  style={{ color: "var(--gold, #B8A88A)" }}
+                >
+                  AI Draft
+                </p>
+                <button
+                  onClick={() => setShowDraft(false)}
+                  className="text-[10px] text-stone-400 hover:text-stone-600 transition-colors"
+                >
+                  閉じる
+                </button>
+              </div>
+
+              <div
+                className="rounded-2xl p-8 md:p-10"
+                style={{ backgroundColor: "var(--navy, #1C2D3F)" }}
+              >
+                <p
+                  className="text-[10px] tracking-[0.3em] uppercase mb-6 text-center"
+                  style={{ color: "var(--gold, #B8A88A)" }}
+                >
+                  『まだ途中にいる』
+                </p>
+
+                <div className="space-y-0">
+                  {renderDraft(draft).map((el, i) => (
+                    <div key={i} className="[&_h3]:text-white/90 [&_h4]:text-white/80 [&_p]:text-stone-400">
+                      {el}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-stone-700 text-center">
+                  <p className="text-[10px] text-stone-500">
+                    AIが生成した下書きです。物語を書き続けることで、より豊かな本になります。
+                  </p>
+                  <button
+                    onClick={handleGenerateDraft}
+                    disabled={generating}
+                    className="mt-4 text-[10px] tracking-wide px-4 py-2 rounded-full border border-stone-600 text-stone-400 hover:text-stone-300 hover:border-stone-500 transition-colors disabled:opacity-40"
+                  >
+                    再生成する
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </section>
