@@ -1,21 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import TodaySection from "../becoming-os/TodaySection";
-import ActionSection from "../becoming-os/ActionSection";
-import ReflectionSection from "../becoming-os/ReflectionSection";
+import HeroMorningSection from "./HeroMorningSection";
+import ResetSection from "./ResetSection";
+import FaceSection from "./FaceSection";
+import WeaveSection from "./WeaveSection";
 import ChallengeSection from "../becoming-os/ChallengeSection";
 import CommunitySection from "../becoming-os/CommunitySection";
-import StorySection from "../becoming-os/StorySection";
-import DeclarationSection from "../becoming-os/DeclarationSection";
+import StoryArchiveSection from "./StoryArchiveSection";
+import BookProjectSection from "./BookProjectSection";
 
 const NAV_ITEMS = [
-  { id: "today", label: "TODAY" },
-  { id: "action", label: "ACTION" },
-  { id: "reflection", label: "REFLECTION" },
+  { id: "hero", label: "TOP" },
+  { id: "reset", label: "整える" },
+  { id: "face", label: "向き合う" },
+  { id: "weave", label: "紡ぐ" },
   { id: "challenge", label: "CHALLENGE" },
   { id: "community", label: "COMMUNITY" },
-  { id: "story", label: "STORY" },
+  { id: "archive", label: "STORY" },
+  { id: "book", label: "BOOK" },
 ] as const;
 
 interface MyPageDashboardProps {
@@ -35,20 +38,25 @@ export default function MyPageDashboard({ userName }: MyPageDashboardProps) {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-cream">
       {/* Floating Section Nav */}
-      <nav className="sticky top-16 z-30 bg-white/90 backdrop-blur-md border-b border-stone-100">
+      <nav className="sticky top-16 z-30 backdrop-blur-md border-b border-stone-100" style={{ backgroundColor: "rgba(247, 246, 243, 0.92)" }}>
         <div className="max-w-2xl mx-auto px-6">
           <div className="flex items-center gap-1 overflow-x-auto py-3 scrollbar-hide">
             {NAV_ITEMS.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`text-[10px] tracking-[0.15em] px-3 py-1.5 rounded-full whitespace-nowrap transition-all ${
+                className={`text-[10px] tracking-[0.12em] px-3 py-1.5 rounded-full whitespace-nowrap transition-all ${
                   activeSection === item.id
-                    ? "bg-gray-900 text-white"
+                    ? "text-white"
                     : "text-stone-400 hover:text-stone-600 hover:bg-stone-50"
                 }`}
+                style={
+                  activeSection === item.id
+                    ? { backgroundColor: "var(--navy, #1C2D3F)" }
+                    : undefined
+                }
               >
                 {item.label}
               </button>
@@ -59,23 +67,30 @@ export default function MyPageDashboard({ userName }: MyPageDashboardProps) {
 
       {/* Sections */}
       <div className="max-w-2xl mx-auto px-6 md:px-8">
-        {/* TODAY */}
-        <div id="section-today" className="pt-12 pb-16">
-          <TodaySection userName={userName} />
+        {/* HERO */}
+        <div id="section-hero" className="pt-12 pb-16">
+          <HeroMorningSection userName={userName} />
         </div>
 
         <Divider />
 
-        {/* ACTION */}
-        <div id="section-action" className="py-16">
-          <ActionSection />
+        {/* RESET — 整える */}
+        <div id="section-reset" className="py-16">
+          <ResetSection />
         </div>
 
         <Divider />
 
-        {/* REFLECTION */}
-        <div id="section-reflection" className="py-16">
-          <ReflectionSection />
+        {/* FACE — 向き合う */}
+        <div id="section-face" className="py-16">
+          <FaceSection />
+        </div>
+
+        <Divider />
+
+        {/* WEAVE — 紡ぐ */}
+        <div id="section-weave" className="py-16">
+          <WeaveSection />
         </div>
 
         <Divider />
@@ -94,24 +109,33 @@ export default function MyPageDashboard({ userName }: MyPageDashboardProps) {
 
         <Divider />
 
-        {/* STORY & DECLARATION */}
-        <div id="section-story" className="py-16">
-          <StorySection />
+        {/* STORY ARCHIVE */}
+        <div id="section-archive" className="py-16">
+          <StoryArchiveSection />
         </div>
 
-        <div className="py-16">
-          <DeclarationSection />
+        <Divider />
+
+        {/* BOOK PROJECT */}
+        <div id="section-book" className="py-16">
+          <BookProjectSection />
         </div>
 
-        {/* Footer Message */}
+        {/* Closing */}
         <div className="py-20 text-center">
-          <p className="text-[10px] tracking-[0.35em] text-stone-300 uppercase mb-4">
-            BECOMING OS
+          <p
+            className="text-[10px] tracking-[0.35em] uppercase mb-4"
+            style={{ color: "var(--gold, #B8A88A)" }}
+          >
+            becoming lab
           </p>
-          <p className="text-sm text-stone-400 font-light">
+          <p
+            className="text-sm font-light"
+            style={{ color: "var(--ink, #1A1A1A)" }}
+          >
             人生は、完成させるものではなく、更新し続けるもの。
           </p>
-          <p className="text-xs text-stone-300 mt-2">
+          <p className="text-xs text-stone-400 mt-2">
             あなたの物語は、まだ途中です。
           </p>
         </div>
@@ -123,7 +147,10 @@ export default function MyPageDashboard({ userName }: MyPageDashboardProps) {
 function Divider() {
   return (
     <div className="flex items-center justify-center py-2">
-      <div className="w-8 h-px bg-stone-200" />
+      <div
+        className="w-8 h-px"
+        style={{ backgroundColor: "var(--gold, #B8A88A)30" }}
+      />
     </div>
   );
 }

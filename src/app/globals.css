@@ -5,12 +5,23 @@
   --color-primary: #1B6B7A;
   --color-secondary: #155a67;
   --color-accent: #1B6B7A;
+
+  /* New design palette */
+  --bg-cream: #F7F6F3;
+  --navy: #1C2D3F;
+  --ink: #1A1A1A;
+  --gold: #B8A88A;
+  --gold-light: #B8A88A20;
 }
 
 @theme {
   --color-primary: #1B6B7A;
   --color-secondary: #155a67;
   --color-accent: #1B6B7A;
+  --color-navy: #1C2D3F;
+  --color-ink: #1A1A1A;
+  --color-gold: #B8A88A;
+  --color-cream: #F7F6F3;
   --font-display: "Noto Sans JP", sans-serif;
 }
 
@@ -28,6 +39,11 @@ body {
 ::selection {
   background-color: #1B6B7A;
   color: white;
+}
+
+/* Mypage cream background */
+.bg-cream {
+  background-color: var(--bg-cream, #F7F6F3);
 }
 
 
