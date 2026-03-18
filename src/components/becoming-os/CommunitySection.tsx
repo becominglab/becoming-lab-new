@@ -103,12 +103,11 @@ export default function CommunitySection() {
               </p>
 
               {member.slug && (
-                <Link
-                  href={`/members/${member.slug}`}
-                  className="inline-block text-[10px] text-stone-400 hover:text-[#1B6B7A] transition-colors mt-3"
-                >
-                  この人の物語を読む →
-                </Link>
+                <div className="mt-3">
+                  <Link href={`/members/${member.slug}`} className="inline-flex items-center gap-1 text-[10px] px-3 py-1.5 rounded-lg border transition-colors hover:bg-[#1B6B7A]/5" style={{ borderColor: "#1B6B7A", color: "#1B6B7A" }}>
+                    物語を読む <span>→</span>
+                  </Link>
+                </div>
               )}
             </div>
           );

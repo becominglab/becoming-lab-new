@@ -46,6 +46,12 @@ const SPORT_MEANING: Record<string, string> = {
   Other: "自分を更新するために",
 };
 
+const SPORT_EMOJI: Record<string, string> = {
+  Run: "🏃", Ride: "🚴", Swim: "🏊", Walk: "🚶", Hike: "🥾",
+  WeightTraining: "🏋️", Workout: "💪", Yoga: "🧘", TrailRun: "⛰️",
+  VirtualRun: "🏃", VirtualRide: "🚴", Other: "⚡",
+};
+
 function formatDuration(min: number): string {
   if (min >= 60) {
     const h = Math.floor(min / 60);
@@ -121,48 +127,30 @@ export default function ActionMeaningSection() {
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {activities.map((a) => {
-            const meaning =
-              SPORT_MEANING[a.activity_type] || SPORT_MEANING.Other;
-            const label =
-              a.name || SPORT_LABELS[a.activity_type] || a.activity_type;
-
-            return (
-              <div
-                key={a.id}
-                className="p-5 rounded-xl transition-colors hover:bg-stone-50/60"
-              >
-                {/* Meaning line — the main message */}
-                <p className="text-sm font-light leading-relaxed mb-2" style={{ color: "var(--ink, #1A1A1A)" }}>
-                  <span className="text-stone-400">{meaning}</span>
-                  {a.distance_km
-                    ? ` ${a.distance_km.toFixed(1)}km ${label === SPORT_LABELS[a.activity_type] ? "" : "— " + label}`
-                    : ` ${label}`}
+        <div className="space-y-2">
+          {activities.map((a) => (
+            <div key={a.id} className="flex items-center gap-3 p-3 rounded-xl border border-stone-100 hover:border-stone-200 bg-white transition-colors">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-base" style={{ backgroundColor: "rgba(184,168,138,0.10)" }}>
+                {SPORT_EMOJI[a.activity_type] || "⚡"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate" style={{ color: "var(--ink, #1A1A1A)" }}>
+                  {a.name || SPORT_LABELS[a.activity_type] || a.activity_type}{a.distance_km ? ` — ${a.distance_km.toFixed(1)}km` : ""}
                 </p>
-
-                {/* Meta — subtle */}
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] text-stone-300">
-                    {formatRelativeDate(a.date)}
-                  </span>
-                  {a.duration_minutes && (
-                    <span className="text-[10px] text-stone-300">
-                      {formatDuration(a.duration_minutes)}
-                    </span>
-                  )}
-                  {a.heart_rate_avg && (
-                    <span className="text-[10px] text-stone-300">
-                      ♥ {a.heart_rate_avg}
-                    </span>
-                  )}
-                  <span className="text-[9px] text-stone-200 uppercase ml-auto">
-                    {a.source}
-                  </span>
+                <p className="text-[10px] text-stone-400 mt-0.5 truncate">{SPORT_MEANING[a.activity_type] || SPORT_MEANING.Other}</p>
+              </div>
+              <div className="flex flex-col items-end gap-0.5 shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-stone-300">{formatRelativeDate(a.date)}</span>
+                  {a.duration_minutes && <span className="text-[10px] text-stone-300">{formatDuration(a.duration_minutes)}</span>}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  {a.heart_rate_avg && <span className="text-[10px] text-rose-300">♥ {a.heart_rate_avg}</span>}
+                  <span className="text-[9px] uppercase" style={{ color: "#E8572E" }}>{a.source}</span>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       )}
 

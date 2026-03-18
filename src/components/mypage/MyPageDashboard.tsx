@@ -23,14 +23,14 @@ import BookProjectSection from "./BookProjectSection";
  * 9. Footer
  */
 const NAV_ITEMS = [
-  { id: "hero", label: "TOP" },
-  { id: "insight", label: "INSIGHT" },
-  { id: "reset", label: "整える" },
-  { id: "action", label: "ACTION" },
-  { id: "challenge", label: "CHALLENGE" },
-  { id: "community", label: "COMMUNITY" },
-  { id: "archive", label: "STORY" },
-  { id: "book", label: "BOOK" },
+  { id: "hero",      label: "トップ" },
+  { id: "insight",   label: "内省" },
+  { id: "reset",     label: "整える" },
+  { id: "action",    label: "行動" },
+  { id: "challenge", label: "挑戦" },
+  { id: "community", label: "仲間" },
+  { id: "archive",   label: "物語" },
+  { id: "book",      label: "本" },
 ] as const;
 
 interface MyPageDashboardProps {
@@ -62,7 +62,7 @@ export default function MyPageDashboard({ userName }: MyPageDashboardProps) {
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`text-[10px] tracking-[0.12em] px-3 py-1.5 rounded-full whitespace-nowrap transition-all ${
+                className={`text-[10px] tracking-[0.08em] px-3 py-1.5 rounded-full whitespace-nowrap transition-all ${
                   activeSection === item.id
                     ? "text-white"
                     : "text-stone-400 hover:text-stone-600 hover:bg-stone-50"

@@ -16,6 +16,11 @@ interface ReflectionEntry {
   mood: string;
 }
 
+interface DeleteTarget {
+  id: string;
+  preview: string;
+}
+
 const MOOD_MAP: Record<string, { label: string; color: string }> = {
   calm: { label: "穏やか", color: "#06B6D4" },
   energized: { label: "エネルギッシュ", color: "#F97316" },
@@ -37,6 +42,8 @@ export default function ResetSection() {
   const [showDeclInput, setShowDeclInput] = useState(false);
   const [declText, setDeclText] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -104,13 +111,21 @@ export default function ResetSection() {
     }
   };
 
-  const handleDeleteReflection = async (id: string) => {
+  const handleDeleteClick = (entry: ReflectionEntry) => {
+    setDeleteTarget({
+      id: entry.id,
+      preview: entry.content.length > 40 ? entry.content.slice(0, 40) + "…" : entry.content,
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget || deleting) return;
+    setDeleting(true);
     try {
-      const res = await fetch(`/api/reflections?id=${id}`, { method: "DELETE" });
-      if (res.ok) {
-        setReflections((prev) => prev.filter((r) => r.id !== id));
-      }
+      const res = await fetch(`/api/reflections?id=${deleteTarget.id}`, { method: "DELETE" });
+      if (res.ok) setReflections((prev) => prev.filter((r) => r.id !== deleteTarget.id));
     } catch {}
+    finally { setDeleting(false); setDeleteTarget(null); }
   };
 
   const pinned = declarations.find((d) => d.pinned);
@@ -118,6 +133,20 @@ export default function ResetSection() {
 
   return (
     <section>
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: "rgba(0,0,0,0.25)" }} onClick={() => !deleting && setDeleteTarget(null)}>
+          <div className="bg-white rounded-2xl p-6 mx-6 max-w-sm w-full shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-sm font-medium mb-2" style={{ color: "var(--ink, #1A1A1A)" }}>この記録を削除しますか？</h3>
+            <p className="text-xs text-stone-400 leading-relaxed mb-1">「{deleteTarget.preview}」</p>
+            <p className="text-xs text-stone-400 leading-relaxed mb-6">元に戻すことはできません。<br />大切な記録は削除前にご確認ください。</p>
+            <div className="flex items-center justify-end gap-3">
+              <button onClick={() => setDeleteTarget(null)} className="text-xs px-4 py-2 rounded-lg border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors" disabled={deleting}>キャンセル</button>
+              <button onClick={handleDeleteConfirm} className="text-xs px-4 py-2 rounded-lg text-white transition-colors disabled:opacity-40" style={{ backgroundColor: "#DC2626" }} disabled={deleting}>{deleting ? "削除中..." : "削除する"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Section Label */}
       <p
         className="text-[10px] tracking-[0.35em] uppercase mb-8"
@@ -279,12 +308,7 @@ export default function ResetSection() {
                     >
                       {mood?.label}
                     </span>
-                    <button
-                      onClick={() => handleDeleteReflection(r.id)}
-                      className="text-[10px] text-stone-200 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 ml-auto"
-                    >
-                      削除
-                    </button>
+                    <button onClick={() => handleDeleteClick(r)} className="text-[11px] text-stone-200 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 ml-auto leading-none" title="この記録を削除">🗑</button>
                   </div>
                   <p className="text-sm text-stone-500 leading-relaxed font-light">
                     {r.content}

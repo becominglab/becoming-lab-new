@@ -5,8 +5,8 @@ const HEALTHPLANET_AUTH_URL =
   "https://www.healthplanet.jp/oauth/auth";
 
 export async function GET(request: NextRequest) {
-  const clientId = process.env.HEALTHPLANET_CLIENT_ID;
-  const redirectUri = process.env.HEALTHPLANET_REDIRECT_URI;
+  const clientId = process.env.HEALTHPLANET_CLIENT_ID?.trim();
+  const redirectUri = process.env.HEALTHPLANET_REDIRECT_URI?.trim();
 
   if (!clientId || !redirectUri) {
     return NextResponse.json(
@@ -24,14 +24,9 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const params = new URLSearchParams({
-    client_id: clientId,
-    redirect_uri: redirectUri,
-    response_type: "code",
-    scope: "innerscan",
-  });
+  // HealthPlanet API requires redirect_uri to be encoded with encodeURIComponent
+  // (URLSearchParams encodes differently and HealthPlanet rejects it)
+  const authUrl = `${HEALTHPLANET_AUTH_URL}?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=innerscan`;
 
-  return NextResponse.redirect(
-    `${HEALTHPLANET_AUTH_URL}?${params.toString()}`
-  );
+  return NextResponse.redirect(authUrl);
 }

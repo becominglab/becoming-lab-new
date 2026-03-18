@@ -39,6 +39,7 @@ export default function ChallengeSection() {
   const [formDesc, setFormDesc] = useState("");
   const [formTarget, setFormTarget] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const fetchChallenges = useCallback(async () => {
     try {
@@ -85,13 +86,8 @@ export default function ChallengeSection() {
     }
   };
 
-  const handleProgressClick = async (
-    challenge: Challenge,
-    e: React.MouseEvent<HTMLDivElement>
-  ) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const newProgress = Math.round((x / rect.width) * 100);
+  const handleProgressChange = async (challenge: Challenge, value: number) => {
+    const newProgress = Math.min(100, Math.max(0, value));
     try {
       const res = await fetch("/api/challenges", {
         method: "PATCH",
@@ -137,15 +133,13 @@ export default function ChallengeSection() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDeleteConfirm = async () => {
+    if (!deleteId) return;
     try {
-      const res = await fetch(`/api/challenges?id=${id}`, { method: "DELETE" });
-      if (res.ok) {
-        setChallenges((prev) => prev.filter((c) => c.id !== id));
-      }
-    } catch {
-      // ignore
-    }
+      const res = await fetch(`/api/challenges?id=${deleteId}`, { method: "DELETE" });
+      if (res.ok) setChallenges((prev) => prev.filter((c) => c.id !== deleteId));
+    } catch {}
+    finally { setDeleteId(null); }
   };
 
   const activeChallenges = challenges.filter((c) => c.status === "active");
@@ -153,6 +147,19 @@ export default function ChallengeSection() {
 
   return (
     <section>
+      {deleteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: "rgba(0,0,0,0.25)" }} onClick={() => setDeleteId(null)}>
+          <div className="bg-white rounded-2xl p-6 mx-6 max-w-sm w-full shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-sm font-medium mb-2" style={{ color: "var(--ink, #1A1A1A)" }}>この挑戦を削除しますか？</h3>
+            <p className="text-xs text-stone-400 leading-relaxed mb-6">進捗・マイルストーンを含むすべてのデータが削除されます。<br />元に戻すことはできません。</p>
+            <div className="flex items-center justify-end gap-3">
+              <button onClick={() => setDeleteId(null)} className="text-xs px-4 py-2 rounded-lg border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors">キャンセル</button>
+              <button onClick={handleDeleteConfirm} className="text-xs px-4 py-2 rounded-lg text-white transition-colors" style={{ backgroundColor: "#DC2626" }}>削除する</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mb-8">
         <p className="text-[10px] tracking-[0.35em] uppercase mb-3" style={{ color: "var(--gold, #B8A88A)" }}>
           CHALLENGE
@@ -215,37 +222,30 @@ export default function ChallengeSection() {
                           {remaining}
                         </span>
                       )}
-                      <button
-                        onClick={() => handleDelete(c.id)}
-                        className="text-[10px] text-stone-300 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
-                      >
-                        削除
-                      </button>
+                      <button onClick={() => setDeleteId(c.id)} className="text-[11px] text-stone-200 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100" title="この挑戦を削除">🗑</button>
                     </div>
                   </div>
 
-                  {/* Progress Bar (clickable) */}
+                  {/* Progress Bar */}
                   <div className="mb-4">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[10px] text-stone-400">
-                        進捗（クリックで更新）
-                      </span>
-                      <span className="text-[10px] text-stone-500 font-medium">
-                        {c.progress}%
-                      </span>
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-2xl font-light" style={{ color: "var(--ink, #1A1A1A)" }}>{c.progress}%</span>
+                      <span className="text-[10px] text-stone-400">今の自分の輪郭</span>
+                      <div className="ml-auto flex items-center gap-1">
+                        <input type="number" min={0} max={100} value={c.progress}
+                          onChange={(e) => handleProgressChange(c, Number(e.target.value))}
+                          className="w-12 text-right text-xs border-b border-stone-200 bg-transparent focus:outline-none focus:border-stone-400 text-gray-700 pb-0.5" />
+                        <span className="text-[10px] text-stone-400">%</span>
+                      </div>
                     </div>
-                    <div
-                      className="h-2 bg-stone-100 rounded-full overflow-hidden cursor-pointer hover:bg-stone-200 transition-colors"
-                      onClick={(e) => handleProgressClick(c, e)}
-                    >
-                      <div
-                        className="h-full rounded-full transition-all duration-300 ease-out"
-                        style={{
-                          width: `${c.progress}%`,
-                          backgroundColor: "#1B6B7A",
-                        }}
-                      />
+                    <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden mb-2">
+                      <div className="h-full rounded-full transition-all duration-300 ease-out" style={{ width: `${c.progress}%`, backgroundColor: "#1B6B7A" }} />
                     </div>
+                    <input type="range" min={0} max={100} step={1} value={c.progress}
+                      onChange={(e) => handleProgressChange(c, Number(e.target.value))}
+                      className="w-full h-1 appearance-none bg-transparent cursor-pointer"
+                      style={{ accentColor: "#1B6B7A" }} />
+                    <p className="text-[10px] text-stone-300 mt-1">← ドラッグして進捗を更新</p>
                   </div>
 
                   {/* Milestones (clickable) */}

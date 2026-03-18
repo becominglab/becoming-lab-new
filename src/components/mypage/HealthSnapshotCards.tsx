@@ -94,29 +94,7 @@ export default function HealthSnapshotCards() {
   }
 
   if (!data) {
-    return (
-      <div className="text-center py-6 bg-stone-50/50 rounded-xl">
-        <p className="text-xs text-stone-400">体組成データがありません</p>
-        {connected ? (
-          <button
-            onClick={handleSync}
-            disabled={syncing}
-            className="mt-2 text-[10px] tracking-wide px-4 py-1.5 rounded-full border transition-colors hover:bg-stone-50 disabled:opacity-40"
-            style={{ borderColor: "var(--gold, #B8A88A)", color: "var(--ink, #1A1A1A)" }}
-          >
-            {syncing ? "同期中..." : "TANITAから同期"}
-          </button>
-        ) : (
-          <Link
-            href="/api/healthplanet/auth"
-            className="mt-2 inline-block text-[10px] tracking-wide px-4 py-1.5 rounded-full border transition-colors hover:bg-stone-50"
-            style={{ borderColor: "var(--gold, #B8A88A)", color: "var(--ink, #1A1A1A)" }}
-          >
-            TANITAと連携する
-          </Link>
-        )}
-      </div>
-    );
+    return null;
   }
 
   return (

@@ -29,6 +29,11 @@ const ENTRY_TYPES = [
   { value: "milestone", label: "節目" },
 ] as const;
 
+function todayJP(): string {
+  const d = new Date();
+  return `${d.getMonth() + 1}月${d.getDate()}日（${"日月火水木金土"[d.getDay()]}）`;
+}
+
 export default function StoryArchiveSection() {
   const [stories, setStories] = useState<StoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +50,7 @@ export default function StoryArchiveSection() {
   const [newChapterName, setNewChapterName] = useState("");
   const [suggestingTitle, setSuggestingTitle] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const fetchStories = useCallback(async () => {
     try {
@@ -82,15 +88,13 @@ export default function StoryArchiveSection() {
     }
   }, [chapterNames, inputChapter]);
 
-  const handleDelete = async (id: string) => {
+  const handleDeleteConfirm = async () => {
+    if (!deleteId) return;
     try {
-      const res = await fetch(`/api/stories?id=${id}`, { method: "DELETE" });
-      if (res.ok) {
-        setStories((prev) => prev.filter((s) => s.id !== id));
-      }
-    } catch {
-      // ignore
-    }
+      const res = await fetch(`/api/stories?id=${deleteId}`, { method: "DELETE" });
+      if (res.ok) setStories((prev) => prev.filter((s) => s.id !== deleteId));
+    } catch {}
+    finally { setDeleteId(null); }
   };
 
   const handleSaveStory = async () => {
@@ -174,6 +178,19 @@ export default function StoryArchiveSection() {
 
   return (
     <section>
+      {deleteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: "rgba(0,0,0,0.25)" }} onClick={() => setDeleteId(null)}>
+          <div className="bg-white rounded-2xl p-6 mx-6 max-w-sm w-full shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-sm font-medium mb-2" style={{ color: "var(--ink, #1A1A1A)" }}>このページを削除しますか？</h3>
+            <p className="text-xs text-stone-400 leading-relaxed mb-6">元に戻すことはできません。<br />大切な記録は削除前にご確認ください。</p>
+            <div className="flex items-center justify-end gap-3">
+              <button onClick={() => setDeleteId(null)} className="text-xs px-4 py-2 rounded-lg border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors">キャンセル</button>
+              <button onClick={handleDeleteConfirm} className="text-xs px-4 py-2 rounded-lg text-white transition-colors" style={{ backgroundColor: "#DC2626" }}>削除する</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Section Header */}
       <div className="mb-8">
         <p
@@ -195,13 +212,13 @@ export default function StoryArchiveSection() {
 
       {/* ── Story Input Form ── */}
       {!showInput ? (
-        <button
-          onClick={() => setShowInput(true)}
-          className="w-full mb-8 p-5 rounded-xl border border-dashed border-stone-200 hover:border-stone-400 transition-colors text-center group"
-        >
-          <p className="text-sm text-stone-400 group-hover:text-stone-600 transition-colors">
-            今日の1ページを書く
-          </p>
+        <button onClick={() => setShowInput(true)} className="w-full mb-8 flex items-center gap-4 p-4 rounded-xl border transition-colors hover:bg-[#1B6B7A]/5 text-left" style={{ borderColor: "#1B6B7A", backgroundColor: "rgba(27,107,122,0.03)" }}>
+          <span className="text-xl shrink-0">✍️</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium" style={{ color: "#1B6B7A" }}>今日の1ページを書く</p>
+            <p className="text-[10px] mt-0.5" style={{ color: "#4a9a7a" }}>{todayJP()} · {chapterNames.length > 0 ? chapterNames[0] : "今日のスタート"}</p>
+          </div>
+          <span className="text-sm shrink-0" style={{ color: "#1B6B7A" }}>→</span>
         </button>
       ) : (
         <div className="mb-8 border border-stone-200 rounded-xl p-6 animate-fadeIn">
@@ -431,12 +448,7 @@ export default function StoryArchiveSection() {
                                 >
                                   {style?.label}
                                 </span>
-                                <button
-                                  onClick={() => handleDelete(entry.id)}
-                                  className="text-[10px] text-stone-300 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 ml-auto"
-                                >
-                                  削除
-                                </button>
+                                <button onClick={() => setDeleteId(entry.id)} className="text-[11px] text-stone-200 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 ml-auto" title="このページを削除">🗑</button>
                               </div>
                               <p className="text-sm text-gray-600 leading-relaxed font-light">
                                 {entry.content}
