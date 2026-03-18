@@ -316,14 +316,20 @@ export default function HeroMorningSection({
         </div>
       )}
 
-      {/* Empty declaration hint */}
+      {/* Default declaration (affirmation) */}
       {!declLoading && !pinnedDecl && (
         <div
-          className="rounded-xl px-6 py-4 mt-2 border border-dashed"
-          style={{ borderColor: "var(--gold, #B8A88A)40" }}
+          className="rounded-xl px-6 py-5 mt-2"
+          style={{ backgroundColor: "var(--navy, #1C2D3F)" }}
         >
-          <p className="text-[11px] text-stone-400 font-light text-center">
-            宣言をピン留めすると、ここに表示されます
+          <p
+            className="text-[9px] tracking-[0.3em] uppercase mb-3"
+            style={{ color: "var(--gold, #B8A88A)" }}
+          >
+            Affirmation
+          </p>
+          <p className="text-base text-white/90 font-light leading-relaxed">
+            私は、更新を重ねる人生を生きる。
           </p>
         </div>
       )}
