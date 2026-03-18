@@ -236,18 +236,38 @@ export default function TopPage() {
           </div>
 
           {/* Closing message */}
-          <p className="text-center text-sm font-light italic text-stone-400 mb-8">
+          <p className="text-center text-sm font-light italic text-stone-400 mb-10">
             次に更新されるのは、あなたの物語かもしれません。
           </p>
 
-          <div className="text-center">
-            <Link
-              href="/jibun-de-eranda-michi"
-              className="inline-block text-sm tracking-wide hover:opacity-70 transition-opacity"
-              style={{ color: "#1B6B7A" }}
-            >
-              物語を読む →
-            </Link>
+          {/* 自分で選んだ道 — CTA Card */}
+          <div className="border border-[#1B6B7A]/20 rounded-2xl p-6 md:p-8 text-center" style={{ backgroundColor: "rgba(27,107,122,0.03)" }}>
+            <p className="text-[10px] tracking-[0.25em] uppercase mb-3" style={{ color: "#1B6B7A" }}>
+              Monthly Event
+            </p>
+            <h3 className="text-lg md:text-xl font-light mb-2" style={{ color: "#111" }}>
+              自分で選んだ道
+            </h3>
+            <p className="text-sm text-stone-400 font-light leading-relaxed mb-6">
+              月に一度、一人のスピーカーが人生の途中を語る。<br className="hidden md:inline" />
+              成功談ではなく、未完成のままの物語を。
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                href="/jibun-de-eranda-michi"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm tracking-wide rounded-lg transition-all duration-300 hover:opacity-90"
+                style={{ backgroundColor: "#1B6B7A", color: "#fff" }}
+              >
+                詳しく見る →
+              </Link>
+              <Link
+                href="/jibun-de-eranda-michi/archive"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm tracking-wide rounded-lg border transition-all duration-300 hover:bg-[#1B6B7A]/5"
+                style={{ borderColor: "#1B6B7A", color: "#1B6B7A" }}
+              >
+                過去の物語を読む
+              </Link>
+            </div>
           </div>
         </div>
       </section>

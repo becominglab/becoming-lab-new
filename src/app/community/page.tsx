@@ -112,6 +112,24 @@ export default function CommunityPage() {
             <p className="text-gray-500">必要なタイミングで、必要な関わり方を。</p>
           </div>
 
+          {/* 自分で選んだ道 — Featured Event */}
+          <div className="mb-16 rounded-2xl border border-[#1B6B7A]/20 p-6 md:p-8" style={{ backgroundColor: "rgba(27,107,122,0.03)" }}>
+            <p className="text-[10px] tracking-[0.25em] uppercase mb-3" style={{ color: "#1B6B7A" }}>Featured Event</p>
+            <h2 className="text-lg font-bold text-gray-900 mb-2">自分で選んだ道</h2>
+            <p className="text-sm text-gray-600 leading-relaxed mb-4">
+              月に一度、一人のスピーカーが人生の途中を語ります。成功談ではなく、未完成のままの物語。
+              すべての活動の起点となるイベントです。
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/jibun-de-eranda-michi" className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-lg transition-colors hover:opacity-90" style={{ backgroundColor: "#1B6B7A", color: "#fff" }}>
+                詳しく見る →
+              </Link>
+              <Link href="/jibun-de-eranda-michi/archive" className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-lg border transition-colors hover:bg-[#1B6B7A]/5" style={{ borderColor: "#1B6B7A", color: "#1B6B7A" }}>
+                過去の物語
+              </Link>
+            </div>
+          </div>
+
           {/* メンバー紹介へ */}
           <div className="mb-16 p-6 bg-stone-50 border border-stone-200">
             <h2 className="text-lg font-bold text-gray-900 mb-3">コミュニティメンバー</h2>
