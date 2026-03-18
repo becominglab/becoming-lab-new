@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 
 interface HealthData {
   weight_kg: number | null;
@@ -20,28 +21,64 @@ const METRICS = [
 export default function HealthSnapshotCards() {
   const [data, setData] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [connected, setConnected] = useState(false);
 
+  const fetchHealth = useCallback(async () => {
+    try {
+      const res = await fetch("/api/health/history?days=30");
+      if (res.ok) {
+        const json = await res.json();
+        const measurements = json.measurements || [];
+        if (measurements.length > 0) {
+          setData(measurements[0]);
+          return;
+        }
+      }
+    } catch {
+      // fall through
+    }
+    setData(null);
+  }, []);
+
+  // Check if HealthPlanet is connected
   useEffect(() => {
-    async function fetchHealth() {
+    async function checkConnection() {
       try {
-        // Try health history first
-        const res = await fetch("/api/health/history?days=30");
+        const res = await fetch("/api/integrations/status");
         if (res.ok) {
           const json = await res.json();
-          const measurements = json.measurements || [];
-          if (measurements.length > 0) {
-            setData(measurements[0]);
-            return;
-          }
+          const hp = json.integrations?.find(
+            (i: { service: string }) => i.service === "healthplanet"
+          );
+          setConnected(hp?.connected === true);
         }
       } catch {
-        // fall through
+        // ignore
       }
-      setData(null);
-      setLoading(false);
     }
-    fetchHealth().finally(() => setLoading(false));
+    checkConnection();
   }, []);
+
+  useEffect(() => {
+    fetchHealth().finally(() => setLoading(false));
+  }, [fetchHealth]);
+
+  const handleSync = async () => {
+    if (syncing) return;
+    setSyncing(true);
+    try {
+      const res = await fetch("/api/healthplanet/data?days=30&sync=true");
+      if (res.ok) {
+        // Re-fetch from DB after sync
+        await fetchHealth();
+      }
+    } catch {
+      // ignore
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -60,29 +97,68 @@ export default function HealthSnapshotCards() {
     return (
       <div className="text-center py-6 bg-stone-50/50 rounded-xl">
         <p className="text-xs text-stone-400">体組成データがありません</p>
-        <p className="text-[10px] text-stone-300 mt-1">
-          TANITAを連携するか、手動で記録を追加しましょう
-        </p>
+        {connected ? (
+          <button
+            onClick={handleSync}
+            disabled={syncing}
+            className="mt-2 text-[10px] tracking-wide px-4 py-1.5 rounded-full border transition-colors hover:bg-stone-50 disabled:opacity-40"
+            style={{ borderColor: "var(--gold, #B8A88A)", color: "var(--ink, #1A1A1A)" }}
+          >
+            {syncing ? "同期中..." : "TANITAから同期"}
+          </button>
+        ) : (
+          <Link
+            href="/api/healthplanet/auth"
+            className="mt-2 inline-block text-[10px] tracking-wide px-4 py-1.5 rounded-full border transition-colors hover:bg-stone-50"
+            style={{ borderColor: "var(--gold, #B8A88A)", color: "var(--ink, #1A1A1A)" }}
+          >
+            TANITAと連携する
+          </Link>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {METRICS.map((m) => {
-        const value = data[m.key];
-        return (
-          <div key={m.key} className="bg-stone-50/80 rounded-xl p-4">
-            <p className="text-[10px] tracking-[0.2em] text-stone-400 mb-1.5">
-              {m.label}
-            </p>
-            <p className="text-xl font-light text-gray-900">
-              {value != null ? value.toFixed(m.decimals) : "—"}
-              <span className="text-xs text-stone-400 ml-1">{m.unit}</span>
-            </p>
-          </div>
-        );
-      })}
+    <div>
+      {/* Sync button row */}
+      <div className="flex items-center justify-end mb-2">
+        {connected && (
+          <button
+            onClick={handleSync}
+            disabled={syncing}
+            className="text-[10px] text-stone-400 hover:text-stone-600 transition-colors flex items-center gap-1 disabled:opacity-40"
+          >
+            <span className={syncing ? "animate-spin" : ""}>↻</span>
+            {syncing ? "同期中..." : "TANITAから同期"}
+          </button>
+        )}
+      </div>
+
+      {/* Metrics grid */}
+      <div className="grid grid-cols-2 gap-3">
+        {METRICS.map((m) => {
+          const value = data[m.key];
+          return (
+            <div key={m.key} className="bg-stone-50/80 rounded-xl p-4">
+              <p className="text-[10px] tracking-[0.2em] text-stone-400 mb-1.5">
+                {m.label}
+              </p>
+              <p className="text-xl font-light text-gray-900">
+                {value != null ? value.toFixed(m.decimals) : "—"}
+                <span className="text-xs text-stone-400 ml-1">{m.unit}</span>
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Last synced */}
+      {data.measured_at && (
+        <p className="text-[9px] text-stone-300 mt-2 text-right">
+          最終計測: {new Date(data.measured_at).toLocaleDateString("ja-JP", { month: "short", day: "numeric" })}
+        </p>
+      )}
     </div>
   );
 }

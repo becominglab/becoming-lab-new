@@ -75,7 +75,7 @@ export default function ActionMeaningSection() {
   useEffect(() => {
     async function fetchActivities() {
       try {
-        const res = await fetch("/api/activities?per_page=5");
+        const res = await fetch("/api/activities?per_page=3");
         if (res.ok) {
           const json = await res.json();
           setActivities(json.activities || []);
