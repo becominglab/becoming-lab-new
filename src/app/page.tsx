@@ -1,139 +1,143 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "becoming lab | 挑戦の途中を、生きる人へ",
+  title: "becoming lab | 更新を重ねる人生を",
   description:
-    "becoming labは、挑戦の途中にいる人の物語を可視化し、応援が集まる場所です。成功を見せ合う場所ではなく、まだ途中の人生に光を当てます。",
+    "人生に完成はない。迷いながら、選び直しながら、それでも進む。becoming labは「なりつづける人生」を生きる人のための場所です。",
 };
-
-const featuredChallengers = [
-  {
-    slug: "tachikawa",
-    name: "立川さん",
-    path: "猟師として生きる道",
-    quote:
-      "期待に応えて生きてきた。それが間違いだとは思わない。ただ自分の声を、後回しにしてきた。",
-    role: "Challenger",
-  },
-  {
-    slug: "yamashiro",
-    name: "山岸穂高",
-    path: "アスリートとして世界を目指す道",
-    quote:
-      "自分が挑戦を続ける限り、誰かの背中を押せるかもしれない。それがチームをつくる理由です。",
-    role: "Challenger",
-  },
-];
 
 export default function TopPage() {
   return (
     <>
-      {/* ヒーロー：3秒で伝わる「挑戦する人のための場所」 */}
-      <section className="relative min-h-screen flex flex-col justify-center items-center px-6 py-24 bg-white">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-xs tracking-[0.3em] text-stone-400 mb-8">
-            becoming lab
-          </p>
-          <h1 className="text-3xl md:text-5xl font-light leading-tight mb-8 tracking-tight text-gray-900">
-            挑戦の途中を、
+      {/* ═══════════════════════════════════════
+          HERO — 100vh / 3秒で心を掴む
+          ═══════════════════════════════════════ */}
+      <section className="relative min-h-screen flex flex-col justify-center items-center -mt-16 pt-16 overflow-hidden">
+        {/* Background — atmospheric gradient (morning light) */}
+        <div
+          className="absolute inset-0 animate-hero-bg"
+          style={{
+            background:
+              "linear-gradient(160deg, #F7F6F3 0%, #EDE9E3 30%, #D9D2C7 60%, #C5BFB4 100%)",
+          }}
+        />
+
+        {/* Subtle light overlay */}
+        <div
+          className="absolute inset-0 animate-hero-bg"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 60% at 70% 30%, rgba(255,255,255,0.5) 0%, transparent 70%)",
+          }}
+        />
+
+        {/* Content — centered */}
+        <div className="relative z-10 max-w-2xl mx-auto text-center px-6">
+          {/* Main Copy */}
+          <h1
+            className="text-3xl md:text-[2.8rem] font-light leading-[1.6] md:leading-[1.7] tracking-tight animate-hero-copy"
+            style={{ color: "#111" }}
+          >
+            更新を重ねる人生を。
             <br />
-            生きる人へ。
+            <span className="block mt-1">
+              自分で選んだ道を、
+            </span>
+            <span className="block mt-1">
+              生きる。
+            </span>
           </h1>
-          <div className="space-y-3 text-stone-600 leading-relaxed text-base md:text-lg max-w-xl mx-auto mb-6">
-            <p>成功を見せ合う場所ではありません。</p>
-            <p>
-              まだ途中の物語に、光を当てる。
+
+          {/* Sub Copy */}
+          <div className="mt-10 md:mt-12 space-y-4 animate-hero-sub">
+            <p
+              className="text-sm md:text-base font-light leading-[2] tracking-wide"
+              style={{ color: "#555" }}
+            >
+              人生に完成はない。
               <br />
-              迷いながらも歩く人に、応援が届く。
+              迷いながら、
+              <br className="md:hidden" />
+              選び直しながら、
+              <br />
+              それでも進む。
+            </p>
+            <p
+              className="text-sm md:text-base font-light leading-[2] tracking-wide"
+              style={{ color: "#555" }}
+            >
+              becoming lab は、
+              <br />
+              「なりつづける人生」を生きる人のための場所です。
             </p>
           </div>
-          <p className="text-stone-400 text-sm mb-12">
-            ここは、そういう場所です。
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/home"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B6B7A] text-white hover:bg-[#155a67] transition-colors duration-300 text-sm"
-            >
-              挑戦フィードを見る
-            </Link>
+
+          {/* CTA — 2 buttons only */}
+          <div className="mt-12 md:mt-14 flex flex-col sm:flex-row gap-4 justify-center animate-hero-cta">
             <Link
               href="/concept"
-              className="inline-flex items-center gap-2 px-6 py-3 border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors duration-300 text-sm"
+              className="inline-flex items-center justify-center px-8 py-3.5 text-sm tracking-wider transition-all duration-300 hover:opacity-80"
+              style={{
+                backgroundColor: "#111",
+                color: "#fff",
+              }}
             >
-              becoming labとは
+              思想を知る
             </Link>
-          </div>
-        </div>
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2">
-          <div className="w-px h-12 bg-gradient-to-b from-stone-300 to-transparent" />
-        </div>
-      </section>
-
-      {/* 挑戦者たち：人物が主役 */}
-      <section className="px-6 py-24 bg-stone-50">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-xs tracking-[0.3em] text-stone-400 mb-4">
-            CHALLENGERS
-          </p>
-          <h2 className="text-2xl font-light mb-4 tracking-tight text-gray-900">
-            自分で選んだ道を歩く人たち
-          </h2>
-          <p className="text-stone-500 text-sm mb-10">
-            完成された成功談ではなく、迷いや葛藤も含めたリアルな人生の物語。
-          </p>
-
-          <div className="space-y-6">
-            {featuredChallengers.map((person) => (
-              <Link
-                key={person.slug}
-                href={`/members/${person.slug}`}
-                className="block group"
-              >
-                <div className="border border-stone-200 p-8 hover:border-stone-400 transition-colors duration-300 bg-white">
-                  <div className="flex items-center gap-3 mb-3">
-                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#1B6B7A] transition-colors">
-                      {person.name}
-                    </h3>
-                    <span className="text-xs px-2 py-0.5 border border-stone-300 text-stone-500">
-                      {person.role}
-                    </span>
-                  </div>
-                  <p className="text-xs text-stone-400 mb-4">
-                    自分で選んだ道：{person.path}
-                  </p>
-                  <p className="text-gray-600 text-sm leading-relaxed border-l-2 border-stone-300 pl-4 italic">
-                    &ldquo;{person.quote}&rdquo;
-                  </p>
-                  <p className="text-sm text-[#1B6B7A] mt-4">
-                    この人の物語を読む →
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          <div className="mt-8 text-center">
             <Link
-              href="/members"
-              className="text-sm text-[#1B6B7A] hover:opacity-70 transition-opacity"
+              href="/jibun-de-eranda-michi"
+              className="inline-flex items-center justify-center px-8 py-3.5 text-sm tracking-wider border transition-all duration-300 hover:bg-black/5"
+              style={{
+                borderColor: "#111",
+                color: "#111",
+              }}
             >
-              すべての挑戦者を見る →
+              物語を読む
             </Link>
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-scroll-indicator">
+          <div className="flex flex-col items-center gap-2">
+            <span
+              className="text-[9px] tracking-[0.25em] uppercase"
+              style={{ color: "#999" }}
+            >
+              Scroll
+            </span>
+            <div
+              className="w-px h-10"
+              style={{
+                background:
+                  "linear-gradient(to bottom, #999, transparent)",
+              }}
+            />
           </div>
         </div>
       </section>
 
-      {/* 思想：静かな情熱 */}
-      <section className="px-6 py-24 bg-white">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-xs tracking-[0.3em] text-stone-400 mb-4">
-            PHILOSOPHY
+      {/* ═══════════════════════════════════════
+          PHILOSOPHY — 思想
+          ═══════════════════════════════════════ */}
+      <section className="px-6 py-28 md:py-32 bg-white">
+        <div className="max-w-xl mx-auto text-center">
+          <p
+            className="text-[10px] tracking-[0.35em] uppercase mb-8"
+            style={{ color: "#B8A88A" }}
+          >
+            Philosophy
           </p>
-          <h2 className="text-2xl font-light mb-8 tracking-tight text-gray-900">
+          <h2
+            className="text-2xl md:text-3xl font-light leading-relaxed tracking-tight mb-10"
+            style={{ color: "#111" }}
+          >
             人生に、完成はない
           </h2>
-          <div className="space-y-4 text-stone-600 leading-relaxed">
+          <div
+            className="space-y-5 text-sm md:text-base font-light leading-[2]"
+            style={{ color: "#555" }}
+          >
             <p>
               「Being」は「在る」こと。
               <br />
@@ -152,67 +156,167 @@ export default function TopPage() {
           </div>
           <Link
             href="/concept"
-            className="inline-block mt-8 text-sm text-[#1B6B7A] hover:opacity-70 transition-opacity"
+            className="inline-block mt-10 text-sm tracking-wide hover:opacity-70 transition-opacity"
+            style={{ color: "#1B6B7A" }}
           >
             思想を読む →
           </Link>
         </div>
       </section>
 
-      {/* コミュニティ：一緒に歩む */}
-      <section className="px-6 py-24 bg-stone-50">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-xs tracking-[0.3em] text-stone-400 mb-4">
-            COMMUNITY
+      {/* ═══════════════════════════════════════
+          STORIES — 物語
+          ═══════════════════════════════════════ */}
+      <section
+        className="px-6 py-28 md:py-32"
+        style={{ backgroundColor: "#F7F6F3" }}
+      >
+        <div className="max-w-xl mx-auto text-center">
+          <p
+            className="text-[10px] tracking-[0.35em] uppercase mb-8"
+            style={{ color: "#B8A88A" }}
+          >
+            Stories
           </p>
-          <h2 className="text-2xl font-light mb-8 tracking-tight text-gray-900">
+          <h2
+            className="text-2xl md:text-3xl font-light leading-relaxed tracking-tight mb-6"
+            style={{ color: "#111" }}
+          >
+            自分で選んだ道を歩く人たち
+          </h2>
+          <p
+            className="text-sm md:text-base font-light leading-[2] mb-10"
+            style={{ color: "#555" }}
+          >
+            完成された成功談ではなく、
+            <br />
+            迷いや葛藤も含めた
+            <br className="md:hidden" />
+            リアルな人生の物語。
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/jibun-de-eranda-michi"
+              className="inline-flex items-center justify-center px-6 py-3 text-sm tracking-wider border transition-all duration-300 hover:bg-black/5"
+              style={{
+                borderColor: "#111",
+                color: "#111",
+              }}
+            >
+              物語を読む
+            </Link>
+            <Link
+              href="/members"
+              className="inline-flex items-center justify-center px-6 py-3 text-sm tracking-wide transition-opacity hover:opacity-70"
+              style={{ color: "#1B6B7A" }}
+            >
+              メンバーを見る →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          COMMUNITY — コミュニティ
+          ═══════════════════════════════════════ */}
+      <section className="px-6 py-28 md:py-32 bg-white">
+        <div className="max-w-xl mx-auto text-center">
+          <p
+            className="text-[10px] tracking-[0.35em] uppercase mb-8"
+            style={{ color: "#B8A88A" }}
+          >
+            Community
+          </p>
+          <h2
+            className="text-2xl md:text-3xl font-light leading-relaxed tracking-tight mb-6"
+            style={{ color: "#111" }}
+          >
             人生の途中を、一緒に歩む
           </h2>
-          <div className="space-y-4 text-stone-600 leading-relaxed mb-8">
-            <p>
-              語り、聴き、一緒に過ごす場。
-              <br />
-              月1回のトークイベント「自分で選んだ道」を起点に、
-              <br />
-              食事会・ランニング・勉強会など、さまざまな形でつながります。
-            </p>
-          </div>
+          <p
+            className="text-sm md:text-base font-light leading-[2] mb-10"
+            style={{ color: "#555" }}
+          >
+            語り、聴き、一緒に過ごす場。
+            <br />
+            月1回のトークイベント「自分で選んだ道」を起点に、
+            <br />
+            食事会・ランニング・勉強会など、
+            <br className="md:hidden" />
+            さまざまな形でつながります。
+          </p>
           <Link
             href="/community"
-            className="text-sm text-[#1B6B7A] hover:opacity-70 transition-opacity"
+            className="inline-block text-sm tracking-wide hover:opacity-70 transition-opacity"
+            style={{ color: "#1B6B7A" }}
           >
             コミュニティについて →
           </Link>
         </div>
       </section>
 
-      {/* セッション */}
-      <section className="px-6 py-24 bg-stone-50">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-xs tracking-[0.3em] text-stone-400 mb-4">SESSION</p>
-          <h2 className="text-2xl font-light mb-8 tracking-tight text-gray-900">becoming session</h2>
-          <p className="text-stone-600 leading-relaxed mb-8">自分自身の人生を見つめ直し、次の一歩を踏み出すためのセッション。</p>
-          <Link href="/session" className="text-sm text-[#1B6B7A] hover:opacity-70 transition-opacity">
-            ▶ セッションについて
+      {/* ═══════════════════════════════════════
+          SESSION — セッション
+          ═══════════════════════════════════════ */}
+      <section
+        className="px-6 py-28 md:py-32"
+        style={{ backgroundColor: "#F7F6F3" }}
+      >
+        <div className="max-w-xl mx-auto text-center">
+          <p
+            className="text-[10px] tracking-[0.35em] uppercase mb-8"
+            style={{ color: "#B8A88A" }}
+          >
+            Session
+          </p>
+          <h2
+            className="text-2xl md:text-3xl font-light leading-relaxed tracking-tight mb-6"
+            style={{ color: "#111" }}
+          >
+            becoming session
+          </h2>
+          <p
+            className="text-sm md:text-base font-light leading-[2] mb-10"
+            style={{ color: "#555" }}
+          >
+            自分自身の人生を見つめ直し、
+            <br />
+            次の一歩を踏み出すためのセッション。
+          </p>
+          <Link
+            href="/service"
+            className="inline-block text-sm tracking-wide hover:opacity-70 transition-opacity"
+            style={{ color: "#1B6B7A" }}
+          >
+            セッションについて →
           </Link>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="px-6 py-24 bg-stone-900 text-white">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-xs tracking-[0.3em] text-stone-500 mb-4">
-            JOIN US
+      {/* ═══════════════════════════════════════
+          CTA — 静かに閉じる
+          ═══════════════════════════════════════ */}
+      <section
+        className="px-6 py-28 md:py-32"
+        style={{ backgroundColor: "#1C2D3F" }}
+      >
+        <div className="max-w-xl mx-auto text-center">
+          <p
+            className="text-[10px] tracking-[0.35em] uppercase mb-8"
+            style={{ color: "#B8A88A" }}
+          >
+            Contact
           </p>
-          <h2 className="text-2xl font-light mb-4 tracking-tight">
+          <h2 className="text-2xl md:text-3xl font-light leading-relaxed tracking-tight text-white mb-4">
             まず、話してみる
           </h2>
-          <p className="text-stone-400 text-sm mb-8">
-            挑戦の途中にいるあなたへ。
+          <p className="text-sm font-light text-stone-400 mb-10">
+            なりつづける人生に、興味があるあなたへ。
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white text-stone-900 hover:bg-stone-100 transition-colors duration-300"
+            className="inline-flex items-center justify-center px-8 py-3.5 bg-white text-sm tracking-wider transition-all duration-300 hover:bg-stone-100"
+            style={{ color: "#1C2D3F" }}
           >
             お問い合わせ
           </Link>
