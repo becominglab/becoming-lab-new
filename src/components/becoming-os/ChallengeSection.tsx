@@ -158,10 +158,10 @@ export default function ChallengeSection() {
           CHALLENGE
         </p>
         <h2 className="text-xl md:text-2xl font-light" style={{ color: "var(--ink, #1A1A1A)" }}>
-          人生の挑戦
+          挑戦の意味
         </h2>
         <p className="text-sm text-stone-400 mt-2 font-light">
-          挑戦には、いつも意味がある。
+          挑戦は目標ではなく、自分の輪郭を確かめる行為。
         </p>
       </div>
 
@@ -181,7 +181,7 @@ export default function ChallengeSection() {
                 まだ挑戦がありません。
               </p>
               <p className="text-xs text-stone-300 mt-2">
-                新しい挑戦を始めて、成長の記録を残しましょう。
+                走ること、書くこと、向き合うこと。あなたの挑戦を始めましょう。
               </p>
             </div>
           )}
@@ -321,14 +321,14 @@ export default function ChallengeSection() {
                 type="text"
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
-                placeholder="例：フルマラソン完走"
+                placeholder="例：走ることで、自分の輪郭を確かめる"
                 className="w-full bg-transparent text-base text-gray-900 placeholder:text-stone-300 focus:outline-none mb-3"
                 autoFocus
               />
               <textarea
                 value={formDesc}
                 onChange={(e) => setFormDesc(e.target.value)}
-                placeholder="この挑戦の意味（例：走ることで、自分の輪郭を確かめる）"
+                placeholder="なぜこの挑戦をするのか（例：逃げない自分でいるために）"
                 className="w-full bg-transparent text-sm text-gray-700 placeholder:text-stone-300 focus:outline-none resize-none leading-relaxed mb-3"
                 rows={2}
               />
