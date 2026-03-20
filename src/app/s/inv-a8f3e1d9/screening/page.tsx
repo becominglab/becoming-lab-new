@@ -1056,12 +1056,332 @@ function MiniCell({ label, value, highlight }: { label: string; value: string; h
   );
 }
 
+/* ========== Filter Types ========== */
+interface ScreeningFilters {
+  priceMin: number;
+  priceMax: number;
+  yieldMin: number;
+  scoreMin: number;
+  cfPositiveOnly: boolean;
+  ward: string;
+  judgments: string[];
+  sortBy: "rank" | "price_asc" | "price_desc" | "yield_desc" | "cf_desc" | "score_desc" | "ccr_desc";
+}
+
+const DEFAULT_FILTERS: ScreeningFilters = {
+  priceMin: 0,
+  priceMax: 50000, // 5億
+  yieldMin: 0,
+  scoreMin: 0,
+  cfPositiveOnly: false,
+  ward: "",
+  judgments: [],
+  sortBy: "rank",
+};
+
+const SORT_OPTIONS: { value: ScreeningFilters["sortBy"]; label: string }[] = [
+  { value: "rank", label: "総合スコア順" },
+  { value: "score_desc", label: "スコア高い順" },
+  { value: "yield_desc", label: "利回り高い順" },
+  { value: "cf_desc", label: "CF高い順" },
+  { value: "ccr_desc", label: "CCR高い順" },
+  { value: "price_asc", label: "価格安い順" },
+  { value: "price_desc", label: "価格高い順" },
+];
+
+const JUDGMENT_OPTIONS = [
+  { value: "strong_buy", label: "強い買い", color: "bg-emerald-600" },
+  { value: "buy", label: "買い", color: "bg-[#1B6B7A]" },
+  { value: "review", label: "要精査", color: "bg-amber-500" },
+  { value: "watch", label: "様子見", color: "bg-orange-400" },
+  { value: "pass", label: "見送り", color: "bg-gray-400" },
+];
+
+/* ========== Screening Filter Panel ========== */
+function FilterPanel({
+  filters,
+  onChange,
+  wards,
+  totalCount,
+  filteredCount,
+}: {
+  filters: ScreeningFilters;
+  onChange: (f: ScreeningFilters) => void;
+  wards: string[];
+  totalCount: number;
+  filteredCount: number;
+}) {
+  const [open, setOpen] = useState(false);
+  const hasActiveFilters =
+    filters.priceMin > 0 ||
+    filters.priceMax < 50000 ||
+    filters.yieldMin > 0 ||
+    filters.scoreMin > 0 ||
+    filters.cfPositiveOnly ||
+    filters.ward !== "" ||
+    filters.judgments.length > 0 ||
+    filters.sortBy !== "rank";
+
+  const activeCount = [
+    filters.priceMin > 0 || filters.priceMax < 50000,
+    filters.yieldMin > 0,
+    filters.scoreMin > 0,
+    filters.cfPositiveOnly,
+    filters.ward !== "",
+    filters.judgments.length > 0,
+    filters.sortBy !== "rank",
+  ].filter(Boolean).length;
+
+  const toggleJudgment = (j: string) => {
+    const next = filters.judgments.includes(j)
+      ? filters.judgments.filter((x) => x !== j)
+      : [...filters.judgments, j];
+    onChange({ ...filters, judgments: next });
+  };
+
+  return (
+    <div className="mb-6">
+      {/* Toggle Button */}
+      <button
+        onClick={() => setOpen(!open)}
+        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all cursor-pointer ${
+          hasActiveFilters
+            ? "bg-amber-50 border-amber-200 hover:border-amber-300"
+            : "bg-white border-gray-200 hover:border-gray-300"
+        }`}
+      >
+        <div className="flex items-center gap-2">
+          <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          <span className="text-sm font-semibold text-gray-700">スクリーニング条件</span>
+          {hasActiveFilters && (
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-white">
+              {activeCount}件の条件
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500">
+            {filteredCount === totalCount ? `全${totalCount}件` : `${filteredCount}/${totalCount}件`}
+          </span>
+          <svg className={`w-4 h-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
+
+      {/* Filter Panel Body */}
+      {open && (
+        <div className="mt-2 bg-white rounded-xl border border-gray-200 p-4 sm:p-5 shadow-sm space-y-5">
+          {/* 並び替え */}
+          <div>
+            <label className="text-xs font-semibold text-gray-600 mb-2 block">並び替え</label>
+            <div className="flex flex-wrap gap-1.5">
+              {SORT_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => onChange({ ...filters, sortBy: opt.value })}
+                  className={`text-xs px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
+                    filters.sortBy === opt.value
+                      ? "text-white border-teal-600 shadow-sm"
+                      : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
+                  }`}
+                  style={filters.sortBy === opt.value ? { backgroundColor: TEAL } : {}}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 判定フィルタ */}
+          <div>
+            <label className="text-xs font-semibold text-gray-600 mb-2 block">判定</label>
+            <div className="flex flex-wrap gap-1.5">
+              {JUDGMENT_OPTIONS.map((opt) => {
+                const active = filters.judgments.includes(opt.value);
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => toggleJudgment(opt.value)}
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-all cursor-pointer ${
+                      active
+                        ? `${judgmentStyle(opt.value)} border-transparent shadow-sm`
+                        : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 価格レンジ */}
+          <div>
+            <label className="text-xs font-semibold text-gray-600 mb-2 block">
+              価格帯
+              {(filters.priceMin > 0 || filters.priceMax < 50000) && (
+                <span className="ml-2 font-normal text-gray-400">
+                  {filters.priceMin > 0 ? `${filters.priceMin.toLocaleString()}万円` : "下限なし"} 〜 {filters.priceMax < 50000 ? `${filters.priceMax.toLocaleString()}万円` : "上限なし"}
+                </span>
+              )}
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                placeholder="下限（万円）"
+                value={filters.priceMin || ""}
+                onChange={(e) => onChange({ ...filters, priceMin: Number(e.target.value) || 0 })}
+                className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent"
+              />
+              <span className="text-gray-400 text-xs">〜</span>
+              <input
+                type="number"
+                placeholder="上限（万円）"
+                value={filters.priceMax < 50000 ? filters.priceMax : ""}
+                onChange={(e) => onChange({ ...filters, priceMax: Number(e.target.value) || 50000 })}
+                className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent"
+              />
+              <span className="text-xs text-gray-400 shrink-0">万円</span>
+            </div>
+          </div>
+
+          {/* 利回り・スコア */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-semibold text-gray-600 mb-2 block">
+                表面利回り（下限）
+              </label>
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="number"
+                  step={0.5}
+                  min={0}
+                  max={30}
+                  placeholder="0"
+                  value={filters.yieldMin || ""}
+                  onChange={(e) => onChange({ ...filters, yieldMin: Number(e.target.value) || 0 })}
+                  className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent"
+                />
+                <span className="text-xs text-gray-400 shrink-0">%以上</span>
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-gray-600 mb-2 block">
+                スコア（下限）
+              </label>
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="number"
+                  step={5}
+                  min={0}
+                  max={100}
+                  placeholder="0"
+                  value={filters.scoreMin || ""}
+                  onChange={(e) => onChange({ ...filters, scoreMin: Number(e.target.value) || 0 })}
+                  className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent"
+                />
+                <span className="text-xs text-gray-400 shrink-0">点以上</span>
+              </div>
+            </div>
+          </div>
+
+          {/* エリア */}
+          <div>
+            <label className="text-xs font-semibold text-gray-600 mb-2 block">エリア</label>
+            <select
+              value={filters.ward}
+              onChange={(e) => onChange({ ...filters, ward: e.target.value })}
+              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent bg-white"
+            >
+              <option value="">全エリア</option>
+              {wards.map((w) => (
+                <option key={w} value={w}>{w}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* CFプラスのみ */}
+          <div>
+            <label className="flex items-center gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={filters.cfPositiveOnly}
+                onChange={(e) => onChange({ ...filters, cfPositiveOnly: e.target.checked })}
+                className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                style={{ accentColor: TEAL }}
+              />
+              <span className="text-xs font-medium text-gray-700">CF（キャッシュフロー）がプラスの物件のみ表示</span>
+            </label>
+          </div>
+
+          {/* リセット */}
+          {hasActiveFilters && (
+            <div className="pt-2 border-t border-gray-100">
+              <button
+                onClick={() => onChange({ ...DEFAULT_FILTERS })}
+                className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors cursor-pointer underline"
+              >
+                全ての条件をリセット
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ========== Filter Logic ========== */
+function applyFilters(rankings: RankingItem[], filters: ScreeningFilters): RankingItem[] {
+  let result = rankings.filter((item) => {
+    const priceMan = Math.round(item.property.price / 10_000);
+    if (filters.priceMin > 0 && priceMan < filters.priceMin) return false;
+    if (filters.priceMax < 50000 && priceMan > filters.priceMax) return false;
+    if (filters.yieldMin > 0 && item.finance.grossYieldPct < filters.yieldMin) return false;
+    if (filters.scoreMin > 0 && item.scoreTotal < filters.scoreMin) return false;
+    if (filters.cfPositiveOnly && item.finance.annualFullCfJpy < 0) return false;
+    if (filters.ward && item.ward !== filters.ward) return false;
+    if (filters.judgments.length > 0 && !filters.judgments.includes(item.buyJudgment)) return false;
+    return true;
+  });
+
+  // Sort
+  switch (filters.sortBy) {
+    case "price_asc":
+      result = [...result].sort((a, b) => a.property.price - b.property.price);
+      break;
+    case "price_desc":
+      result = [...result].sort((a, b) => b.property.price - a.property.price);
+      break;
+    case "yield_desc":
+      result = [...result].sort((a, b) => b.finance.grossYieldPct - a.finance.grossYieldPct);
+      break;
+    case "cf_desc":
+      result = [...result].sort((a, b) => b.finance.annualFullCfJpy - a.finance.annualFullCfJpy);
+      break;
+    case "score_desc":
+      result = [...result].sort((a, b) => b.scoreTotal - a.scoreTotal);
+      break;
+    case "ccr_desc":
+      result = [...result].sort((a, b) => (b.finance.ccrPct ?? -999) - (a.finance.ccrPct ?? -999));
+      break;
+    default: // rank
+      break;
+  }
+
+  return result;
+}
+
 /* ========== Main Page ========== */
 export default function ScreeningPage() {
   const [data, setData] = useState<ReportData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [filters, setFilters] = useState<ScreeningFilters>({ ...DEFAULT_FILTERS });
 
   useEffect(() => {
     fetch("/s/inv-a8f3e1d9/screening-data.json")
@@ -1111,11 +1431,13 @@ export default function ScreeningPage() {
   }
 
   const generatedAt = new Date(data.generatedAt);
+  const wards = [...new Set(data.rankings.map((r) => r.ward))].sort();
+  const filtered = applyFilters(data.rankings, filters);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
-        <header className="mb-8">
+        <header className="mb-6">
           <div className="flex items-center gap-3 mb-2">
             <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${scoreBgColor(85)} flex items-center justify-center shadow-lg`}>
               <span className="text-white text-lg font-bold">B</span>
@@ -1150,18 +1472,41 @@ export default function ScreeningPage() {
           )}
         </header>
 
-        <div className="space-y-4">
-          {data.rankings.map((item) => (
-            <PropertyCard
-              key={item.canonicalId}
-              item={item}
-              onSelect={() => {
-                setSelectedId(item.canonicalId);
-                window.scrollTo(0, 0);
-              }}
-            />
-          ))}
-        </div>
+        {/* スクリーニング条件パネル */}
+        <FilterPanel
+          filters={filters}
+          onChange={setFilters}
+          wards={wards}
+          totalCount={data.rankings.length}
+          filteredCount={filtered.length}
+        />
+
+        {filtered.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
+            <div className="text-3xl mb-3">&#x1F50D;</div>
+            <p className="text-sm font-semibold text-gray-700 mb-1">条件に一致する物件がありません</p>
+            <p className="text-xs text-gray-400">フィルター条件を緩めてお試しください</p>
+            <button
+              onClick={() => setFilters({ ...DEFAULT_FILTERS })}
+              className="mt-4 text-xs font-medium px-4 py-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 cursor-pointer transition-colors"
+            >
+              条件をリセット
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filtered.map((item) => (
+              <PropertyCard
+                key={item.canonicalId}
+                item={item}
+                onSelect={() => {
+                  setSelectedId(item.canonicalId);
+                  window.scrollTo(0, 0);
+                }}
+              />
+            ))}
+          </div>
+        )}
 
         <footer className="mt-16 text-center text-xs text-gray-400 pb-8">
           <div className="w-12 h-0.5 mx-auto mb-4 rounded-full" style={{ backgroundColor: TEAL, opacity: 0.3 }} />
