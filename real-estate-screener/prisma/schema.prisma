@@ -1,0 +1,249 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ── 取得生データ ──
+model ListingRaw {
+  id              Int      @id @default(autoincrement())
+  sourceSite      String   @map("source_site")
+  sourceUrl       String   @map("source_url")
+  listingId       String   @map("listing_id")
+  fetchedAt       DateTime @default(now()) @map("fetched_at")
+  htmlHash        String?  @map("html_hash")
+  rawJson         String   @map("raw_json") // JSON string
+  status          String   @default("pending") // pending | normalized | failed
+  errorMessage    String?  @map("error_message")
+
+  @@unique([sourceSite, listingId])
+  @@index([sourceSite])
+  @@index([status])
+  @@map("listing_raw")
+}
+
+// ── 正規化済み物件 ──
+model PropertyCanonical {
+  id                    Int      @id @default(autoincrement())
+  canonicalId           String   @unique @map("canonical_id") // dedupe後の一意ID
+  propertyName          String?  @map("property_name")
+  prefecture            String   @default("東京都")
+  ward                  String?  // 区
+  address               String?
+  lat                   Float?
+  lng                   Float?
+  structureType         String?  @map("structure_type") // RC, SRC, S, W, W劣
+  builtYear             Int?     @map("built_year")
+  builtMonth            Int?     @map("built_month")
+  landAreaSqm           Float?   @map("land_area_sqm")
+  buildingAreaSqm       Float?   @map("building_area_sqm")
+  frontageM             Float?   @map("frontage_m")
+  totalFloors           Int?     @map("total_floors")
+  totalUnits            Int?     @map("total_units")
+  roomBreakdown         String?  @map("room_breakdown")
+  occupiedUnits         Int?     @map("occupied_units")
+  vacantUnits           Int?     @map("vacant_units")
+  occupancyRate         Float?   @map("occupancy_rate")
+
+  // アクセス
+  station1Line          String?  @map("station1_line")
+  station1Name          String?  @map("station1_name")
+  station1WalkMin       Int?     @map("station1_walk_min")
+  station1DailyPassengers Int?   @map("station1_daily_passengers")
+  station2Line          String?  @map("station2_line")
+  station2Name          String?  @map("station2_name")
+  station2WalkMin       Int?     @map("station2_walk_min")
+  station3Line          String?  @map("station3_line")
+  station3Name          String?  @map("station3_name")
+  station3WalkMin       Int?     @map("station3_walk_min")
+
+  urbanPopulation       Int?     @map("urban_population")
+
+  // 価格・収入
+  propertyPriceJpy      Float    @map("property_price_jpy")
+  annualFullRentJpy     Float?   @map("annual_full_rent_jpy")
+  annualCurrentRentJpy  Float?   @map("annual_current_rent_jpy")
+  expenseRatioPct       Float    @default(16.0) @map("expense_ratio_pct")
+
+  // 資金調達デフォルト
+  selfFundingJpy        Float?   @map("self_funding_jpy")
+  loanInterestPct       Float    @default(1.5) @map("loan_interest_pct")
+  loanYears             Int      @default(30) @map("loan_years")
+
+  // 土地・建物
+  roadValueJpyPerSqm    Float?   @map("road_value_jpy_per_sqm")
+  reBuildable           Boolean? @map("re_buildable")
+  zoning                String?
+  coverageRatio         Float?   @map("coverage_ratio")
+  floorAreaRatio        Float?   @map("floor_area_ratio")
+  landRightType         String?  @map("land_right_type")
+  roadDirection         String?  @map("road_direction")
+  roadWidth             Float?   @map("road_width")
+
+  // その他
+  brokerName            String?  @map("broker_name")
+  hasOccupancyInfo      Boolean  @default(false) @map("has_occupancy_info")
+  hasRouteValue         Boolean  @default(false) @map("has_route_value")
+  hasTaxInfo            Boolean  @default(false) @map("has_tax_info")
+  memo                  String?
+
+  // 計算結果
+  grossYieldPct         Float?   @map("gross_yield_pct")
+  currentYieldPct       Float?   @map("current_yield_pct")
+  annualLoanPaymentJpy  Float?   @map("annual_loan_payment_jpy")
+  annualFullCfJpy       Float?   @map("annual_full_cf_jpy")
+  annualCurrentCfJpy    Float?   @map("annual_current_cf_jpy")
+  fullCfPct             Float?   @map("full_cf_pct")
+  currentCfPct          Float?   @map("current_cf_pct")
+  ccrPct                Float?   @map("ccr_pct")
+  landValuationJpy      Float?   @map("land_valuation_jpy")
+  buildingValuationJpy  Float?   @map("building_valuation_jpy")
+  valuationRatioPct     Float?   @map("valuation_ratio_pct")
+  safeMonthlyRentJpy    Float?   @map("safe_monthly_rent_jpy")
+  safeMonthlyExpenseJpy Float?   @map("safe_monthly_expense_jpy")
+  safeMonthlyLoanJpy    Float?   @map("safe_monthly_loan_jpy")
+  safeMonthlyCfJpy      Float?   @map("safe_monthly_cf_jpy")
+
+  // スコア
+  scoreLocation         Float?   @map("score_location")
+  scoreProfitability    Float?   @map("score_profitability")
+  scoreFinancing        Float?   @map("score_financing")
+  scoreRisk             Float?   @map("score_risk")
+  scoreValueCreation    Float?   @map("score_value_creation")
+  scoreExit             Float?   @map("score_exit")
+  scoreVision           Float?   @map("score_vision")
+  scoreTotal            Float?   @map("score_total")
+  buyJudgment           String?  @map("buy_judgment") // strong_buy | buy | review | watch | pass
+  explanation           String?
+  warningFlags          String?  @map("warning_flags") // JSON array
+
+  specialOpportunityFlag Boolean @default(false) @map("special_opportunity_flag")
+
+  firstSeenAt           DateTime @default(now()) @map("first_seen_at")
+  lastSeenAt            DateTime @default(now()) @map("last_seen_at")
+  listingPublishedAt    DateTime? @map("listing_published_at")
+  isActive              Boolean  @default(true) @map("is_active")
+
+  sources               PropertySource[]
+  rankings              DailyRanking[]
+  priceHistory          PriceHistory[]
+  sensitivityResults    SensitivityResult[]
+  reviewQueue           ReviewQueue[]
+
+  @@index([ward])
+  @@index([scoreTotal])
+  @@index([buyJudgment])
+  @@index([isActive])
+  @@map("property_canonical")
+}
+
+// ── 物件ソース（複数サイト紐付け） ──
+model PropertySource {
+  id              Int               @id @default(autoincrement())
+  propertyId      Int               @map("property_id")
+  sourceSite      String            @map("source_site")
+  sourceUrl       String            @map("source_url")
+  listingId       String            @map("listing_id")
+  firstSeenAt     DateTime          @default(now()) @map("first_seen_at")
+  lastSeenAt      DateTime          @default(now()) @map("last_seen_at")
+  isActive        Boolean           @default(true) @map("is_active")
+
+  property        PropertyCanonical @relation(fields: [propertyId], references: [id])
+
+  @@unique([sourceSite, listingId])
+  @@map("property_source")
+}
+
+// ── 日次実行ログ ──
+model DailyRun {
+  id              Int      @id @default(autoincrement())
+  runDate         String   @map("run_date") // YYYY-MM-DD
+  startedAt       DateTime @default(now()) @map("started_at")
+  finishedAt      DateTime? @map("finished_at")
+  status          String   @default("running") // running | completed | failed
+  totalFetched    Int      @default(0) @map("total_fetched")
+  totalNormalized Int      @default(0) @map("total_normalized")
+  totalScored     Int      @default(0) @map("total_scored")
+  newListings     Int      @default(0) @map("new_listings")
+  priceChanges    Int      @default(0) @map("price_changes")
+  delistedCount   Int      @default(0) @map("delisted_count")
+  errorCount      Int      @default(0) @map("error_count")
+  errorDetails    String?  @map("error_details") // JSON
+  configSnapshot  String?  @map("config_snapshot") // JSON
+
+  rankings        DailyRanking[]
+
+  @@unique([runDate])
+  @@map("daily_run")
+}
+
+// ── 日次ランキング ──
+model DailyRanking {
+  id              Int               @id @default(autoincrement())
+  runId           Int               @map("run_id")
+  propertyId      Int               @map("property_id")
+  rank            Int
+  scoreTotal      Float             @map("score_total")
+  buyJudgment     String            @map("buy_judgment")
+  explanation     String?
+  isNewEntry      Boolean           @default(false) @map("is_new_entry")
+  rankChange      Int?              @map("rank_change") // 前日比
+  priceChange     Float?            @map("price_change") // 値下げ額
+
+  run             DailyRun          @relation(fields: [runId], references: [id])
+  property        PropertyCanonical @relation(fields: [propertyId], references: [id])
+
+  @@unique([runId, propertyId])
+  @@map("daily_ranking")
+}
+
+// ── 感度分析結果 ──
+model SensitivityResult {
+  id              Int               @id @default(autoincrement())
+  propertyId      Int               @map("property_id")
+  calculatedAt    DateTime          @default(now()) @map("calculated_at")
+  parameterName   String            @map("parameter_name") // price | interest | years | self_funding
+  deltaValue      Float             @map("delta_value")
+  resultCfJpy     Float?            @map("result_cf_jpy")
+  resultYieldPct  Float?            @map("result_yield_pct")
+  resultCcrPct    Float?            @map("result_ccr_pct")
+
+  property        PropertyCanonical @relation(fields: [propertyId], references: [id])
+
+  @@map("sensitivity_result")
+}
+
+// ── レビューキュー ──
+model ReviewQueue {
+  id              Int               @id @default(autoincrement())
+  propertyId      Int               @map("property_id")
+  reason          String            // 精査理由
+  priority        Int               @default(0) // 高い = 優先
+  status          String            @default("pending") // pending | reviewed | dismissed
+  createdAt       DateTime          @default(now()) @map("created_at")
+  reviewedAt      DateTime?         @map("reviewed_at")
+  notes           String?
+
+  property        PropertyCanonical @relation(fields: [propertyId], references: [id])
+
+  @@map("review_queue")
+}
+
+// ── 価格履歴 ──
+model PriceHistory {
+  id              Int               @id @default(autoincrement())
+  propertyId      Int               @map("property_id")
+  observedAt      DateTime          @default(now()) @map("observed_at")
+  priceJpy        Float             @map("price_jpy")
+  annualRentJpy   Float?            @map("annual_rent_jpy")
+  yieldPct        Float?            @map("yield_pct")
+  source          String?
+
+  property        PropertyCanonical @relation(fields: [propertyId], references: [id])
+
+  @@index([propertyId, observedAt])
+  @@map("price_history")
+}

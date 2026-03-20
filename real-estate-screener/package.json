@@ -1,0 +1,51 @@
+{
+  "name": "real-estate-screener",
+  "version": "0.1.0",
+  "description": "東京23区 1棟不動産スクリーニング＆投資判断システム",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "crawl": "tsx src/jobs/crawl-all.ts",
+    "normalize": "tsx src/jobs/normalize-all.ts",
+    "score": "tsx src/jobs/score-all.ts",
+    "rank": "tsx src/jobs/rank-daily.ts",
+    "report": "tsx src/jobs/report-daily.ts",
+    "daily": "tsx src/jobs/daily.ts",
+    "backfill": "tsx src/jobs/backfill.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev": "tsx watch src/jobs/daily.ts --dry-run",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.3.0",
+    "cheerio": "^1.0.0",
+    "commander": "^13.1.0",
+    "csv-stringify": "^6.5.2",
+    "csv-parse": "^5.6.0",
+    "date-fns": "^4.1.0",
+    "node-cron": "^3.0.3",
+    "p-limit": "^6.2.0",
+    "playwright": "^1.50.0",
+    "undici": "^7.3.0",
+    "winston": "^3.17.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "@types/node-cron": "^3.0.11",
+    "eslint": "^9.19.0",
+    "prisma": "^6.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.0"
+  }
+}

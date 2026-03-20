@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import ConditionalShell from "@/components/ConditionalShell";
 
 export const metadata: Metadata = {
   title: {
@@ -43,9 +42,7 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="antialiased bg-white text-gray-800 font-sans">
-        <Header />
-        <main className="pt-16">{children}</main>
-        <Footer />
+        <ConditionalShell>{children}</ConditionalShell>
       </body>
     </html>
   );

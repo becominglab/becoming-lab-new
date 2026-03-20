@@ -40,3 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+# real-estate-screener data
+real-estate-screener/data/
+real-estate-screener/node_modules/
