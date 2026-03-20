@@ -75,6 +75,33 @@ export interface EncouragementLog {
   shown_at: string
 }
 
+// 過去問アップロード関連
+export interface UploadedExam {
+  id: string
+  session_name: string
+  uploaded_at: string
+  image_url: string | null
+  results: UploadedExamResult[]
+}
+
+export interface UploadedExamResult {
+  section: 'reading' | 'listening' | 'writing' | 'speaking'
+  part: string
+  question_number: number
+  is_correct: boolean
+}
+
+// 弱点分析結果
+export interface WeaknessAnalysis {
+  category: string
+  label: string
+  totalQuestions: number
+  correctCount: number
+  accuracy: number
+  level: 'weak' | 'average' | 'strong'
+  recommendation: string
+}
+
 export type StudyMode = '3min' | '10min' | 'full'
 
 export interface DailyTask {

@@ -2,21 +2,54 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { BookOpen } from 'lucide-react'
+import { BookOpen, AlertCircle } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const isSupabaseConfigured =
+    !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
     setIsLoading(true)
-    // デモモード: 認証をスキップしてダッシュボードへ
-    setTimeout(() => {
+
+    if (!isSupabaseConfigured) {
+      // Supabase未設定時はデモモードへ
       router.push('/dashboard')
-    }, 500)
+      return
+    }
+
+    try {
+      const supabase = createClient()
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (authError) {
+        if (authError.message.includes('Invalid login credentials')) {
+          setError('メールアドレスまたはパスワードが正しくありません')
+        } else {
+          setError(authError.message)
+        }
+        setIsLoading(false)
+        return
+      }
+
+      router.push('/dashboard')
+      router.refresh()
+    } catch {
+      setError('ログイン中にエラーが発生しました')
+      setIsLoading(false)
+    }
   }
 
   const handleDemoLogin = () => {
@@ -36,6 +69,13 @@ export default function LoginPage() {
           <p className="text-sm text-gray-500 mt-1">英検2級 合格サポート</p>
         </div>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2">
+            <AlertCircle size={16} className="text-red-500 shrink-0 mt-0.5" />
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -45,6 +85,7 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 outline-none transition-all text-sm"
               placeholder="example@email.com"
             />
@@ -57,6 +98,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 outline-none transition-all text-sm"
               placeholder="パスワードを入力"
             />

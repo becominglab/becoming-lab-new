@@ -1078,18 +1078,18 @@ interface ScreeningFilters {
 }
 
 const DEFAULT_FILTERS: ScreeningFilters = {
-  priceMin: 0,
-  priceMax: 50000, // 5億
-  yieldMin: 0,
+  priceMin: 1500,      // 1,500万円
+  priceMax: 15000,     // 1.5億円
+  yieldMin: 6.0,       // 利回り6%以上
   scoreMin: 0,
   cfPositiveOnly: false,
   ward: "",
   judgments: [],
   sortBy: "rank",
-  structures: [],
-  ageMax: 0,
-  walkMax: 0,
-  totalUnitsMin: 0,
+  structures: ["W", "LS", "RC", "S"],  // 木造・軽量鉄骨・RC・S
+  ageMax: 0,           // 上限なし（築古リスクは後段で評価）
+  walkMax: 15,         // 駅徒歩15分以内
+  totalUnitsMin: 4,    // 4戸以上を優先
   buildingAreaMin: 0,
   landAreaMin: 0,
   reBuildableOnly: false,
@@ -1142,74 +1142,110 @@ const AGE_OPTIONS = [
 ];
 
 /* ========== Screening Filter Panel ========== */
+function isFilterActive(f: ScreeningFilters): boolean {
+  const d = DEFAULT_FILTERS;
+  return (
+    f.priceMin !== d.priceMin ||
+    f.priceMax !== d.priceMax ||
+    f.yieldMin !== d.yieldMin ||
+    f.scoreMin !== d.scoreMin ||
+    f.cfPositiveOnly !== d.cfPositiveOnly ||
+    f.ward !== d.ward ||
+    f.judgments.length !== d.judgments.length ||
+    f.sortBy !== d.sortBy ||
+    JSON.stringify(f.structures.slice().sort()) !== JSON.stringify(d.structures.slice().sort()) ||
+    f.ageMax !== d.ageMax ||
+    f.walkMax !== d.walkMax ||
+    f.totalUnitsMin !== d.totalUnitsMin ||
+    f.buildingAreaMin !== d.buildingAreaMin ||
+    f.landAreaMin !== d.landAreaMin ||
+    f.reBuildableOnly !== d.reBuildableOnly ||
+    f.occupancyMin !== d.occupancyMin
+  );
+}
+
+function countActiveFilters(f: ScreeningFilters): number {
+  const d = DEFAULT_FILTERS;
+  return [
+    f.priceMin !== d.priceMin || f.priceMax !== d.priceMax,
+    f.yieldMin !== d.yieldMin,
+    f.scoreMin !== d.scoreMin,
+    f.cfPositiveOnly !== d.cfPositiveOnly,
+    f.ward !== d.ward,
+    f.judgments.length !== d.judgments.length,
+    f.sortBy !== d.sortBy,
+    JSON.stringify(f.structures.slice().sort()) !== JSON.stringify(d.structures.slice().sort()),
+    f.ageMax !== d.ageMax,
+    f.walkMax !== d.walkMax,
+    f.totalUnitsMin !== d.totalUnitsMin,
+    f.buildingAreaMin !== d.buildingAreaMin || f.landAreaMin !== d.landAreaMin,
+    f.reBuildableOnly !== d.reBuildableOnly,
+    f.occupancyMin !== d.occupancyMin,
+  ].filter(Boolean).length;
+}
+
 function FilterPanel({
   filters,
   onChange,
   wards,
   totalCount,
   filteredCount,
+  rankings,
 }: {
   filters: ScreeningFilters;
   onChange: (f: ScreeningFilters) => void;
   wards: string[];
   totalCount: number;
   filteredCount: number;
+  rankings: RankingItem[];
 }) {
   const [open, setOpen] = useState(false);
-  const hasActiveFilters =
-    filters.priceMin > 0 ||
-    filters.priceMax < 50000 ||
-    filters.yieldMin > 0 ||
-    filters.scoreMin > 0 ||
-    filters.cfPositiveOnly ||
-    filters.ward !== "" ||
-    filters.judgments.length > 0 ||
-    filters.sortBy !== "rank" ||
-    filters.structures.length > 0 ||
-    filters.ageMax > 0 ||
-    filters.walkMax > 0 ||
-    filters.totalUnitsMin > 0 ||
-    filters.buildingAreaMin > 0 ||
-    filters.landAreaMin > 0 ||
-    filters.reBuildableOnly ||
-    filters.occupancyMin > 0;
+  const [draft, setDraft] = useState<ScreeningFilters>({ ...filters });
 
-  const activeCount = [
-    filters.priceMin > 0 || filters.priceMax < 50000,
-    filters.yieldMin > 0,
-    filters.scoreMin > 0,
-    filters.cfPositiveOnly,
-    filters.ward !== "",
-    filters.judgments.length > 0,
-    filters.sortBy !== "rank",
-    filters.structures.length > 0,
-    filters.ageMax > 0,
-    filters.walkMax > 0,
-    filters.totalUnitsMin > 0,
-    filters.buildingAreaMin > 0 || filters.landAreaMin > 0,
-    filters.reBuildableOnly,
-    filters.occupancyMin > 0,
-  ].filter(Boolean).length;
+  // Sync draft when panel opens
+  const handleToggle = () => {
+    if (!open) setDraft({ ...filters });
+    setOpen(!open);
+  };
+
+  const hasActiveFilters = isFilterActive(filters);
+  const activeCount = countActiveFilters(filters);
+
+  // Check if draft differs from applied filters
+  const hasDraftChanges = JSON.stringify(draft) !== JSON.stringify(filters);
+
+  // Real-time preview count based on draft filters
+  const draftFilteredCount = open ? applyFilters(rankings, draft).length : filteredCount;
 
   const toggleJudgment = (j: string) => {
-    const next = filters.judgments.includes(j)
-      ? filters.judgments.filter((x) => x !== j)
-      : [...filters.judgments, j];
-    onChange({ ...filters, judgments: next });
+    const next = draft.judgments.includes(j)
+      ? draft.judgments.filter((x) => x !== j)
+      : [...draft.judgments, j];
+    setDraft({ ...draft, judgments: next });
   };
 
   const toggleStructure = (s: string) => {
-    const next = filters.structures.includes(s)
-      ? filters.structures.filter((x) => x !== s)
-      : [...filters.structures, s];
-    onChange({ ...filters, structures: next });
+    const next = draft.structures.includes(s)
+      ? draft.structures.filter((x) => x !== s)
+      : [...draft.structures, s];
+    setDraft({ ...draft, structures: next });
+  };
+
+  const handleApply = () => {
+    onChange({ ...draft });
+    setOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleReset = () => {
+    setDraft({ ...DEFAULT_FILTERS });
   };
 
   return (
     <div className="mb-6">
       {/* Toggle Button */}
       <button
-        onClick={() => setOpen(!open)}
+        onClick={handleToggle}
         className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all cursor-pointer ${
           hasActiveFilters
             ? "bg-amber-50 border-amber-200 hover:border-amber-300"
@@ -1247,13 +1283,13 @@ function FilterPanel({
               {SORT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
-                  onClick={() => onChange({ ...filters, sortBy: opt.value })}
+                  onClick={() => setDraft({ ...draft, sortBy: opt.value })}
                   className={`text-xs px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
-                    filters.sortBy === opt.value
+                    draft.sortBy === opt.value
                       ? "text-white border-teal-600 shadow-sm"
                       : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
                   }`}
-                  style={filters.sortBy === opt.value ? { backgroundColor: TEAL } : {}}
+                  style={draft.sortBy === opt.value ? { backgroundColor: TEAL } : {}}
                 >
                   {opt.label}
                 </button>
@@ -1266,7 +1302,7 @@ function FilterPanel({
             <label className="text-xs font-semibold text-gray-600 mb-2 block">判定</label>
             <div className="flex flex-wrap gap-1.5">
               {JUDGMENT_OPTIONS.map((opt) => {
-                const active = filters.judgments.includes(opt.value);
+                const active = draft.judgments.includes(opt.value);
                 return (
                   <button
                     key={opt.value}
@@ -1288,9 +1324,9 @@ function FilterPanel({
           <div>
             <label className="text-xs font-semibold text-gray-600 mb-2 block">
               価格帯
-              {(filters.priceMin > 0 || filters.priceMax < 50000) && (
+              {(draft.priceMin > 0 || (draft.priceMax > 0 && draft.priceMax < 100000)) && (
                 <span className="ml-2 font-normal text-gray-400">
-                  {filters.priceMin > 0 ? `${filters.priceMin.toLocaleString()}万円` : "下限なし"} 〜 {filters.priceMax < 50000 ? `${filters.priceMax.toLocaleString()}万円` : "上限なし"}
+                  {draft.priceMin > 0 ? `${draft.priceMin.toLocaleString()}万円` : "下限なし"} 〜 {(draft.priceMax > 0 && draft.priceMax < 100000) ? `${draft.priceMax.toLocaleString()}万円` : "上限なし"}
                 </span>
               )}
             </label>
@@ -1298,16 +1334,16 @@ function FilterPanel({
               <input
                 type="number"
                 placeholder="下限（万円）"
-                value={filters.priceMin || ""}
-                onChange={(e) => onChange({ ...filters, priceMin: Number(e.target.value) || 0 })}
+                value={draft.priceMin || ""}
+                onChange={(e) => setDraft({ ...draft, priceMin: Number(e.target.value) || 0 })}
                 className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent"
               />
               <span className="text-gray-400 text-xs">〜</span>
               <input
                 type="number"
                 placeholder="上限（万円）"
-                value={filters.priceMax < 50000 ? filters.priceMax : ""}
-                onChange={(e) => onChange({ ...filters, priceMax: Number(e.target.value) || 50000 })}
+                value={draft.priceMax > 0 && draft.priceMax < 100000 ? draft.priceMax : ""}
+                onChange={(e) => setDraft({ ...draft, priceMax: Number(e.target.value) || 0 })}
                 className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent"
               />
               <span className="text-xs text-gray-400 shrink-0">万円</span>
@@ -1327,8 +1363,8 @@ function FilterPanel({
                   min={0}
                   max={30}
                   placeholder="0"
-                  value={filters.yieldMin || ""}
-                  onChange={(e) => onChange({ ...filters, yieldMin: Number(e.target.value) || 0 })}
+                  value={draft.yieldMin || ""}
+                  onChange={(e) => setDraft({ ...draft, yieldMin: Number(e.target.value) || 0 })}
                   className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent"
                 />
                 <span className="text-xs text-gray-400 shrink-0">%以上</span>
@@ -1345,8 +1381,8 @@ function FilterPanel({
                   min={0}
                   max={100}
                   placeholder="0"
-                  value={filters.scoreMin || ""}
-                  onChange={(e) => onChange({ ...filters, scoreMin: Number(e.target.value) || 0 })}
+                  value={draft.scoreMin || ""}
+                  onChange={(e) => setDraft({ ...draft, scoreMin: Number(e.target.value) || 0 })}
                   className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent"
                 />
                 <span className="text-xs text-gray-400 shrink-0">点以上</span>
@@ -1358,8 +1394,8 @@ function FilterPanel({
           <div>
             <label className="text-xs font-semibold text-gray-600 mb-2 block">エリア</label>
             <select
-              value={filters.ward}
-              onChange={(e) => onChange({ ...filters, ward: e.target.value })}
+              value={draft.ward}
+              onChange={(e) => setDraft({ ...draft, ward: e.target.value })}
               className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent bg-white"
             >
               <option value="">全エリア</option>
@@ -1374,7 +1410,7 @@ function FilterPanel({
             <label className="text-xs font-semibold text-gray-600 mb-2 block">建物構造</label>
             <div className="flex flex-wrap gap-1.5">
               {STRUCTURE_OPTIONS.map((opt) => {
-                const active = filters.structures.includes(opt.value);
+                const active = draft.structures.includes(opt.value);
                 return (
                   <button
                     key={opt.value}
@@ -1398,8 +1434,8 @@ function FilterPanel({
             <div>
               <label className="text-xs font-semibold text-gray-600 mb-2 block">築年数</label>
               <select
-                value={filters.ageMax}
-                onChange={(e) => onChange({ ...filters, ageMax: Number(e.target.value) })}
+                value={draft.ageMax}
+                onChange={(e) => setDraft({ ...draft, ageMax: Number(e.target.value) })}
                 className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent bg-white"
               >
                 {AGE_OPTIONS.map((opt) => (
@@ -1410,8 +1446,8 @@ function FilterPanel({
             <div>
               <label className="text-xs font-semibold text-gray-600 mb-2 block">駅からの徒歩分数</label>
               <select
-                value={filters.walkMax}
-                onChange={(e) => onChange({ ...filters, walkMax: Number(e.target.value) })}
+                value={draft.walkMax}
+                onChange={(e) => setDraft({ ...draft, walkMax: Number(e.target.value) })}
                 className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent bg-white"
               >
                 {WALK_OPTIONS.map((opt) => (
@@ -1430,8 +1466,8 @@ function FilterPanel({
                   type="number"
                   min={0}
                   placeholder="下限"
-                  value={filters.buildingAreaMin || ""}
-                  onChange={(e) => onChange({ ...filters, buildingAreaMin: Number(e.target.value) || 0 })}
+                  value={draft.buildingAreaMin || ""}
+                  onChange={(e) => setDraft({ ...draft, buildingAreaMin: Number(e.target.value) || 0 })}
                   className="w-full text-sm border border-gray-200 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300"
                 />
                 <span className="text-[10px] text-gray-400 shrink-0">㎡〜</span>
@@ -1444,8 +1480,8 @@ function FilterPanel({
                   type="number"
                   min={0}
                   placeholder="下限"
-                  value={filters.landAreaMin || ""}
-                  onChange={(e) => onChange({ ...filters, landAreaMin: Number(e.target.value) || 0 })}
+                  value={draft.landAreaMin || ""}
+                  onChange={(e) => setDraft({ ...draft, landAreaMin: Number(e.target.value) || 0 })}
                   className="w-full text-sm border border-gray-200 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300"
                 />
                 <span className="text-[10px] text-gray-400 shrink-0">㎡〜</span>
@@ -1458,8 +1494,8 @@ function FilterPanel({
                   type="number"
                   min={0}
                   placeholder="下限"
-                  value={filters.totalUnitsMin || ""}
-                  onChange={(e) => onChange({ ...filters, totalUnitsMin: Number(e.target.value) || 0 })}
+                  value={draft.totalUnitsMin || ""}
+                  onChange={(e) => setDraft({ ...draft, totalUnitsMin: Number(e.target.value) || 0 })}
                   className="w-full text-sm border border-gray-200 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300"
                 />
                 <span className="text-[10px] text-gray-400 shrink-0">戸〜</span>
@@ -1471,19 +1507,19 @@ function FilterPanel({
           <div>
             <label className="text-xs font-semibold text-gray-600 mb-2 block">
               入居率
-              {filters.occupancyMin > 0 && <span className="ml-2 font-normal text-gray-400">{filters.occupancyMin}%以上</span>}
+              {draft.occupancyMin > 0 && <span className="ml-2 font-normal text-gray-400">{draft.occupancyMin}%以上</span>}
             </label>
             <div className="flex flex-wrap gap-1.5">
               {[0, 50, 70, 80, 90, 100].map((v) => (
                 <button
                   key={v}
-                  onClick={() => onChange({ ...filters, occupancyMin: v })}
+                  onClick={() => setDraft({ ...draft, occupancyMin: v })}
                   className={`text-xs px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
-                    filters.occupancyMin === v
+                    draft.occupancyMin === v
                       ? "text-white border-teal-600 shadow-sm"
                       : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
                   }`}
-                  style={filters.occupancyMin === v ? { backgroundColor: TEAL } : {}}
+                  style={draft.occupancyMin === v ? { backgroundColor: TEAL } : {}}
                 >
                   {v === 0 ? "指定なし" : v === 100 ? "満室のみ" : `${v}%以上`}
                 </button>
@@ -1498,8 +1534,8 @@ function FilterPanel({
               <label className="flex items-center gap-2.5 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={filters.cfPositiveOnly}
-                  onChange={(e) => onChange({ ...filters, cfPositiveOnly: e.target.checked })}
+                  checked={draft.cfPositiveOnly}
+                  onChange={(e) => setDraft({ ...draft, cfPositiveOnly: e.target.checked })}
                   className="w-4 h-4 rounded border-gray-300"
                   style={{ accentColor: TEAL }}
                 />
@@ -1508,8 +1544,8 @@ function FilterPanel({
               <label className="flex items-center gap-2.5 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={filters.reBuildableOnly}
-                  onChange={(e) => onChange({ ...filters, reBuildableOnly: e.target.checked })}
+                  checked={draft.reBuildableOnly}
+                  onChange={(e) => setDraft({ ...draft, reBuildableOnly: e.target.checked })}
                   className="w-4 h-4 rounded border-gray-300"
                   style={{ accentColor: TEAL }}
                 />
@@ -1518,17 +1554,25 @@ function FilterPanel({
             </div>
           </div>
 
-          {/* リセット */}
-          {hasActiveFilters && (
-            <div className="pt-2 border-t border-gray-100">
+          {/* 確定ボタン・リセット */}
+          <div className="pt-4 border-t border-gray-100 space-y-3">
+            <button
+              onClick={handleApply}
+              className="w-full py-3 rounded-xl text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all cursor-pointer active:scale-[0.98]"
+              style={{ backgroundColor: draftFilteredCount === 0 ? "#9ca3af" : TEAL }}
+              disabled={draftFilteredCount === 0}
+            >
+              この条件で検索（{draftFilteredCount}件ヒット）
+            </button>
+            {isFilterActive(draft) && (
               <button
-                onClick={() => onChange({ ...DEFAULT_FILTERS })}
-                className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors cursor-pointer underline"
+                onClick={handleReset}
+                className="w-full text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors cursor-pointer underline py-1"
               >
                 全ての条件をリセット
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -1542,7 +1586,7 @@ function applyFilters(rankings: RankingItem[], filters: ScreeningFilters): Ranki
     const p = item.property;
     const priceMan = Math.round(p.price / 10_000);
     if (filters.priceMin > 0 && priceMan < filters.priceMin) return false;
-    if (filters.priceMax < 50000 && priceMan > filters.priceMax) return false;
+    if (filters.priceMax > 0 && priceMan > filters.priceMax) return false;
     if (filters.yieldMin > 0 && item.finance.grossYieldPct < filters.yieldMin) return false;
     if (filters.scoreMin > 0 && item.scoreTotal < filters.scoreMin) return false;
     if (filters.cfPositiveOnly && item.finance.annualFullCfJpy < 0) return false;
@@ -1703,7 +1747,23 @@ export default function ScreeningPage() {
           wards={wards}
           totalCount={data.rankings.length}
           filteredCount={filtered.length}
+          rankings={data.rankings}
         />
+
+        {/* フィルター適用時の結果件数表示 */}
+        {isFilterActive(filters) && filtered.length > 0 && (
+          <div className="mb-4 flex items-center justify-between bg-teal-50 border border-teal-200 rounded-xl px-4 py-2.5">
+            <p className="text-sm font-semibold" style={{ color: TEAL }}>
+              {filtered.length}件の物件が見つかりました
+            </p>
+            <button
+              onClick={() => setFilters({ ...DEFAULT_FILTERS })}
+              className="text-xs text-gray-500 hover:text-gray-700 underline cursor-pointer"
+            >
+              条件をクリア
+            </button>
+          </div>
+        )}
 
         {filtered.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
