@@ -1,24 +1,36 @@
 'use client'
 
 import { useState } from 'react'
-import { User, Calendar, Bell, ImageIcon, MessageSquare, Save, Check } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { User, Calendar, Bell, ImageIcon, MessageSquare, Save, Check, LogOut } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 import BottomNav from '@/components/BottomNav'
+import { createClient } from '@/lib/supabase/client'
 import { dummyUser, dummyEncouragementSettings } from '@/lib/data/dummy-data'
 
 type Mode = 'original' | 'uploaded' | 'hidden'
 type Tone = 'gentle' | 'bright' | 'push' | 'serious'
 
 export default function SettingsPage() {
+  const router = useRouter()
   const [name, setName] = useState(dummyUser.name)
   const [examDate, setExamDate] = useState(dummyUser.exam_date)
   const [mode, setMode] = useState<Mode>(dummyEncouragementSettings.mode)
   const [tone, setTone] = useState<Tone>(dummyEncouragementSettings.tone)
   const [saved, setSaved] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
 
   const handleSave = () => {
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
+  }
+
+  const handleLogout = async () => {
+    setLoggingOut(true)
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
   }
 
   const modeOptions: { value: Mode; label: string; description: string }[] = [
@@ -173,6 +185,16 @@ export default function SettingsPage() {
               設定を保存
             </>
           )}
+        </button>
+
+        {/* ログアウト */}
+        <button
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className="w-full py-3.5 rounded-xl font-medium text-sm border border-red-200 text-red-500 hover:bg-red-50 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          <LogOut size={16} />
+          {loggingOut ? 'ログアウト中...' : 'ログアウト'}
         </button>
 
         {/* アプリ情報 */}
