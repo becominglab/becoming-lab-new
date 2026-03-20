@@ -316,6 +316,106 @@ function SimInput({
   );
 }
 
+/* ========== Cash Flow Waterfall ========== */
+function CashFlowWaterfall({ monthlyRent, monthlyExpense, monthlyLoan, monthlyCf }: {
+  monthlyRent: number; monthlyExpense: number; monthlyLoan: number; monthlyCf: number;
+}) {
+  const maxVal = monthlyRent > 0 ? monthlyRent : 1;
+  const expPct = Math.min((monthlyExpense / maxVal) * 100, 100);
+  const loanPct = Math.min((monthlyLoan / maxVal) * 100, 100);
+  const cfPct = Math.min(Math.abs(monthlyCf) / maxVal * 100, 100);
+  const cfPositive = monthlyCf >= 0;
+
+  return (
+    <div className="bg-gray-50 rounded-xl p-4 mb-4">
+      <div className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-4">月額キャッシュフロー内訳</div>
+
+      {/* 家賃収入バー */}
+      <div className="mb-3">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs text-gray-600 font-medium">家賃収入</span>
+          <span className="text-xs font-bold text-gray-800">+{formatJpy(monthlyRent)}</span>
+        </div>
+        <div className="h-6 bg-gray-200 rounded-lg overflow-hidden">
+          <div className="h-full rounded-lg bg-emerald-400 transition-all duration-500 flex items-center justify-end pr-2" style={{ width: '100%' }}>
+            <span className="text-[10px] text-white font-bold">100%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 経費バー */}
+      <div className="mb-3">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs text-gray-600 font-medium">経費</span>
+          <span className="text-xs font-bold text-orange-600">-{formatJpy(monthlyExpense)}</span>
+        </div>
+        <div className="h-6 bg-gray-200 rounded-lg overflow-hidden">
+          <div className="h-full rounded-lg bg-orange-400 transition-all duration-500 flex items-center pr-2" style={{ width: `${expPct}%`, minWidth: expPct > 0 ? '2rem' : '0' }}>
+            {expPct >= 10 && <span className="text-[10px] text-white font-bold ml-auto">{expPct.toFixed(0)}%</span>}
+          </div>
+        </div>
+      </div>
+
+      {/* ローン返済バー */}
+      <div className="mb-3">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs text-gray-600 font-medium">ローン返済</span>
+          <span className="text-xs font-bold text-blue-600">-{formatJpy(monthlyLoan)}</span>
+        </div>
+        <div className="h-6 bg-gray-200 rounded-lg overflow-hidden">
+          <div className="h-full rounded-lg bg-blue-400 transition-all duration-500 flex items-center pr-2" style={{ width: `${loanPct}%`, minWidth: loanPct > 0 ? '2rem' : '0' }}>
+            {loanPct >= 10 && <span className="text-[10px] text-white font-bold ml-auto">{loanPct.toFixed(0)}%</span>}
+          </div>
+        </div>
+      </div>
+
+      {/* 区切り線 */}
+      <div className="border-t-2 border-dashed border-gray-300 my-3" />
+
+      {/* 手残りバー */}
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs font-bold text-gray-800">手残り（CF）</span>
+          <span className={`text-sm font-black ${cfPositive ? "text-emerald-600" : "text-red-600"}`}>
+            {cfPositive ? "+" : "-"}{formatJpy(Math.abs(monthlyCf))}/月
+          </span>
+        </div>
+        <div className="h-8 bg-gray-200 rounded-lg overflow-hidden">
+          <div
+            className={`h-full rounded-lg transition-all duration-500 flex items-center pr-2 ${cfPositive ? "bg-emerald-500" : "bg-red-500"}`}
+            style={{ width: `${cfPct}%`, minWidth: cfPct > 0 ? '3rem' : '0' }}
+          >
+            {cfPct >= 8 && (
+              <span className="text-xs text-white font-bold ml-auto">
+                {cfPositive ? "" : "-"}{cfPct.toFixed(0)}%
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ========== Big Metric Cell ========== */
+function BigMetricCell({ label, value, positive, primary, subtitle }: {
+  label: string; value: string; positive: boolean; primary?: boolean; subtitle?: string;
+}) {
+  return (
+    <div className={`rounded-xl px-3.5 py-3 border-2 transition-colors ${
+      primary
+        ? positive ? "bg-emerald-50 border-emerald-400" : "bg-red-50 border-red-400"
+        : positive ? "bg-white border-emerald-200" : "bg-white border-red-200"
+    }`}>
+      <div className="text-[10px] text-gray-500 tracking-wide font-medium">{label}</div>
+      <div className={`text-lg font-black mt-0.5 ${
+        positive ? "text-emerald-700" : "text-red-600"
+      }`}>{value}</div>
+      {subtitle && <div className={`text-[10px] font-medium mt-0.5 ${positive ? "text-emerald-500" : "text-red-400"}`}>{subtitle}</div>}
+    </div>
+  );
+}
+
 /* ========== Detail View ========== */
 function PropertyDetail({ item, onBack }: { item: RankingItem; onBack: () => void }) {
   const p = item.property;
@@ -634,32 +734,91 @@ function PropertyDetail({ item, onBack }: { item: RankingItem; onBack: () => voi
             />
           </div>
 
-          {/* 計算結果 */}
-          <div className="bg-gray-50 rounded-xl p-4 mb-4">
-            <div className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-3">収支詳細</div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-              <InfoCell label="表面利回り" value={`${grossYieldPct.toFixed(2)}%`} />
-              <InfoCell label="現況利回り" value={currentYieldPct != null ? `${currentYieldPct.toFixed(2)}%` : "—"} />
-              <InfoCell label="満室年間家賃" value={annualFullRent > 0 ? formatJpy(annualFullRent) : "—"} />
-              <InfoCell label="現況年間家賃" value={annualCurrentRent != null ? formatJpy(annualCurrentRent) : "—"} />
-              <InfoCell label="年間経費" value={formatJpy(annualExpense)} />
-              <InfoCell label="借入額" value={formatJpy(borrowAmount)} />
-              <InfoCell label="年間返済額" value={formatJpy(annualLoanPayment)} />
-              <InfoCell label="月額返済" value={formatJpy(monthlyLoanPayment)} />
-              <InfoCell label="返済比率" value={`${loanRepaymentRatioPct.toFixed(1)}%`} />
-              <InfoCell label="自己資金" value={formatJpy(selfFundingJpy)} />
-              <InfoCell label="初期費用" value={formatJpy(initialCostsJpy)} />
-              <InfoCell label="総投資額" value={formatJpy(totalInvestment)} />
+          {/* 月額キャッシュフロー ウォーターフォール */}
+          <CashFlowWaterfall
+            monthlyRent={annualFullRent / 12}
+            monthlyExpense={annualExpense / 12}
+            monthlyLoan={monthlyLoanPayment}
+            monthlyCf={monthlyFullCf}
+          />
+
+          {/* 判定バナー */}
+          <div className={`rounded-xl p-4 mb-5 border-2 ${
+            monthlyFullCf >= 0
+              ? "bg-emerald-50 border-emerald-300"
+              : "bg-red-50 border-red-300"
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className={`text-2xl ${monthlyFullCf >= 0 ? "" : ""}`}>
+                  {monthlyFullCf >= 0 ? "\u2705" : "\u274C"}
+                </span>
+                <div>
+                  <div className={`text-sm font-bold ${monthlyFullCf >= 0 ? "text-emerald-800" : "text-red-800"}`}>
+                    {monthlyFullCf >= 0 ? "毎月のCFはプラス — 回ります" : "毎月のCFはマイナス — 持ち出しが発生"}
+                  </div>
+                  <div className={`text-xs mt-0.5 ${monthlyFullCf >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                    {monthlyFullCf >= 0
+                      ? `毎月 ${formatJpy(monthlyFullCf)} の手残り（年間 ${formatJpy(annualFullCf)}）`
+                      : `毎月 ${formatJpy(Math.abs(monthlyFullCf))} の持ち出し（年間 ${formatJpy(Math.abs(annualFullCf))}）`
+                    }
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* CFハイライト */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <ResultCell label="満室CF（年）" value={formatJpy(annualFullCf)} warn={annualFullCf < 0} />
-            <ResultCell label="満室CF（月）" value={formatJpy(monthlyFullCf)} warn={monthlyFullCf < 0} />
-            <ResultCell label="現況CF（年）" value={annualCurrentCf != null ? formatJpy(annualCurrentCf) : "—"} warn={annualCurrentCf != null && annualCurrentCf < 0} />
-            <ResultCell label="CCR" value={ccrPct != null ? `${ccrPct.toFixed(1)}%` : "—"} />
+          {/* 主要指標カード */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
+            <BigMetricCell
+              label="満室CF/月"
+              value={formatJpy(monthlyFullCf)}
+              positive={monthlyFullCf >= 0}
+              primary
+            />
+            <BigMetricCell
+              label="満室CF/年"
+              value={formatJpy(annualFullCf)}
+              positive={annualFullCf >= 0}
+            />
+            <BigMetricCell
+              label="CCR"
+              value={ccrPct != null ? `${ccrPct.toFixed(1)}%` : "—"}
+              positive={ccrPct != null && ccrPct > 0}
+            />
+            <BigMetricCell
+              label="返済比率"
+              value={`${loanRepaymentRatioPct.toFixed(1)}%`}
+              positive={loanRepaymentRatioPct <= 50}
+              subtitle={loanRepaymentRatioPct <= 40 ? "安全圏" : loanRepaymentRatioPct <= 50 ? "やや高め" : "危険水域"}
+            />
           </div>
+
+          {/* 収支詳細（折りたたみ） */}
+          <details className="group">
+            <summary className="text-xs cursor-pointer font-medium hover:opacity-70 transition-opacity flex items-center gap-1" style={{ color: TEAL }}>
+              <svg className="w-3 h-3 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+              収支の内訳を詳しく見る
+            </summary>
+            <div className="bg-gray-50 rounded-xl p-4 mt-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                <InfoCell label="表面利回り" value={`${grossYieldPct.toFixed(2)}%`} />
+                <InfoCell label="現況利回り" value={currentYieldPct != null ? `${currentYieldPct.toFixed(2)}%` : "—"} />
+                <InfoCell label="満室年間家賃" value={annualFullRent > 0 ? formatJpy(annualFullRent) : "—"} />
+                <InfoCell label="現況年間家賃" value={annualCurrentRent != null ? formatJpy(annualCurrentRent) : "—"} />
+                <InfoCell label="年間経費" value={formatJpy(annualExpense)} />
+                <InfoCell label="借入額" value={formatJpy(borrowAmount)} />
+                <InfoCell label="年間返済額" value={formatJpy(annualLoanPayment)} />
+                <InfoCell label="月額返済" value={formatJpy(monthlyLoanPayment)} />
+                <InfoCell label="自己資金" value={formatJpy(selfFundingJpy)} />
+                <InfoCell label="初期費用" value={formatJpy(initialCostsJpy)} />
+                <InfoCell label="総投資額" value={formatJpy(totalInvestment)} />
+                {annualCurrentCf != null && (
+                  <InfoCell label="現況CF（年）" value={formatJpy(annualCurrentCf)} />
+                )}
+              </div>
+            </div>
+          </details>
         </section>
 
         {/* 積算評価 */}
