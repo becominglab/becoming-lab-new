@@ -1188,12 +1188,14 @@ function FilterPanel({
   wards,
   totalCount,
   filteredCount,
+  rankings,
 }: {
   filters: ScreeningFilters;
   onChange: (f: ScreeningFilters) => void;
   wards: string[];
   totalCount: number;
   filteredCount: number;
+  rankings: RankingItem[];
 }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<ScreeningFilters>({ ...filters });
@@ -1209,6 +1211,9 @@ function FilterPanel({
 
   // Check if draft differs from applied filters
   const hasDraftChanges = JSON.stringify(draft) !== JSON.stringify(filters);
+
+  // Real-time preview count based on draft filters
+  const draftFilteredCount = open ? applyFilters(rankings, draft).length : filteredCount;
 
   const toggleJudgment = (j: string) => {
     const next = draft.judgments.includes(j)
@@ -1552,14 +1557,10 @@ function FilterPanel({
             <button
               onClick={handleApply}
               className="w-full py-3 rounded-xl text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all cursor-pointer active:scale-[0.98]"
-              style={{ backgroundColor: TEAL }}
+              style={{ backgroundColor: draftFilteredCount === 0 ? "#9ca3af" : TEAL }}
+              disabled={draftFilteredCount === 0}
             >
-              この条件で検索
-              {isFilterActive(draft) && (
-                <span className="ml-2 text-white/80 text-xs font-normal">
-                  ({countActiveFilters(draft)}件の条件)
-                </span>
-              )}
+              この条件で検索（{draftFilteredCount}件ヒット）
             </button>
             {isFilterActive(draft) && (
               <button
@@ -1744,6 +1745,7 @@ export default function ScreeningPage() {
           wards={wards}
           totalCount={data.rankings.length}
           filteredCount={filtered.length}
+          rankings={data.rankings}
         />
 
         {/* フィルター適用時の結果件数表示 */}
