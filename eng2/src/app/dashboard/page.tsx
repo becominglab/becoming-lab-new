@@ -5,13 +5,13 @@ import Link from 'next/link'
 import {
   CalendarDays, Flame, TrendingUp, Clock, BookOpen,
   PenLine, BarChart3, Users, ChevronRight, Sparkles, Zap,
-  Upload, Target,
+  Upload, Target, Trophy, Star,
 } from 'lucide-react'
 import BottomNav from '@/components/BottomNav'
 import CelebrationModal from '@/components/CelebrationModal'
 import { dummyUser, dummyExamLogs, dummyCardReviews, dummyVocabLogs, studyDays, dummyEncouragementSettings } from '@/lib/data/dummy-data'
 import { encouragementMessages } from '@/lib/data/encouragement-messages'
-import { grammarCards } from '@/lib/data/grammar-cards'
+import { dummyTotalXp, calculateLevel, dummyMasteredTopics, allAchievements } from '@/lib/data/achievements'
 
 export default function DashboardPage() {
   const [showCelebration, setShowCelebration] = useState(false)
@@ -238,18 +238,69 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* 昨日より伸びた項目 */}
+        {/* 成長ハイライト */}
         <section>
-          <h2 className="text-sm font-bold text-gray-700 mb-3">最近の成長</h2>
-          <div className="bg-success-50 rounded-2xl p-4 border border-success-100">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp size={16} className="text-success-600" />
-              <p className="text-sm font-medium text-success-600">語彙力がアップ！</p>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-gray-700">成長ハイライト</h2>
+            <Link href="/growth" className="text-xs text-primary-500 flex items-center gap-0.5">
+              詳しく見る <ChevronRight size={12} />
+            </Link>
+          </div>
+
+          {/* レベル & XP ミニカード */}
+          <Link href="/growth" className="block mb-3">
+            <div className="bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 rounded-2xl p-4 text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <span className="text-2xl font-black">{calculateLevel(dummyTotalXp).level}</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-white/80">Lv.{calculateLevel(dummyTotalXp).level}</p>
+                  <p className="text-sm font-bold">{calculateLevel(dummyTotalXp).title}</p>
+                  <div className="w-full bg-white/30 rounded-full h-1.5 mt-1">
+                    <div
+                      className="bg-white h-1.5 rounded-full"
+                      style={{ width: `${Math.round((calculateLevel(dummyTotalXp).xp / calculateLevel(dummyTotalXp).nextLevelXp) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg font-bold">{dummyTotalXp}</p>
+                  <p className="text-[10px] text-white/70">XP</p>
+                </div>
+              </div>
             </div>
-            <p className="text-xs text-gray-600">
-              今週の語彙正答率が先週より8%上がりました。
-              {grammarCards.filter(c => c.category === '時制').length > 0 && '時制の理解も着実に進んでいます。'}
-            </p>
+          </Link>
+
+          {/* できるようになったこと */}
+          {dummyMasteredTopics.length > 0 && (
+            <div className="bg-green-50 rounded-2xl p-4 border border-green-100 mb-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Star size={16} className="text-green-500" />
+                <p className="text-sm font-medium text-green-700">できるようになったこと</p>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {dummyMasteredTopics.map(t => (
+                  <span key={t.category} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                    {t.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 最近のバッジ */}
+          <div className="flex gap-2">
+            {allAchievements
+              .filter(a => a.unlockedAt)
+              .sort((a, b) => new Date(b.unlockedAt!).getTime() - new Date(a.unlockedAt!).getTime())
+              .slice(0, 4)
+              .map(badge => (
+                <div key={badge.id} className="flex-1 bg-yellow-50 rounded-xl p-2 text-center border border-yellow-100">
+                  <span className="text-lg">{badge.icon}</span>
+                  <p className="text-[9px] text-gray-600 mt-0.5 line-clamp-1">{badge.title}</p>
+                </div>
+              ))}
           </div>
         </section>
 
@@ -304,6 +355,14 @@ export default function DashboardPage() {
               <Sparkles size={20} className="text-purple-500 mb-2" />
               <p className="text-sm font-medium text-gray-700">語彙20問</p>
               <p className="text-[10px] text-gray-400">デイリーチャレンジ</p>
+            </Link>
+            <Link
+              href="/growth"
+              className="bg-white rounded-xl p-4 border border-gray-100 hover:border-gray-200 transition-colors"
+            >
+              <Trophy size={20} className="text-yellow-500 mb-2" />
+              <p className="text-sm font-medium text-gray-700">成長きろく</p>
+              <p className="text-[10px] text-gray-400">バッジ・レベル・実績</p>
             </Link>
           </div>
         </section>
