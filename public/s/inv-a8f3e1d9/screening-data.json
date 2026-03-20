@@ -1,6 +1,6 @@
 {
   "date": "2026-03-20",
-  "generatedAt": "2026-03-20T05:16:22.057Z",
+  "generatedAt": "2026-03-20T06:12:14.495Z",
   "count": 10,
   "rankings": [
     {
@@ -22,6 +22,7 @@
         "buildingAreaSqm": 205.98,
         "totalFloors": 2,
         "totalUnits": 4,
+        "imageUrl": "https://img.rakumachi.jp/c/property/~US8IzAx5dfzpgCtCslccQ__/111303460_x4y4",
         "sourceSite": "rakumachi",
         "sourceUrl": "https://www.rakumachi.jp/syuuekibukken/kanto/tokyo/dim1002/3571051/show.html",
         "price": 63000000,
@@ -452,6 +453,7 @@
         "buildingAreaSqm": 126.36,
         "totalFloors": 2,
         "totalUnits": 8,
+        "imageUrl": "https://img.rakumachi.jp/c/property/IBHTRx2Bg~IQboz5lGhUfw__/111354672_x4y4",
         "sourceSite": "rakumachi",
         "sourceUrl": "https://www.rakumachi.jp/syuuekibukken/kanto/tokyo/dim1002/3572391/show.html",
         "price": 78800000,
@@ -882,6 +884,7 @@
         "buildingAreaSqm": 97.44,
         "totalFloors": 2,
         "totalUnits": 10,
+        "imageUrl": "https://img.rakumachi.jp/c/property/Cc~l9IUZ8OYAG28blCz1Og__/111273239_x4y4",
         "sourceSite": "rakumachi",
         "sourceUrl": "https://www.rakumachi.jp/syuuekibukken/kanto/tokyo/dim1002/3570458/show.html",
         "price": 98000000,
@@ -1311,6 +1314,7 @@
         "buildingAreaSqm": 122.3,
         "totalFloors": 12,
         "totalUnits": 41,
+        "imageUrl": "https://img.rakumachi.jp/c/property/I0cAxsyXgLeTc91JlnerKg__/111250610_x4y4",
         "sourceSite": "rakumachi",
         "sourceUrl": "https://www.rakumachi.jp/syuuekibukken/kanto/tokyo/dim2003/3570029/show.html",
         "price": 74000000,
@@ -1742,6 +1746,7 @@
         "buildingAreaSqm": 200,
         "totalFloors": 3,
         "totalUnits": 8,
+        "imageUrl": "https://img.rakumachi.jp/c/property/jO3sG3GkFI6Tirhvzl36kQ__/111385797_x4y4",
         "sourceSite": "rakumachi",
         "sourceUrl": "https://www.rakumachi.jp/syuuekibukken/kanto/tokyo/dim1001/3570953/show.html",
         "price": 70000000,
@@ -2155,435 +2160,6 @@
     },
     {
       "rank": 6,
-      "canonicalId": "rakumachi-3570331",
-      "propertyName": "足立区 S 14戸 築2006年 日暮里舎人ライナー 高野駅",
-      "ward": "足立区",
-      "scoreTotal": 58.61676642470545,
-      "buyJudgment": "watch",
-      "isNewEntry": true,
-      "rankChange": null,
-      "priceChange": null,
-      "property": {
-        "address": "東京都足立区興野",
-        "structureType": "S",
-        "builtYear": 2006,
-        "builtMonth": 12,
-        "landAreaSqm": 332.89,
-        "buildingAreaSqm": 278.23,
-        "totalFloors": 3,
-        "totalUnits": 14,
-        "sourceSite": "rakumachi",
-        "sourceUrl": "https://www.rakumachi.jp/syuuekibukken/kanto/tokyo/dim1002/3570331/show.html",
-        "price": 116000000,
-        "annualFullRentJpy": 8177999.999999999,
-        "loanInterestPct": 1.5,
-        "loanYears": 30,
-        "roadValueJpyPerSqm": 300000,
-        "station1": {
-          "name": "日暮里舎人ライナー 高野",
-          "walkMin": 12
-        }
-      },
-      "finance": {
-        "grossYieldPct": 7.049999999999999,
-        "currentYieldPct": null,
-        "annualExpenseJpy": 1308479.9999999998,
-        "annualLoanPaymentJpy": 4323665.996613223,
-        "monthlyLoanPaymentJpy": 360305.4997177686,
-        "annualFullCfJpy": 2545854.003386776,
-        "annualCurrentCfJpy": null,
-        "monthlyFullCfJpy": 212154.50028223134,
-        "monthlyCurrentCfJpy": null,
-        "fullCfPct": 31.13052095117115,
-        "currentCfPct": null,
-        "ccrPct": 21.947017270575657,
-        "loanRepaymentRatioPct": 52.86947904882885,
-        "borrowAmount": 104400000
-      },
-      "valuation": {
-        "landValuationJpy": 99867000,
-        "buildingValuationJpy": 22094735.29411765,
-        "totalValuationJpy": 121961735.29411764,
-        "valuationRatioPct": 105.13942697768763,
-        "durableYears": 34,
-        "ageYears": 19,
-        "remainingYears": 15
-      },
-      "safety": {
-        "safeMonthlyRentJpy": 545199.9999999999,
-        "safeMonthlyExpenseJpy": 68149.99999999999,
-        "safeMonthlyLoanJpy": 560441.774424674,
-        "safeMonthlyCfJpy": -83391.7744246741,
-        "isSafe": false
-      },
-      "scores": {
-        "location": 9.4,
-        "profitability": 6.615790050296555,
-        "financing": 9.72225297015358,
-        "risk": 11.578723404255319,
-        "valueCreation": 9.5,
-        "exit": 6.8,
-        "vision": 5,
-        "total": 58.61676642470545
-      },
-      "warningFlags": [
-        "unknown_road_access",
-        "unknown_current_rent",
-        "insufficient_rent_roll"
-      ],
-      "specialOpportunityFlag": false,
-      "scoringDetails": {
-        "立地_駅徒歩": "12分 → 1.6/6点",
-        "立地_路線数": "1路線 → 0.0/3点",
-        "立地_区人気度": "足立区(6/10) → 3.0/5点",
-        "立地_単身需要": "6/10 → 2.4/4点",
-        "立地_乗降者数": "0人 → 0.0/3点",
-        "立地_賃貸需要": "2.4/4点",
-        "収益_表面利回り": "7.0% → 1.4/4点",
-        "収益_現況利回り": "不明 → 0点",
-        "収益_満室CF": "年255万円 → 3.0/3点",
-        "収益_CCR": "21.9% → 2.0/2点",
-        "収益_安全余力": "月-83千円 (要注意) → 0.2/3点",
-        "融資_積算比率": "105% → 3.7/4点",
-        "融資_土地値比率": "86% → 3.0/3点",
-        "融資_再建築": "不明 → 1.5/3点",
-        "融資_接道": "不明 → 0.6/2点",
-        "融資_価格帯": "11600万円 → 0.9/3点",
-        "リスク_築年数": "築19年 → 2.0/3点",
-        "リスク_構造": "S → 1.5/2点",
-        "リスク_空室": "入居率85% → 2.1/3点",
-        "リスク_法的": "問題なし → 3.0/3点",
-        "リスク_修繕": "1.6/2点",
-        "リスク_災害": "簡易判定 → 1.4/2点",
-        "創造_家賃増額": "情報不足 → 1.5/3点",
-        "創造_空室改善": "0戸空き → 0.0/3点",
-        "創造_外装改善": "築19年 → 2.0/2点",
-        "創造_間取り変更": "S → 1.0/2点",
-        "創造_ぶち抜き": "14戸/S → 3.0/3点",
-        "創造_オーナー住戸": "2.0/2点",
-        "出口_売却可能性": "2.1/3点",
-        "出口_エリア人気": "足立区(6/10) → 1.2/2点",
-        "出口_土地値": "86% → 2.0/2点",
-        "出口_買い手裾野": "11600万円 → 1.5/3点",
-        "ビジョン_空間転用": "14戸 → 2.0/2点",
-        "ビジョン_自宅兼投資": "1.0/1点",
-        "ビジョン_ブランド": "S → 1.0/1点",
-        "ビジョン_コミュニティ": "1.0/1点"
-      },
-      "sensitivity": [
-        {
-          "parameterName": "price",
-          "deltaValue": -5000000,
-          "resultCfJpy": 2752926.129661356,
-          "resultYieldPct": 7.3675675675675665,
-          "resultCcrPct": 23.732121807425482
-        },
-        {
-          "parameterName": "price",
-          "deltaValue": -4000000,
-          "resultCfJpy": 2711511.70440644,
-          "resultYieldPct": 7.301785714285714,
-          "resultCcrPct": 23.375100900055514
-        },
-        {
-          "parameterName": "price",
-          "deltaValue": -3000000,
-          "resultCfJpy": 2670097.2791515244,
-          "resultYieldPct": 7.23716814159292,
-          "resultCcrPct": 23.018079992685557
-        },
-        {
-          "parameterName": "price",
-          "deltaValue": -2000000,
-          "resultCfJpy": 2628682.8538966086,
-          "resultYieldPct": 7.173684210526315,
-          "resultCcrPct": 22.66105908531559
-        },
-        {
-          "parameterName": "price",
-          "deltaValue": -1000000,
-          "resultCfJpy": 2587268.4286416927,
-          "resultYieldPct": 7.111304347826087,
-          "resultCcrPct": 22.304038177945625
-        },
-        {
-          "parameterName": "price",
-          "deltaValue": 0,
-          "resultCfJpy": 2545854.003386776,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 21.947017270575657
-        },
-        {
-          "parameterName": "price",
-          "deltaValue": 1000000,
-          "resultCfJpy": 2504439.578131861,
-          "resultYieldPct": 6.989743589743588,
-          "resultCcrPct": 21.5899963632057
-        },
-        {
-          "parameterName": "price",
-          "deltaValue": 2000000,
-          "resultCfJpy": 2463025.1528769443,
-          "resultYieldPct": 6.93050847457627,
-          "resultCcrPct": 21.232975455835724
-        },
-        {
-          "parameterName": "price",
-          "deltaValue": 3000000,
-          "resultCfJpy": 2421610.7276220284,
-          "resultYieldPct": 6.872268907563024,
-          "resultCcrPct": 20.87595454846576
-        },
-        {
-          "parameterName": "price",
-          "deltaValue": 4000000,
-          "resultCfJpy": 2380196.3023671126,
-          "resultYieldPct": 6.814999999999999,
-          "resultCcrPct": 20.5189336410958
-        },
-        {
-          "parameterName": "price",
-          "deltaValue": 5000000,
-          "resultCfJpy": 2338781.8771121968,
-          "resultYieldPct": 6.7586776859504125,
-          "resultCcrPct": 20.161912733725835
-        },
-        {
-          "parameterName": "interest",
-          "deltaValue": -0.25,
-          "resultCfJpy": 2694542.903815608,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 23.22881813634145
-        },
-        {
-          "parameterName": "interest",
-          "deltaValue": -0.2,
-          "resultCfJpy": 2665061.4478272432,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 22.97466765368313
-        },
-        {
-          "parameterName": "interest",
-          "deltaValue": -0.15,
-          "resultCfJpy": 2635451.666823202,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 22.719410920889672
-        },
-        {
-          "parameterName": "interest",
-          "deltaValue": -0.1,
-          "resultCfJpy": 2605713.721029776,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 22.463049319222208
-        },
-        {
-          "parameterName": "interest",
-          "deltaValue": -0.05,
-          "resultCfJpy": 2575847.776159416,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 22.205584277236344
-        },
-        {
-          "parameterName": "interest",
-          "deltaValue": 0,
-          "resultCfJpy": 2545854.003386776,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 21.947017270575657
-        },
-        {
-          "parameterName": "interest",
-          "deltaValue": 0.05,
-          "resultCfJpy": 2515732.579317537,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 21.687349821702906
-        },
-        {
-          "parameterName": "interest",
-          "deltaValue": 0.1,
-          "resultCfJpy": 2485483.6859628605,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 21.426583499679833
-        },
-        {
-          "parameterName": "interest",
-          "deltaValue": 0.15,
-          "resultCfJpy": 2455107.510709268,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 21.164719919907483
-        },
-        {
-          "parameterName": "interest",
-          "deltaValue": 0.2,
-          "resultCfJpy": 2424604.246291141,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 20.90176074388915
-        },
-        {
-          "parameterName": "interest",
-          "deltaValue": 0.25,
-          "resultCfJpy": 2393974.090756881,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 20.63770767893863
-        },
-        {
-          "parameterName": "years",
-          "deltaValue": -5,
-          "resultCfJpy": 1859117.7049109302,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 16.026876766473535
-        },
-        {
-          "parameterName": "years",
-          "deltaValue": -4,
-          "resultCfJpy": 2017891.3878864832,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 17.39561541281451
-        },
-        {
-          "parameterName": "years",
-          "deltaValue": -3,
-          "resultCfJpy": 2164761.32992776,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 18.66173560282552
-        },
-        {
-          "parameterName": "years",
-          "deltaValue": -2,
-          "resultCfJpy": 2301003.0951784616,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 19.836233579124666
-        },
-        {
-          "parameterName": "years",
-          "deltaValue": -1,
-          "resultCfJpy": 2427716.313615812,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 20.92858891048114
-        },
-        {
-          "parameterName": "years",
-          "deltaValue": 0,
-          "resultCfJpy": 2545854.003386776,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 21.947017270575657
-        },
-        {
-          "parameterName": "years",
-          "deltaValue": 1,
-          "resultCfJpy": 2656246.217852586,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 22.898674291832638
-        },
-        {
-          "parameterName": "years",
-          "deltaValue": 2,
-          "resultCfJpy": 2759619.2588116564,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 23.789821196652213
-        },
-        {
-          "parameterName": "years",
-          "deltaValue": 3,
-          "resultCfJpy": 2856611.396408501,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 24.625960313866386
-        },
-        {
-          "parameterName": "years",
-          "deltaValue": 4,
-          "resultCfJpy": 2947785.814940367,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 25.4119466805204
-        },
-        {
-          "parameterName": "years",
-          "deltaValue": 5,
-          "resultCfJpy": 3033641.3393820487,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 26.15208051191421
-        },
-        {
-          "parameterName": "self_funding",
-          "deltaValue": -5000000,
-          "resultCfJpy": 2338781.8771121968,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 35.436089047154496
-        },
-        {
-          "parameterName": "self_funding",
-          "deltaValue": -4000000,
-          "resultCfJpy": 2380196.3023671126,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 31.318372399567274
-        },
-        {
-          "parameterName": "self_funding",
-          "deltaValue": -3000000,
-          "resultCfJpy": 2421610.7276220284,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 28.15826427467475
-        },
-        {
-          "parameterName": "self_funding",
-          "deltaValue": -2000000,
-          "resultCfJpy": 2463025.1528769443,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 25.656512009134836
-        },
-        {
-          "parameterName": "self_funding",
-          "deltaValue": -1000000,
-          "resultCfJpy": 2504439.578131861,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 23.626788472942085
-        },
-        {
-          "parameterName": "self_funding",
-          "deltaValue": 0,
-          "resultCfJpy": 2545854.003386776,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 21.947017270575657
-        },
-        {
-          "parameterName": "self_funding",
-          "deltaValue": 1000000,
-          "resultCfJpy": 2587268.4286416927,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 20.533876417791213
-        },
-        {
-          "parameterName": "self_funding",
-          "deltaValue": 2000000,
-          "resultCfJpy": 2628682.8538966086,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 19.328550396298596
-        },
-        {
-          "parameterName": "self_funding",
-          "deltaValue": 3000000,
-          "resultCfJpy": 2670097.2791515244,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 18.288337528435097
-        },
-        {
-          "parameterName": "self_funding",
-          "deltaValue": 4000000,
-          "resultCfJpy": 2711511.70440644,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 17.381485284656666
-        },
-        {
-          "parameterName": "self_funding",
-          "deltaValue": 5000000,
-          "resultCfJpy": 2752926.129661356,
-          "resultYieldPct": 7.049999999999999,
-          "resultCcrPct": 16.58389234735757
-        }
-      ],
-      "explanation": "【観察】総合スコア 59点\n\n▼ 主な加点理由\n  - 満室CF年255万円で手残りが確保できる\n  - 積算比率105%で融資評価が高い\n  - 土地値が価格の86%を占め、出口の下支えがある\n  - 14戸で管理効率が良く、空室リスクが分散される\n  - オーナー住戸化やコミュニティ拠点としての転用余地がある\n\n▼ 主な懸念\n  - 接道状況が不明。再建築可否の確認が必要\n  - 現況家賃が不明。レントロールの確認が必須\n  - 入居状況の詳細が不明。精査が必要\n  - 安全余力テスト不通過（月-83千円）。金利上昇リスクに注意\n\n▼ ひとこと\n  現状の数字では積極的に動く水準にない。条件変更（値下げ・空室改善）があれば再評価。\n\n▼ こんな人向き\n  自宅兼投資やコミュニティ拠点など、投資+ライフスタイルを両立させたい人。"
-    },
-    {
-      "rank": 7,
       "canonicalId": "rakumachi-3570952",
       "propertyName": "板橋区 RC 9戸 築1988年 蓮根駅",
       "ward": "板橋区",
@@ -2601,6 +2177,7 @@
         "buildingAreaSqm": 436.12,
         "totalFloors": 6,
         "totalUnits": 9,
+        "imageUrl": "https://img.rakumachi.jp/c/property/CyADhwG3lBY21utCsuI0ZA__/111385788_x4y4",
         "sourceSite": "rakumachi",
         "sourceUrl": "https://www.rakumachi.jp/syuuekibukken/kanto/tokyo/dim1001/3570952/show.html",
         "price": 85000000,
@@ -3013,7 +2590,7 @@
       "explanation": "【観察】総合スコア 58点\n\n▼ 主な加点理由\n  - 表面利回り8.4%で23区内としては高水準\n  - 満室CF年284万円で手残りが確保できる\n  - 金利5%・家賃80%のストレステストでもCF黒字を維持\n  - 積算比率103%で融資評価が高い\n  - 土地値が価格の81%を占め、出口の下支えがある\n  - 9戸で管理効率が良く、空室リスクが分散される\n  - オーナー住戸化やコミュニティ拠点としての転用余地がある\n\n▼ 主な懸念\n  - 接道状況が不明。再建築可否の確認が必要\n  - 現況家賃が不明。レントロールの確認が必須\n  - 入居状況の詳細が不明。精査が必要\n  - 築37年で大規模修繕の可能性。修繕履歴の確認を推奨\n\n▼ ひとこと\n  現状の数字では積極的に動く水準にない。条件変更（値下げ・空室改善）があれば再評価。\n\n▼ こんな人向き\n  自宅兼投資やコミュニティ拠点など、投資+ライフスタイルを両立させたい人。"
     },
     {
-      "rank": 8,
+      "rank": 7,
       "canonicalId": "rakumachi-3569920",
       "propertyName": "新宿区 S 60戸 築1969年 下落合駅",
       "ward": "新宿区",
@@ -3030,6 +2607,7 @@
         "buildingAreaSqm": 38.67,
         "totalFloors": 11,
         "totalUnits": 60,
+        "imageUrl": "https://img.rakumachi.jp/c/property/56MElWgzpn3Ohzd6iQh-rQ__/111243436_x4y4",
         "sourceSite": "rakumachi",
         "sourceUrl": "https://www.rakumachi.jp/syuuekibukken/kanto/tokyo/dim2001/3569920/show.html",
         "price": 16500000,
@@ -3415,7 +2993,7 @@
       "explanation": "【観察】総合スコア 58点\n\n▼ 主な加点理由\n  - 駅徒歩2分と駅近で空室リスクが低い\n  - 表面利回り8.0%で23区内としては高水準\n  - 60戸で管理効率が良く、空室リスクが分散される\n  - オーナー住戸化やコミュニティ拠点としての転用余地がある\n\n▼ 主な懸念\n  - 接道状況が不明。再建築可否の確認が必要\n  - 現況家賃が不明。レントロールの確認が必須\n  - 積算評価が物件価格を大きく下回り、融資が通りにくい可能性\n  - 入居状況の詳細が不明。精査が必要\n  - 安全余力テスト不通過（月-3千円）。金利上昇リスクに注意\n  - 築56年で大規模修繕の可能性。修繕履歴の確認を推奨\n\n▼ ひとこと\n  現状の数字では積極的に動く水準にない。条件変更（値下げ・空室改善）があれば再評価。\n\n▼ こんな人向き\n  1棟目として始めたい初心者〜2棟目の買い増し層。融資のハードルが低い価格帯。"
     },
     {
-      "rank": 9,
+      "rank": 8,
       "canonicalId": "rakumachi-3572351",
       "propertyName": "中野区 W 築1960年 幡ヶ谷駅",
       "ward": "中野区",
@@ -3837,7 +3415,7 @@
       "explanation": "【観察】総合スコア 58点\n\n▼ 主な加点理由\n  - 表面利回り18.4%で23区内としては高水準\n  - 満室CF年503万円で手残りが確保できる\n  - 金利5%・家賃80%のストレステストでもCF黒字を維持\n  - 積算比率94%で融資評価が高い\n  - 土地値が価格の94%を占め、出口の下支えがある\n\n▼ 主な懸念\n  - 接道状況が不明。再建築可否の確認が必要\n  - 現況家賃が不明。レントロールの確認が必須\n  - 入居状況の詳細が不明。精査が必要\n  - 築65年で大規模修繕の可能性。修繕履歴の確認を推奨\n  - 木造築40年超。耐震・劣化の確認が必須\n\n▼ ひとこと\n  現状の数字では積極的に動く水準にない。条件変更（値下げ・空室改善）があれば再評価。\n\n▼ こんな人向き\n  堅実にCFを積み上げたい投資家。特別な戦略は不要だが、基本に忠実な運用が求められる。"
     },
     {
-      "rank": 10,
+      "rank": 9,
       "canonicalId": "rakumachi-3572781",
       "propertyName": "墨田区 W 12戸 築2015年 小村井駅",
       "ward": "墨田区",
@@ -3855,6 +3433,7 @@
         "buildingAreaSqm": 199.84,
         "totalFloors": 2,
         "totalUnits": 12,
+        "imageUrl": "https://img.rakumachi.jp/c/property/d868entGfq-7SHKwu831Bg__/111383209_x4y4",
         "sourceSite": "rakumachi",
         "sourceUrl": "https://www.rakumachi.jp/syuuekibukken/kanto/tokyo/dim1002/3572781/show.html",
         "price": 148800000,
@@ -4265,6 +3844,435 @@
         }
       ],
       "explanation": "【観察】総合スコア 57点\n\n▼ 主な加点理由\n  - 駅徒歩7分で通勤利便性が良好\n  - 満室CF年195万円で手残りが確保できる\n  - 土地値が価格の66%を占め、出口の下支えがある\n  - 12戸で管理効率が良く、空室リスクが分散される\n  - オーナー住戸化やコミュニティ拠点としての転用余地がある\n\n▼ 主な懸念\n  - 接道状況が不明。再建築可否の確認が必要\n  - 現況家賃が不明。レントロールの確認が必須\n  - 入居状況の詳細が不明。精査が必要\n  - 安全余力テスト不通過（月-198千円）。金利上昇リスクに注意\n\n▼ ひとこと\n  現状の数字では積極的に動く水準にない。条件変更（値下げ・空室改善）があれば再評価。\n\n▼ こんな人向き\n  自宅兼投資やコミュニティ拠点など、投資+ライフスタイルを両立させたい人。"
+    },
+    {
+      "rank": 10,
+      "canonicalId": "rakumachi-3571789",
+      "propertyName": "新宿区 S 築1988年 四ツ谷駅",
+      "ward": "新宿区",
+      "scoreTotal": 56.67022201665125,
+      "buyJudgment": "watch",
+      "isNewEntry": true,
+      "rankChange": null,
+      "priceChange": null,
+      "property": {
+        "address": "東京都新宿区四谷坂町",
+        "structureType": "S",
+        "builtYear": 1988,
+        "builtMonth": 10,
+        "landAreaSqm": 38.67,
+        "buildingAreaSqm": 80.86,
+        "totalFloors": 3,
+        "sourceSite": "rakumachi",
+        "sourceUrl": "https://www.rakumachi.jp/syuuekibukken/kanto/tokyo/dim1009/3571789/show.html",
+        "price": 92000000,
+        "annualFullRentJpy": 20028400,
+        "loanInterestPct": 1.5,
+        "loanYears": 30,
+        "roadValueJpyPerSqm": 1200000,
+        "station1": {
+          "line": "東京メトロ丸ノ内線",
+          "name": "四ツ谷",
+          "walkMin": 7
+        }
+      },
+      "finance": {
+        "grossYieldPct": 21.77,
+        "currentYieldPct": null,
+        "annualExpenseJpy": 3204544,
+        "annualLoanPaymentJpy": 3429114.4111070386,
+        "monthlyLoanPaymentJpy": 285759.5342589199,
+        "annualFullCfJpy": 13394741.58889296,
+        "annualCurrentCfJpy": null,
+        "monthlyFullCfJpy": 1116228.46574108,
+        "monthlyCurrentCfJpy": null,
+        "fullCfPct": 66.87874013347528,
+        "currentCfPct": null,
+        "ccrPct": 145.59501727057565,
+        "loanRepaymentRatioPct": 17.121259866524728,
+        "borrowAmount": 82800000
+      },
+      "valuation": {
+        "landValuationJpy": 46404000,
+        "buildingValuationJpy": 0,
+        "totalValuationJpy": 46404000,
+        "valuationRatioPct": 50.43913043478261,
+        "durableYears": 34,
+        "ageYears": 37,
+        "remainingYears": 0
+      },
+      "safety": {
+        "safeMonthlyRentJpy": 1335226.6666666667,
+        "safeMonthlyExpenseJpy": 166903.33333333334,
+        "safeMonthlyLoanJpy": 444488.30385405174,
+        "safeMonthlyCfJpy": 723835.0294792817,
+        "isSafe": true
+      },
+      "scores": {
+        "location": 15.899999999999999,
+        "profitability": 12,
+        "financing": 6.022869565217391,
+        "risk": 9.429787234042553,
+        "valueCreation": 4.5,
+        "exit": 7.517565217391304,
+        "vision": 1.3,
+        "total": 56.67022201665125
+      },
+      "warningFlags": [
+        "unknown_road_access",
+        "unknown_current_rent",
+        "insufficient_rent_roll"
+      ],
+      "specialOpportunityFlag": false,
+      "scoringDetails": {
+        "立地_駅徒歩": "7分 → 3.6/6点",
+        "立地_路線数": "1路線 → 0.0/3点",
+        "立地_区人気度": "新宿区(9/10) → 4.5/5点",
+        "立地_単身需要": "10/10 → 4.0/4点",
+        "立地_乗降者数": "0人 → 0.0/3点",
+        "立地_賃貸需要": "3.8/4点",
+        "収益_表面利回り": "21.8% → 4.0/4点",
+        "収益_現況利回り": "不明 → 0点",
+        "収益_満室CF": "年1339万円 → 3.0/3点",
+        "収益_CCR": "145.6% → 2.0/2点",
+        "収益_安全余力": "月724千円 (安全) → 3.0/3点",
+        "融資_積算比率": "50% → 0.6/4点",
+        "融資_土地値比率": "50% → 1.2/3点",
+        "融資_再建築": "不明 → 1.5/3点",
+        "融資_接道": "不明 → 0.6/2点",
+        "融資_価格帯": "9200万円 → 2.1/3点",
+        "リスク_築年数": "築37年 → 0.8/3点",
+        "リスク_構造": "S → 1.5/2点",
+        "リスク_空室": "入居率85% → 2.1/3点",
+        "リスク_法的": "問題なし → 3.0/3点",
+        "リスク_修繕": "0.6/2点",
+        "リスク_災害": "簡易判定 → 1.4/2点",
+        "創造_家賃増額": "情報不足 → 1.5/3点",
+        "創造_空室改善": "0戸空き → 0.0/3点",
+        "創造_外装改善": "築37年 → 2.0/2点",
+        "創造_間取り変更": "S → 1.0/2点",
+        "創造_ぶち抜き": "0戸/S → 0.0/3点",
+        "創造_オーナー住戸": "0.0/2点",
+        "出口_売却可能性": "3.0/3点",
+        "出口_エリア人気": "新宿区(9/10) → 1.8/2点",
+        "出口_土地値": "50% → 1.2/2点",
+        "出口_買い手裾野": "9200万円 → 1.5/3点",
+        "ビジョン_空間転用": "0戸 → 0.0/2点",
+        "ビジョン_自宅兼投資": "0.0/1点",
+        "ビジョン_ブランド": "S → 1.0/1点",
+        "ビジョン_コミュニティ": "0.3/1点"
+      },
+      "sensitivity": [
+        {
+          "parameterName": "price",
+          "deltaValue": -5000000,
+          "resultCfJpy": 13601813.715167541,
+          "resultYieldPct": 23.02114942528736,
+          "resultCcrPct": 147.8458012518211
+        },
+        {
+          "parameterName": "price",
+          "deltaValue": -4000000,
+          "resultCfJpy": 13560399.289912626,
+          "resultYieldPct": 22.759545454545453,
+          "resultCcrPct": 147.39564445557204
+        },
+        {
+          "parameterName": "price",
+          "deltaValue": -3000000,
+          "resultCfJpy": 13518984.86465771,
+          "resultYieldPct": 22.5038202247191,
+          "resultCcrPct": 146.94548765932294
+        },
+        {
+          "parameterName": "price",
+          "deltaValue": -2000000,
+          "resultCfJpy": 13477570.439402793,
+          "resultYieldPct": 22.253777777777778,
+          "resultCcrPct": 146.49533086307383
+        },
+        {
+          "parameterName": "price",
+          "deltaValue": -1000000,
+          "resultCfJpy": 13436156.014147878,
+          "resultYieldPct": 22.00923076923077,
+          "resultCcrPct": 146.04517406682476
+        },
+        {
+          "parameterName": "price",
+          "deltaValue": 0,
+          "resultCfJpy": 13394741.58889296,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 145.59501727057565
+        },
+        {
+          "parameterName": "price",
+          "deltaValue": 1000000,
+          "resultCfJpy": 13353327.163638044,
+          "resultYieldPct": 21.535913978494623,
+          "resultCcrPct": 145.14486047432658
+        },
+        {
+          "parameterName": "price",
+          "deltaValue": 2000000,
+          "resultCfJpy": 13311912.73838313,
+          "resultYieldPct": 21.306808510638298,
+          "resultCcrPct": 144.69470367807747
+        },
+        {
+          "parameterName": "price",
+          "deltaValue": 3000000,
+          "resultCfJpy": 13270498.313128214,
+          "resultYieldPct": 21.082526315789472,
+          "resultCcrPct": 144.24454688182843
+        },
+        {
+          "parameterName": "price",
+          "deltaValue": 4000000,
+          "resultCfJpy": 13229083.887873298,
+          "resultYieldPct": 20.862916666666667,
+          "resultCcrPct": 143.79439008557932
+        },
+        {
+          "parameterName": "price",
+          "deltaValue": 5000000,
+          "resultCfJpy": 13187669.46261838,
+          "resultYieldPct": 20.647835051546394,
+          "resultCcrPct": 143.34423328933025
+        },
+        {
+          "parameterName": "interest",
+          "deltaValue": -0.25,
+          "resultCfJpy": 13512667.268543415,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 146.87681813634146
+        },
+        {
+          "parameterName": "interest",
+          "deltaValue": -0.2,
+          "resultCfJpy": 13489285.42413885,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 146.62266765368315
+        },
+        {
+          "parameterName": "interest",
+          "deltaValue": -0.15,
+          "resultCfJpy": 13465801.80472185,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 146.36741092088968
+        },
+        {
+          "parameterName": "interest",
+          "deltaValue": -0.1,
+          "resultCfJpy": 13442216.537368445,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 146.11104931922222
+        },
+        {
+          "parameterName": "interest",
+          "deltaValue": -0.05,
+          "resultCfJpy": 13418529.753505744,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 145.85358427723637
+        },
+        {
+          "parameterName": "interest",
+          "deltaValue": 0,
+          "resultCfJpy": 13394741.58889296,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 145.59501727057565
+        },
+        {
+          "parameterName": "interest",
+          "deltaValue": 0.05,
+          "resultCfJpy": 13370852.183596667,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 145.33534982170292
+        },
+        {
+          "parameterName": "interest",
+          "deltaValue": 0.1,
+          "resultCfJpy": 13346861.681970546,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 145.07458349967985
+        },
+        {
+          "parameterName": "interest",
+          "deltaValue": 0.15,
+          "resultCfJpy": 13322770.23263149,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 144.8127199199075
+        },
+        {
+          "parameterName": "interest",
+          "deltaValue": 0.2,
+          "resultCfJpy": 13298577.988437802,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 144.54976074388915
+        },
+        {
+          "parameterName": "interest",
+          "deltaValue": 0.25,
+          "resultCfJpy": 13274285.106462354,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 144.28570767893862
+        },
+        {
+          "parameterName": "years",
+          "deltaValue": -5,
+          "resultCfJpy": 12850088.662515566,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 139.67487676647355
+        },
+        {
+          "parameterName": "years",
+          "deltaValue": -4,
+          "resultCfJpy": 12976012.617978936,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 141.04361541281452
+        },
+        {
+          "parameterName": "years",
+          "deltaValue": -3,
+          "resultCfJpy": 13092495.67545995,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 142.30973560282553
+        },
+        {
+          "parameterName": "years",
+          "deltaValue": -2,
+          "resultCfJpy": 13200549.48927947,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 143.48423357912466
+        },
+        {
+          "parameterName": "years",
+          "deltaValue": -1,
+          "resultCfJpy": 13301046.179764265,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 144.57658891048115
+        },
+        {
+          "parameterName": "years",
+          "deltaValue": 0,
+          "resultCfJpy": 13394741.58889296,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 145.59501727057565
+        },
+        {
+          "parameterName": "years",
+          "deltaValue": 1,
+          "resultCfJpy": 13482294.034848604,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 146.54667429183266
+        },
+        {
+          "parameterName": "years",
+          "deltaValue": 2,
+          "resultCfJpy": 13564279.550092004,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 147.43782119665224
+        },
+        {
+          "parameterName": "years",
+          "deltaValue": 3,
+          "resultCfJpy": 13641204.348875709,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 148.27396031386638
+        },
+        {
+          "parameterName": "years",
+          "deltaValue": 4,
+          "resultCfJpy": 13713515.094607878,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 149.05994668052043
+        },
+        {
+          "parameterName": "years",
+          "deltaValue": 5,
+          "resultCfJpy": 13781607.407096108,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 149.80008051191422
+        },
+        {
+          "parameterName": "self_funding",
+          "deltaValue": -5000000,
+          "resultCfJpy": 13187669.46261838,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 313.9921300623424
+        },
+        {
+          "parameterName": "self_funding",
+          "deltaValue": -4000000,
+          "resultCfJpy": 13229083.887873298,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 254.40545938217878
+        },
+        {
+          "parameterName": "self_funding",
+          "deltaValue": -3000000,
+          "resultCfJpy": 13270498.313128214,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 214.04029537303572
+        },
+        {
+          "parameterName": "self_funding",
+          "deltaValue": -2000000,
+          "resultCfJpy": 13311912.73838313,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 184.88767692198792
+        },
+        {
+          "parameterName": "self_funding",
+          "deltaValue": -1000000,
+          "resultCfJpy": 13353327.163638044,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 162.8454532150981
+        },
+        {
+          "parameterName": "self_funding",
+          "deltaValue": 0,
+          "resultCfJpy": 13394741.58889296,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 145.59501727057565
+        },
+        {
+          "parameterName": "self_funding",
+          "deltaValue": 1000000,
+          "resultCfJpy": 13436156.014147878,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 131.72701974654782
+        },
+        {
+          "parameterName": "self_funding",
+          "deltaValue": 2000000,
+          "resultCfJpy": 13477570.439402793,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 120.33545035181066
+        },
+        {
+          "parameterName": "self_funding",
+          "deltaValue": 3000000,
+          "resultCfJpy": 13518984.86465771,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 110.81135134965336
+        },
+        {
+          "parameterName": "self_funding",
+          "deltaValue": 4000000,
+          "resultCfJpy": 13560399.289912626,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 102.73029765085322
+        },
+        {
+          "parameterName": "self_funding",
+          "deltaValue": 5000000,
+          "resultCfJpy": 13601813.715167541,
+          "resultYieldPct": 21.77,
+          "resultCcrPct": 95.78742052934888
+        }
+      ],
+      "explanation": "【観察】総合スコア 57点\n\n▼ 主な加点理由\n  - 駅徒歩7分で通勤利便性が良好\n  - 表面利回り21.8%で23区内としては高水準\n  - 満室CF年1339万円で手残りが確保できる\n  - 金利5%・家賃80%のストレステストでもCF黒字を維持\n\n▼ 主な懸念\n  - 接道状況が不明。再建築可否の確認が必要\n  - 現況家賃が不明。レントロールの確認が必須\n  - 入居状況の詳細が不明。精査が必要\n  - 築37年で大規模修繕の可能性。修繕履歴の確認を推奨\n\n▼ ひとこと\n  現状の数字では積極的に動く水準にない。条件変更（値下げ・空室改善）があれば再評価。\n\n▼ こんな人向き\n  既に実績があり、金融機関との関係が構築済みの中級以上の投資家。"
     }
   ]
 }

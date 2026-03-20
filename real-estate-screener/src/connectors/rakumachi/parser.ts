@@ -38,8 +38,14 @@ export function parseListPage(html: string): RawListing[] {
       // テキスト全体を取得
       const text = $el.text();
 
+      // 画像抽出
+      const imgEl = $el.find('img[src*="img.rakumachi"], img[src*="property"], img[src*="bukken"], img').first();
+      const imgSrc = imgEl.attr('src') || imgEl.attr('data-src') || '';
+      const imageUrl = imgSrc.startsWith('http') ? imgSrc : imgSrc ? `https://www.rakumachi.jp${imgSrc}` : '';
+
       // 基本情報抽出
       const rawData: Record<string, unknown> = {
+        imageUrl: imageUrl || undefined,
         title: extractField($el, $, '物件名') || $el.find('h2, h3, .property-name').first().text().trim(),
         price: extractField($el, $, '価格'),
         yield: extractField($el, $, '利回り'),
@@ -128,6 +134,16 @@ export function parseDetailPage(html: string): Record<string, unknown> {
   const $ = cheerio.load(html);
   const details: Record<string, unknown> = {};
   const text = $('body').text();
+
+  // 実物件画像を抽出（/c/property/ パスのもの = 実際の物件写真）
+  const propertyImg = $('img[src*="img.rakumachi.jp/c/property"]').first().attr('src');
+  if (propertyImg) {
+    details.imageUrl = propertyImg.startsWith('http') ? propertyImg : `https:${propertyImg}`;
+  }
+  if (!details.imageUrl) {
+    const lazyImg = $('img[data-src*="img.rakumachi.jp/c/property"]').first().attr('data-src');
+    if (lazyImg) details.imageUrl = lazyImg.startsWith('http') ? lazyImg : `https:${lazyImg}`;
+  }
 
   // テーブル行からデータ抽出
   $('th, dt').each((_i, el) => {

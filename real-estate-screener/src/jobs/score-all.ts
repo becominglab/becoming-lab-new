@@ -63,6 +63,7 @@ export function dbRecordToCanonical(rec: any): PropertyCanonical {
     roadDirection: rec.roadDirection ?? undefined,
     roadWidth: rec.roadWidth ?? undefined,
     brokerName: rec.brokerName ?? undefined,
+    imageUrl: rec.imageUrl ?? undefined,
     hasOccupancyInfo: rec.hasOccupancyInfo ?? false,
     hasRouteValue: rec.hasRouteValue ?? false,
     hasTaxInfo: rec.hasTaxInfo ?? false,

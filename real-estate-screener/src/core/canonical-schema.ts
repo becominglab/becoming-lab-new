@@ -94,6 +94,8 @@ export const PropertyCanonicalSchema = z.object({
   hasTaxInfo: z.boolean().default(false),
   memo: z.string().optional(),
 
+  imageUrl: z.string().optional(),
+
   // ソース情報
   sourceSite: z.string(),
   sourceUrl: z.string(),

@@ -27,6 +27,7 @@ interface PropertyInfo {
   roadDirection?: string;
   roadWidth?: number;
   brokerName?: string;
+  imageUrl?: string;
   sourceSite: string;
   sourceUrl: string;
   price: number;
@@ -205,13 +206,44 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* ========== PMT計算（元利均等） ========== */
+function calcPMT(rate: number, nper: number, pv: number): number {
+  if (rate === 0) return pv / nper;
+  const r = rate / 12;
+  const n = nper * 12;
+  return (pv * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1) * 12;
+}
+
 /* ========== Detail View ========== */
 function PropertyDetail({ item, onBack }: { item: RankingItem; onBack: () => void }) {
   const p = item.property;
-  const f = item.finance;
   const v = item.valuation;
   const s = item.safety;
   const sc = item.scores;
+
+  // --- インタラクティブ入力 ---
+  const [loanYears, setLoanYears] = useState(p.loanYears);
+  const [interestPct, setInterestPct] = useState(p.loanInterestPct);
+  const [brokeragePct, setBrokeragePct] = useState(3.0);
+
+  // --- リアルタイム再計算 ---
+  const initialCostsJpy = Math.round(p.price * (brokeragePct / 100));
+  const selfFundingJpy = p.selfFundingJpy ?? 15_000_000;
+  const totalInvestment = selfFundingJpy + initialCostsJpy;
+  const borrowAmount = p.price - selfFundingJpy;
+  const annualLoanPayment = borrowAmount > 0 ? calcPMT(interestPct / 100, loanYears, borrowAmount) : 0;
+  const monthlyLoanPayment = annualLoanPayment / 12;
+  const annualFullRent = p.annualFullRentJpy ?? 0;
+  const annualExpense = annualFullRent * ((p.selfFundingJpy ? 16 : 16) / 100);
+  const annualFullCf = annualFullRent - annualExpense - annualLoanPayment;
+  const monthlyFullCf = annualFullCf / 12;
+  const grossYieldPct = p.price > 0 && annualFullRent > 0 ? (annualFullRent / p.price) * 100 : 0;
+  const ccrPct = totalInvestment > 0 ? (annualFullCf / totalInvestment) * 100 : null;
+  const loanRepaymentRatioPct = annualFullRent > 0 ? (annualLoanPayment / annualFullRent) * 100 : 0;
+
+  const annualCurrentRent = p.annualCurrentRentJpy ?? null;
+  const annualCurrentCf = annualCurrentRent != null ? annualCurrentRent - annualExpense - annualLoanPayment : null;
+  const currentYieldPct = annualCurrentRent != null && p.price > 0 ? (annualCurrentRent / p.price) * 100 : null;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 sm:py-10">
@@ -225,7 +257,7 @@ function PropertyDetail({ item, onBack }: { item: RankingItem; onBack: () => voi
       </button>
 
       {/* Title */}
-      <div className="flex items-start justify-between gap-4 mb-6">
+      <div className="flex items-start justify-between gap-4 mb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-2xl font-bold" style={{ color: TEAL }}>#{item.rank}</span>
@@ -242,6 +274,30 @@ function PropertyDetail({ item, onBack }: { item: RankingItem; onBack: () => voi
           <div className="text-xs text-gray-400">/ 100</div>
         </div>
       </div>
+
+      {/* 物件画像 */}
+      {p.imageUrl && (
+        <div className="w-full h-48 sm:h-64 rounded-xl overflow-hidden mb-4 bg-gray-100">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={p.imageUrl}
+            alt={item.propertyName}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
+      {/* ソース元リンク */}
+      <a
+        href={p.sourceUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1.5 text-sm font-medium mb-6 px-3 py-1.5 rounded-lg border hover:opacity-80 transition-opacity"
+        style={{ color: TEAL, borderColor: TEAL }}
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+        {p.sourceSite === "rakumachi" ? "楽待" : p.sourceSite}で実物件を確認 →
+      </a>
 
       {/* 物件概要 */}
       <section className="bg-white border border-gray-200 rounded-xl p-5 mb-4 shadow-sm">
@@ -313,29 +369,118 @@ function PropertyDetail({ item, onBack }: { item: RankingItem; onBack: () => voi
         </details>
       </section>
 
-      {/* 収支計算 */}
+      {/* 収支シミュレーション（インタラクティブ） */}
       <section className="bg-white border border-gray-200 rounded-xl p-5 mb-4 shadow-sm">
         <SectionTitle>収支シミュレーション</SectionTitle>
+
+        {/* 調整パネル */}
+        <div className="bg-gray-50 rounded-lg p-4 mb-4 space-y-4">
+          <div className="text-xs font-medium text-gray-500 mb-2">条件を変更してシミュレーション</div>
+
+          {/* 借入年数 */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs text-gray-600">借入年数</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={1}
+                  max={45}
+                  value={loanYears}
+                  onChange={(e) => setLoanYears(Math.max(1, Math.min(45, Number(e.target.value) || 1)))}
+                  className="w-14 text-sm text-right font-medium border border-gray-300 rounded px-1.5 py-0.5 focus:outline-none focus:border-[#1B6B7A]"
+                />
+                <span className="text-xs text-gray-500">年</span>
+              </div>
+            </div>
+            <input
+              type="range"
+              min={1}
+              max={45}
+              value={loanYears}
+              onChange={(e) => setLoanYears(Number(e.target.value))}
+              className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+              style={{ accentColor: TEAL }}
+            />
+            <div className="flex justify-between text-[10px] text-gray-400 mt-0.5">
+              <span>1年</span><span>15年</span><span>30年</span><span>45年</span>
+            </div>
+          </div>
+
+          {/* 金利 */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs text-gray-600">金利</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={0}
+                  max={10}
+                  step={0.1}
+                  value={interestPct}
+                  onChange={(e) => setInterestPct(Math.max(0, Math.min(10, Number(e.target.value) || 0)))}
+                  className="w-16 text-sm text-right font-medium border border-gray-300 rounded px-1.5 py-0.5 focus:outline-none focus:border-[#1B6B7A]"
+                />
+                <span className="text-xs text-gray-500">%</span>
+              </div>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={10}
+              step={0.1}
+              value={interestPct}
+              onChange={(e) => setInterestPct(Number(e.target.value))}
+              className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+              style={{ accentColor: TEAL }}
+            />
+            <div className="flex justify-between text-[10px] text-gray-400 mt-0.5">
+              <span>0%</span><span>2.5%</span><span>5%</span><span>7.5%</span><span>10%</span>
+            </div>
+          </div>
+
+          {/* 仲介手数料 */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs text-gray-600">初期費用（仲介手数料）</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={0}
+                  max={10}
+                  step={0.1}
+                  value={brokeragePct}
+                  onChange={(e) => setBrokeragePct(Math.max(0, Math.min(10, Number(e.target.value) || 0)))}
+                  className="w-16 text-sm text-right font-medium border border-gray-300 rounded px-1.5 py-0.5 focus:outline-none focus:border-[#1B6B7A]"
+                />
+                <span className="text-xs text-gray-500">%</span>
+                <span className="text-xs text-gray-400 ml-1">= {formatJpy(initialCostsJpy)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 計算結果 */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <InfoCell label="表面利回り" value={`${f.grossYieldPct.toFixed(2)}%`} />
-          <InfoCell label="現況利回り" value={f.currentYieldPct != null ? `${f.currentYieldPct.toFixed(2)}%` : "—"} />
-          <InfoCell label="満室年間家賃" value={p.annualFullRentJpy ? formatJpy(p.annualFullRentJpy) : "—"} />
-          <InfoCell label="現況年間家賃" value={p.annualCurrentRentJpy ? formatJpy(p.annualCurrentRentJpy) : "—"} />
-          <InfoCell label="年間経費" value={formatJpy(f.annualExpenseJpy)} />
-          <InfoCell label="借入額" value={formatJpy(f.borrowAmount)} />
-          <InfoCell label="金利" value={`${p.loanInterestPct}%`} />
-          <InfoCell label="返済年数" value={`${p.loanYears}年`} />
-          <InfoCell label="年間返済額" value={formatJpy(f.annualLoanPaymentJpy)} />
-          <InfoCell label="月額返済" value={formatJpy(f.monthlyLoanPaymentJpy)} />
-          <InfoCell label="返済比率" value={`${f.loanRepaymentRatioPct.toFixed(1)}%`} />
-          <InfoCell label="自己資金" value={p.selfFundingJpy ? formatJpy(p.selfFundingJpy) : "—"} />
+          <InfoCell label="表面利回り" value={`${grossYieldPct.toFixed(2)}%`} />
+          <InfoCell label="現況利回り" value={currentYieldPct != null ? `${currentYieldPct.toFixed(2)}%` : "—"} />
+          <InfoCell label="満室年間家賃" value={annualFullRent > 0 ? formatJpy(annualFullRent) : "—"} />
+          <InfoCell label="現況年間家賃" value={annualCurrentRent != null ? formatJpy(annualCurrentRent) : "—"} />
+          <InfoCell label="年間経費" value={formatJpy(annualExpense)} />
+          <InfoCell label="借入額" value={formatJpy(borrowAmount)} />
+          <InfoCell label="年間返済額" value={formatJpy(annualLoanPayment)} />
+          <InfoCell label="月額返済" value={formatJpy(monthlyLoanPayment)} />
+          <InfoCell label="返済比率" value={`${loanRepaymentRatioPct.toFixed(1)}%`} />
+          <InfoCell label="自己資金" value={formatJpy(selfFundingJpy)} />
+          <InfoCell label="初期費用" value={formatJpy(initialCostsJpy)} />
+          <InfoCell label="総投資額" value={formatJpy(totalInvestment)} />
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-gray-100">
-          <HighlightCell label="満室CF（年）" value={formatJpy(f.annualFullCfJpy)} />
-          <HighlightCell label="満室CF（月）" value={formatJpy(f.monthlyFullCfJpy)} />
-          <HighlightCell label="現況CF（年）" value={f.annualCurrentCfJpy != null ? formatJpy(f.annualCurrentCfJpy) : "—"} />
-          <HighlightCell label="CCR" value={f.ccrPct != null ? `${f.ccrPct.toFixed(1)}%` : "—"} />
+          <HighlightCell label="満室CF（年）" value={formatJpy(annualFullCf)} warn={annualFullCf < 0} />
+          <HighlightCell label="満室CF（月）" value={formatJpy(monthlyFullCf)} warn={monthlyFullCf < 0} />
+          <HighlightCell label="現況CF（年）" value={annualCurrentCf != null ? formatJpy(annualCurrentCf) : "—"} warn={annualCurrentCf != null && annualCurrentCf < 0} />
+          <HighlightCell label="CCR" value={ccrPct != null ? `${ccrPct.toFixed(1)}%` : "—"} />
         </div>
       </section>
 
@@ -434,11 +579,13 @@ function PropertyDetail({ item, onBack }: { item: RankingItem; onBack: () => voi
           href={p.sourceUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block px-6 py-2.5 rounded-lg text-white text-sm font-medium hover:opacity-90"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white text-sm font-medium hover:opacity-90"
           style={{ backgroundColor: TEAL }}
         >
-          {p.sourceSite} で物件を確認する →
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+          {p.sourceSite === "rakumachi" ? "楽待" : p.sourceSite}で実物件を確認する →
         </a>
+        <p className="text-xs text-gray-400 mt-2">掲載元のサイトで最新情報・詳細写真を確認できます</p>
       </div>
     </div>
   );
@@ -477,56 +624,86 @@ function HighlightCell({ label, value, warn }: { label: string; value: string; w
 
 /* ========== List Card ========== */
 function PropertyCard({ item, onSelect }: { item: RankingItem; onSelect: () => void }) {
+  const hasImage = !!item.property.imageUrl;
   return (
     <button
       onClick={onSelect}
-      className="w-full text-left bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow p-4 sm:p-5 cursor-pointer"
+      className="w-full text-left bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-2xl font-bold" style={{ color: TEAL }}>#{item.rank}</span>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${judgmentStyle(item.buyJudgment)}`}>
+      {/* 物件画像 */}
+      {hasImage && (
+        <div className="w-full h-44 sm:h-52 bg-gray-100 overflow-hidden relative">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={item.property.imageUrl}
+            alt={item.propertyName}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+          <div className="absolute top-2 left-2 flex items-center gap-1.5">
+            <span className="text-sm font-bold px-2 py-0.5 rounded-md bg-white/90 shadow-sm" style={{ color: TEAL }}>#{item.rank}</span>
+            <span className={`text-xs px-2 py-0.5 rounded-full shadow-sm ${judgmentStyle(item.buyJudgment)}`}>
               {judgmentLabel(item.buyJudgment)}
             </span>
-            {item.isNewEntry && <span className="text-xs px-1.5 py-0.5 rounded text-white" style={{ backgroundColor: TEAL }}>NEW</span>}
-            {item.rankChange != null && item.rankChange > 0 && <span className="text-xs text-emerald-600 font-medium">↑{item.rankChange}</span>}
-            {item.rankChange != null && item.rankChange < 0 && <span className="text-xs text-red-500 font-medium">↓{Math.abs(item.rankChange)}</span>}
+            {item.isNewEntry && <span className="text-xs px-1.5 py-0.5 rounded text-white shadow-sm" style={{ backgroundColor: TEAL }}>NEW</span>}
           </div>
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{item.propertyName}</h3>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {item.ward}
-            {item.property.station1?.name && ` / ${item.property.station1.name}駅`}
-            {item.property.station1?.walkMin != null && ` 徒歩${item.property.station1.walkMin}分`}
-          </p>
+          <div className="absolute top-2 right-2">
+            <div className={`text-2xl font-bold px-2 py-0.5 rounded-md bg-white/90 shadow-sm ${scoreColor(item.scoreTotal)}`}>{item.scoreTotal.toFixed(0)}<span className="text-[10px] text-gray-400">/100</span></div>
+          </div>
         </div>
-        <div className="text-right shrink-0">
-          <div className={`text-3xl font-bold ${scoreColor(item.scoreTotal)}`}>{item.scoreTotal.toFixed(0)}</div>
-          <div className="text-xs text-gray-400">/ 100</div>
-        </div>
-      </div>
+      )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-        <div className="rounded-lg px-3 py-2" style={{ backgroundColor: TEAL_LIGHT }}>
-          <div className="text-[10px] text-gray-500">価格</div>
-          <div className="text-sm font-semibold text-gray-900 mt-0.5">{formatJpy(item.property.price)}</div>
-        </div>
-        <div className="rounded-lg px-3 py-2" style={{ backgroundColor: TEAL_LIGHT }}>
-          <div className="text-[10px] text-gray-500">表面利回り</div>
-          <div className="text-sm font-semibold text-gray-900 mt-0.5">{item.finance.grossYieldPct.toFixed(1)}%</div>
-        </div>
-        <div className="rounded-lg px-3 py-2" style={{ backgroundColor: TEAL_LIGHT }}>
-          <div className="text-[10px] text-gray-500">満室CF</div>
-          <div className="text-sm font-semibold text-gray-900 mt-0.5">{formatJpy(item.finance.annualFullCfJpy)}<span className="text-xs text-gray-400">/年</span></div>
-        </div>
-        <div className="rounded-lg px-3 py-2" style={{ backgroundColor: TEAL_LIGHT }}>
-          <div className="text-[10px] text-gray-500">CCR</div>
-          <div className="text-sm font-semibold text-gray-900 mt-0.5">{item.finance.ccrPct != null ? `${item.finance.ccrPct.toFixed(1)}%` : "—"}</div>
-        </div>
-      </div>
+      <div className="p-4 sm:p-5">
+        {/* 画像がない場合のヘッダー */}
+        {!hasImage && (
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-2xl font-bold" style={{ color: TEAL }}>#{item.rank}</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${judgmentStyle(item.buyJudgment)}`}>
+                  {judgmentLabel(item.buyJudgment)}
+                </span>
+                {item.isNewEntry && <span className="text-xs px-1.5 py-0.5 rounded text-white" style={{ backgroundColor: TEAL }}>NEW</span>}
+                {item.rankChange != null && item.rankChange > 0 && <span className="text-xs text-emerald-600 font-medium">↑{item.rankChange}</span>}
+                {item.rankChange != null && item.rankChange < 0 && <span className="text-xs text-red-500 font-medium">↓{Math.abs(item.rankChange)}</span>}
+              </div>
+            </div>
+            <div className="text-right shrink-0">
+              <div className={`text-3xl font-bold ${scoreColor(item.scoreTotal)}`}>{item.scoreTotal.toFixed(0)}</div>
+              <div className="text-xs text-gray-400">/ 100</div>
+            </div>
+          </div>
+        )}
 
-      <div className="mt-3 text-xs text-right" style={{ color: TEAL }}>
-        詳細を見る →
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{item.propertyName}</h3>
+        <p className="text-sm text-gray-500 mt-0.5">
+          {item.ward}
+          {item.property.station1?.name && ` / ${item.property.station1.name}駅`}
+          {item.property.station1?.walkMin != null && ` 徒歩${item.property.station1.walkMin}分`}
+        </p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+          <div className="rounded-lg px-3 py-2" style={{ backgroundColor: TEAL_LIGHT }}>
+            <div className="text-[10px] text-gray-500">価格</div>
+            <div className="text-sm font-semibold text-gray-900 mt-0.5">{formatJpy(item.property.price)}</div>
+          </div>
+          <div className="rounded-lg px-3 py-2" style={{ backgroundColor: TEAL_LIGHT }}>
+            <div className="text-[10px] text-gray-500">表面利回り</div>
+            <div className="text-sm font-semibold text-gray-900 mt-0.5">{item.finance.grossYieldPct.toFixed(1)}%</div>
+          </div>
+          <div className="rounded-lg px-3 py-2" style={{ backgroundColor: TEAL_LIGHT }}>
+            <div className="text-[10px] text-gray-500">満室CF</div>
+            <div className="text-sm font-semibold text-gray-900 mt-0.5">{formatJpy(item.finance.annualFullCfJpy)}<span className="text-xs text-gray-400">/年</span></div>
+          </div>
+          <div className="rounded-lg px-3 py-2" style={{ backgroundColor: TEAL_LIGHT }}>
+            <div className="text-[10px] text-gray-500">CCR</div>
+            <div className="text-sm font-semibold text-gray-900 mt-0.5">{item.finance.ccrPct != null ? `${item.finance.ccrPct.toFixed(1)}%` : "—"}</div>
+          </div>
+        </div>
+
+        <div className="mt-3 text-xs text-right" style={{ color: TEAL }}>
+          詳細を見る →
+        </div>
       </div>
     </button>
   );

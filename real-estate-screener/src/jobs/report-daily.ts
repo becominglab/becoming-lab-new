@@ -125,6 +125,7 @@ export function generateJsonReport(entries: RankingEntry[], date: string): strin
         roadDirection: e.property.roadDirection,
         roadWidth: e.property.roadWidth,
         brokerName: e.property.brokerName,
+        imageUrl: e.property.imageUrl,
         sourceSite: e.property.sourceSite,
         sourceUrl: e.property.sourceUrl,
         price: e.property.propertyPriceJpy,

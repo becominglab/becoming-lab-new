@@ -85,6 +85,7 @@ model PropertyCanonical {
 
   // その他
   brokerName            String?  @map("broker_name")
+  imageUrl              String?  @map("image_url")
   hasOccupancyInfo      Boolean  @default(false) @map("has_occupancy_info")
   hasRouteValue         Boolean  @default(false) @map("has_route_value")
   hasTaxInfo            Boolean  @default(false) @map("has_tax_info")
