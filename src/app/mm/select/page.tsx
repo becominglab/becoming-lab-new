@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 import type { UserType } from '@/lib/nobishiro/types';
 
 const users = [
@@ -35,10 +35,20 @@ const users = [
   },
 ];
 
-export default function UserSelectPage() {
+function UserSelectInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [selected, setSelected] = useState<UserType | null>(null);
   const [confirming, setConfirming] = useState(false);
+
+  // Auto-select from ?user= param (from family top page)
+  useEffect(() => {
+    const userParam = searchParams.get('user') as UserType | null;
+    if (userParam && users.find((u) => u.id === userParam)) {
+      setSelected(userParam);
+      setConfirming(true);
+    }
+  }, [searchParams]);
 
   const handleSelect = (userId: UserType) => {
     setSelected(userId);
@@ -141,5 +151,13 @@ export default function UserSelectPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function UserSelectPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin text-2xl">🌀</div></div>}>
+      <UserSelectInner />
+    </Suspense>
   );
 }
