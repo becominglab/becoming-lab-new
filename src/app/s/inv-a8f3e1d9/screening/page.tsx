@@ -1078,18 +1078,18 @@ interface ScreeningFilters {
 }
 
 const DEFAULT_FILTERS: ScreeningFilters = {
-  priceMin: 0,
-  priceMax: 50000, // 5億
-  yieldMin: 0,
+  priceMin: 1500,      // 1,500万円
+  priceMax: 15000,     // 1.5億円
+  yieldMin: 6.0,       // 利回り6%以上
   scoreMin: 0,
   cfPositiveOnly: false,
   ward: "",
   judgments: [],
   sortBy: "rank",
-  structures: [],
-  ageMax: 0,
-  walkMax: 0,
-  totalUnitsMin: 0,
+  structures: ["W", "LS", "RC", "S"],  // 木造・軽量鉄骨・RC・S
+  ageMax: 0,           // 上限なし（築古リスクは後段で評価）
+  walkMax: 15,         // 駅徒歩15分以内
+  totalUnitsMin: 4,    // 4戸以上を優先
   buildingAreaMin: 0,
   landAreaMin: 0,
   reBuildableOnly: false,
@@ -1143,42 +1143,44 @@ const AGE_OPTIONS = [
 
 /* ========== Screening Filter Panel ========== */
 function isFilterActive(f: ScreeningFilters): boolean {
+  const d = DEFAULT_FILTERS;
   return (
-    f.priceMin > 0 ||
-    f.priceMax < 50000 ||
-    f.yieldMin > 0 ||
-    f.scoreMin > 0 ||
-    f.cfPositiveOnly ||
-    f.ward !== "" ||
-    f.judgments.length > 0 ||
-    f.sortBy !== "rank" ||
-    f.structures.length > 0 ||
-    f.ageMax > 0 ||
-    f.walkMax > 0 ||
-    f.totalUnitsMin > 0 ||
-    f.buildingAreaMin > 0 ||
-    f.landAreaMin > 0 ||
-    f.reBuildableOnly ||
-    f.occupancyMin > 0
+    f.priceMin !== d.priceMin ||
+    f.priceMax !== d.priceMax ||
+    f.yieldMin !== d.yieldMin ||
+    f.scoreMin !== d.scoreMin ||
+    f.cfPositiveOnly !== d.cfPositiveOnly ||
+    f.ward !== d.ward ||
+    f.judgments.length !== d.judgments.length ||
+    f.sortBy !== d.sortBy ||
+    JSON.stringify(f.structures.slice().sort()) !== JSON.stringify(d.structures.slice().sort()) ||
+    f.ageMax !== d.ageMax ||
+    f.walkMax !== d.walkMax ||
+    f.totalUnitsMin !== d.totalUnitsMin ||
+    f.buildingAreaMin !== d.buildingAreaMin ||
+    f.landAreaMin !== d.landAreaMin ||
+    f.reBuildableOnly !== d.reBuildableOnly ||
+    f.occupancyMin !== d.occupancyMin
   );
 }
 
 function countActiveFilters(f: ScreeningFilters): number {
+  const d = DEFAULT_FILTERS;
   return [
-    f.priceMin > 0 || f.priceMax < 50000,
-    f.yieldMin > 0,
-    f.scoreMin > 0,
-    f.cfPositiveOnly,
-    f.ward !== "",
-    f.judgments.length > 0,
-    f.sortBy !== "rank",
-    f.structures.length > 0,
-    f.ageMax > 0,
-    f.walkMax > 0,
-    f.totalUnitsMin > 0,
-    f.buildingAreaMin > 0 || f.landAreaMin > 0,
-    f.reBuildableOnly,
-    f.occupancyMin > 0,
+    f.priceMin !== d.priceMin || f.priceMax !== d.priceMax,
+    f.yieldMin !== d.yieldMin,
+    f.scoreMin !== d.scoreMin,
+    f.cfPositiveOnly !== d.cfPositiveOnly,
+    f.ward !== d.ward,
+    f.judgments.length !== d.judgments.length,
+    f.sortBy !== d.sortBy,
+    JSON.stringify(f.structures.slice().sort()) !== JSON.stringify(d.structures.slice().sort()),
+    f.ageMax !== d.ageMax,
+    f.walkMax !== d.walkMax,
+    f.totalUnitsMin !== d.totalUnitsMin,
+    f.buildingAreaMin !== d.buildingAreaMin || f.landAreaMin !== d.landAreaMin,
+    f.reBuildableOnly !== d.reBuildableOnly,
+    f.occupancyMin !== d.occupancyMin,
   ].filter(Boolean).length;
 }
 
@@ -1322,9 +1324,9 @@ function FilterPanel({
           <div>
             <label className="text-xs font-semibold text-gray-600 mb-2 block">
               価格帯
-              {(draft.priceMin > 0 || draft.priceMax < 50000) && (
+              {(draft.priceMin > 0 || (draft.priceMax > 0 && draft.priceMax < 100000)) && (
                 <span className="ml-2 font-normal text-gray-400">
-                  {draft.priceMin > 0 ? `${draft.priceMin.toLocaleString()}万円` : "下限なし"} 〜 {draft.priceMax < 50000 ? `${draft.priceMax.toLocaleString()}万円` : "上限なし"}
+                  {draft.priceMin > 0 ? `${draft.priceMin.toLocaleString()}万円` : "下限なし"} 〜 {(draft.priceMax > 0 && draft.priceMax < 100000) ? `${draft.priceMax.toLocaleString()}万円` : "上限なし"}
                 </span>
               )}
             </label>
@@ -1340,8 +1342,8 @@ function FilterPanel({
               <input
                 type="number"
                 placeholder="上限（万円）"
-                value={draft.priceMax < 50000 ? draft.priceMax : ""}
-                onChange={(e) => setDraft({ ...draft, priceMax: Number(e.target.value) || 50000 })}
+                value={draft.priceMax > 0 && draft.priceMax < 100000 ? draft.priceMax : ""}
+                onChange={(e) => setDraft({ ...draft, priceMax: Number(e.target.value) || 0 })}
                 className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent"
               />
               <span className="text-xs text-gray-400 shrink-0">万円</span>
@@ -1584,7 +1586,7 @@ function applyFilters(rankings: RankingItem[], filters: ScreeningFilters): Ranki
     const p = item.property;
     const priceMan = Math.round(p.price / 10_000);
     if (filters.priceMin > 0 && priceMan < filters.priceMin) return false;
-    if (filters.priceMax < 50000 && priceMan > filters.priceMax) return false;
+    if (filters.priceMax > 0 && priceMan > filters.priceMax) return false;
     if (filters.yieldMin > 0 && item.finance.grossYieldPct < filters.yieldMin) return false;
     if (filters.scoreMin > 0 && item.scoreTotal < filters.scoreMin) return false;
     if (filters.cfPositiveOnly && item.finance.annualFullCfJpy < 0) return false;
