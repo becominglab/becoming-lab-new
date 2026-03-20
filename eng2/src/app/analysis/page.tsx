@@ -112,7 +112,7 @@ export default function AnalysisPage() {
                 <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10 }} />
                 <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 10 }} />
                 <Tooltip
-                  formatter={(value: number) => [`${value}%`, '正答率']}
+                  formatter={(value) => [`${value}%`, '正答率']}
                   contentStyle={{ fontSize: 12, borderRadius: 8 }}
                 />
                 <Bar dataKey="正答率" radius={[0, 4, 4, 0]}>
