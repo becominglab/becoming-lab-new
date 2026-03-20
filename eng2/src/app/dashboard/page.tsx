@@ -5,6 +5,7 @@ import Link from 'next/link'
 import {
   CalendarDays, Flame, TrendingUp, Clock, BookOpen,
   PenLine, BarChart3, Users, ChevronRight, Sparkles, Zap,
+  Upload, Target,
 } from 'lucide-react'
 import BottomNav from '@/components/BottomNav'
 import CelebrationModal from '@/components/CelebrationModal'
@@ -177,7 +178,7 @@ export default function DashboardPage() {
 
         {/* 3分モード */}
         <Link
-          href="/vocab"
+          href="/quick-test"
           className="block bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-2xl p-4 hover:from-primary-600 hover:to-primary-700 transition-all"
         >
           <div className="flex items-center gap-3">
@@ -185,9 +186,9 @@ export default function DashboardPage() {
               <Zap size={20} />
             </div>
             <div className="flex-1">
-              <p className="font-bold text-sm">3分だけやる</p>
+              <p className="font-bold text-sm">3分クイックテスト</p>
               <p className="text-xs text-primary-200">
-                サクッと語彙5問チャレンジ
+                弱点カテゴリから8問チャレンジ
               </p>
             </div>
             <ChevronRight size={20} className="text-primary-200" />
@@ -257,6 +258,22 @@ export default function DashboardPage() {
           <h2 className="text-sm font-bold text-gray-700 mb-3">メニュー</h2>
           <div className="grid grid-cols-2 gap-2">
             <Link
+              href="/upload"
+              className="bg-white rounded-xl p-4 border border-gray-100 hover:border-gray-200 transition-colors"
+            >
+              <Upload size={20} className="text-red-500 mb-2" />
+              <p className="text-sm font-medium text-gray-700">過去問アップロード</p>
+              <p className="text-[10px] text-gray-400">⚪×を入力して分析</p>
+            </Link>
+            <Link
+              href="/weakness"
+              className="bg-white rounded-xl p-4 border border-gray-100 hover:border-gray-200 transition-colors"
+            >
+              <Target size={20} className="text-accent-500 mb-2" />
+              <p className="text-sm font-medium text-gray-700">弱点分析</p>
+              <p className="text-[10px] text-gray-400">出題傾向から弱点特定</p>
+            </Link>
+            <Link
               href="/exam-log"
               className="bg-white rounded-xl p-4 border border-gray-100 hover:border-gray-200 transition-colors"
             >
@@ -268,7 +285,7 @@ export default function DashboardPage() {
               href="/analysis"
               className="bg-white rounded-xl p-4 border border-gray-100 hover:border-gray-200 transition-colors"
             >
-              <BarChart3 size={20} className="text-accent-500 mb-2" />
+              <BarChart3 size={20} className="text-blue-500 mb-2" />
               <p className="text-sm font-medium text-gray-700">苦手分析</p>
               <p className="text-[10px] text-gray-400">弱点を確認</p>
             </Link>
