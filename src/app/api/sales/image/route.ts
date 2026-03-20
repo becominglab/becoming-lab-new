@@ -37,9 +37,29 @@ export async function POST(request: NextRequest) {
     let prompt: string;
 
     if (type === "floorplan") {
-      prompt = `A clean, professional 2D architectural floor plan of a ${housingDesc} living-dining room, ${sizeDesc}. ${style} style layout. Show furniture placement including sofa, dining table, TV unit, and storage. Clean white background, architectural line drawing style, labeled in Japanese. Top-down view, precise measurements, professional architectural rendering. No text watermarks.`;
+      prompt = `Professional architectural floor plan, top-down orthographic view, of a Japanese ${housingDesc} LDK (living-dining-kitchen) room, ${sizeDesc}. Precisely drawn with thin black lines on white background. Include:
+- Accurate wall thickness (150mm for exterior, 100mm for interior)
+- Standard Japanese architectural symbols: sliding doors, hinged doors with arc, windows with double lines
+- Furniture layout drawn to scale: ${style === "modern" ? "L-shaped sofa, glass coffee table, wall-mounted TV" : style === "natural" || style === "nordic" ? "3-seater fabric sofa, wooden coffee table, TV board" : "sofa, coffee table, TV unit"}, 4-person dining table with chairs, kitchen counter
+- Dimensions marked in millimeters with dimension lines and arrows
+- Room labels in Japanese (リビング, ダイニング, キッチン)
+- North arrow indicator
+- Scale bar (1:50)
+- Tatami grid reference lines
+Style: Clean CAD-quality architectural drawing, monochrome, no colors, no shading, no 3D effects, no watermarks. Similar to a real Japanese 間取り図 from a housing catalog.`;
     } else {
-      prompt = `A photorealistic interior design 3D rendering of a ${housingDesc} living room, ${sizeDesc}. Style: ${styleDescriptions[style] || style}. Color scheme: ${colorDescriptions[colorTone] || colorTone}. High-end furniture, natural lighting from large windows, warm atmosphere. Shot at eye level with wide-angle lens. Professional interior photography quality, 8K detail, no people, no text.`;
+      prompt = `Award-winning interior photography of a real Japanese ${housingDesc} living room, ${sizeDesc}. Captured with a Canon EOS R5, 16-35mm wide-angle lens at f/8, natural window light streaming in.
+
+Interior style: ${styleDescriptions[style] || style}.
+Color palette: ${colorDescriptions[colorTone] || colorTone}.
+
+The room features real, existing furniture brands popular in Japan (SIEVE, IDEE, Artek style). Include specific details:
+- ${style === "natural" ? "Solid oak flooring, linen curtains, a potted monstera plant, woven basket storage" : style === "modern" ? "Polished concrete-look flooring, roller blinds, geometric pendant light, matte black hardware" : style === "nordic" ? "Light birch herringbone floor, sheepskin throw on chair, Danish pendant lamp, ceramic vases" : style === "industrial" ? "Reclaimed wood accent wall, exposed black steel shelving, concrete planter, Edison pendant lights" : style === "japandi" ? "Light oak flooring with tatami insert area, shoji-inspired partition, low walnut table, ceramic sake set on shelf" : "White-washed wood floor, rattan armchair, linen sofa with blue cushions, woven jute rug"}
+- Realistic window view showing ${housing === "mansion" ? "a city skyline through large balcony windows" : "a Japanese garden with trees through floor-to-ceiling windows"}
+- Warm afternoon sunlight casting natural shadows
+- Lived-in feeling with a coffee cup on the table, an open book, a folded throw blanket
+
+Photo style: Editorial interior photography for a premium Japanese housing magazine like &Premium or Casa BRUTUS. Photorealistic, no CGI look, no watermarks, no text overlays. The image should look like a real photograph taken in an actual home.`;
     }
 
     const openai = getOpenAI();
@@ -48,7 +68,7 @@ export async function POST(request: NextRequest) {
       prompt,
       n: 1,
       size: "1024x1024",
-      quality: "standard",
+      quality: "hd",
     });
 
     const imageUrl = response.data?.[0]?.url;
