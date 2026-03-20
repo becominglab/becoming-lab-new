@@ -2,6 +2,7 @@ import { prisma } from '../db/client.js';
 import { normalizeRakumachiListing } from '../connectors/rakumachi/parser.js';
 import { normalizeAthomeListing } from '../connectors/athome/parser.js';
 import { defaultConfig } from '../config/default.js';
+import { getWardAvgRoadValue } from '../config/wards.js';
 import { geocodeAddress } from '../utils/geo.js';
 import logger from '../utils/logger.js';
 import type { RawListing } from '../connectors/types.js';
@@ -98,6 +99,23 @@ async function main() {
           parsed.lat = geo.lat;
           parsed.lng = geo.lng;
         }
+      }
+
+      // 4b. 路線価が無い場合、区の平均路線価で補完
+      if (!parsed.roadValueJpyPerSqm && parsed.ward) {
+        parsed.roadValueJpyPerSqm = getWardAvgRoadValue(parsed.ward);
+        parsed.hasRouteValue = true;
+      }
+
+      // 4c. 物件名が空の場合、住所+構造+築年から自動生成
+      if (!parsed.propertyName || parsed.propertyName.trim() === '') {
+        const parts: string[] = [];
+        if (parsed.ward) parts.push(parsed.ward);
+        if (parsed.structureType) parts.push(parsed.structureType);
+        if (parsed.totalUnits) parts.push(`${parsed.totalUnits}戸`);
+        if (parsed.builtYear) parts.push(`築${parsed.builtYear}年`);
+        if (parsed.station1?.name) parts.push(`${parsed.station1.name}駅`);
+        parsed.propertyName = parts.join(' ') || parsed.address || '名称不明';
       }
 
       // 5. PropertyCanonical にupsert

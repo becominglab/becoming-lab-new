@@ -9,7 +9,8 @@ async function main() {
 
   const connectors = [
     new RakumachiConnector(),
-    new AtHomeConnector(),
+    // AtHome は 405 エラーを返すため一時無効化
+    // new AtHomeConnector(),
   ];
 
   let totalFetched = 0;
