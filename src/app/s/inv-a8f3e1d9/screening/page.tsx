@@ -1746,6 +1746,21 @@ export default function ScreeningPage() {
           filteredCount={filtered.length}
         />
 
+        {/* フィルター適用時の結果件数表示 */}
+        {isFilterActive(filters) && filtered.length > 0 && (
+          <div className="mb-4 flex items-center justify-between bg-teal-50 border border-teal-200 rounded-xl px-4 py-2.5">
+            <p className="text-sm font-semibold" style={{ color: TEAL }}>
+              {filtered.length}件の物件が見つかりました
+            </p>
+            <button
+              onClick={() => setFilters({ ...DEFAULT_FILTERS })}
+              className="text-xs text-gray-500 hover:text-gray-700 underline cursor-pointer"
+            >
+              条件をクリア
+            </button>
+          </div>
+        )}
+
         {filtered.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
             <div className="text-3xl mb-3">&#x1F50D;</div>
