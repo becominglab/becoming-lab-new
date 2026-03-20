@@ -90,7 +90,6 @@ export default function HomePage() {
   const nextReward = getNextReward();
   const missionsToday = todayLog?.missionsCompleted || 0;
 
-  const accentColor = isMitsuki ? 'indigo' : 'emerald';
   const gradFrom = isMitsuki ? 'from-indigo-500' : 'from-emerald-500';
   const gradTo = isMitsuki ? 'to-slate-600' : 'to-teal-500';
 

@@ -110,8 +110,7 @@ export function getTodayLog(state: AppState): DailyLog | undefined {
 export function getStreak(state: AppState): number {
   let count = 0;
   const d = new Date();
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  for (;;) {
     const key = toDateStr(d);
     const log = state.dailyLogs[key];
     if (log?.studied) {

@@ -3,10 +3,9 @@
 import { Suspense, useEffect, useState, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { AppState, EarnedBadge } from '@/lib/nobishiro/types';
-import { BADGES, QUESTIONS, SUBJECTS } from '@/lib/nobishiro/data';
+import { BADGES, QUESTIONS } from '@/lib/nobishiro/data';
 import {
   getState,
-  updateState,
   completeMission,
   checkAndAwardBadges,
   getStreak,
@@ -118,7 +117,6 @@ function ResultPageInner() {
   const nobishiroUnits = state ? getNobishiroUnits(state, subject) : [];
 
   // Theme colors
-  const accentBg = isMitsuki ? 'bg-indigo-500' : 'bg-emerald-500';
   const accentText = isMitsuki ? 'text-indigo-600' : 'text-emerald-600';
   const accentBgLight = isMitsuki ? 'bg-indigo-50' : 'bg-emerald-50';
   const accentBorder = isMitsuki ? 'border-indigo-100' : 'border-emerald-100';

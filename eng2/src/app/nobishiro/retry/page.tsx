@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { AppState, Question } from '@/lib/nobishiro/types';
 import { QUESTIONS } from '@/lib/nobishiro/data';
-import { getState, updateState, addAnswerRecord } from '@/lib/nobishiro/store';
+import { getState, addAnswerRecord } from '@/lib/nobishiro/store';
 
 // ---------------------------------------------------------------------------
 // Inline sample retry questions (supplements the main QUESTIONS pool)
@@ -233,7 +233,7 @@ function RetryPageInner() {
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
-  const [quizDone, setQuizDone] = useState(false);
+  const [, setQuizDone] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Load state and find retry questions
@@ -283,7 +283,6 @@ function RetryPageInner() {
   const gradFrom = isMitsuki ? 'from-indigo-500' : 'from-emerald-500';
   const gradTo = isMitsuki ? 'to-slate-600' : 'to-teal-500';
   const accentText = isMitsuki ? 'text-indigo-600' : 'text-emerald-600';
-  const accentBg = isMitsuki ? 'bg-indigo-500' : 'bg-emerald-500';
   const accentBgLight = isMitsuki ? 'bg-indigo-50' : 'bg-emerald-50';
   const accentBorder = isMitsuki ? 'border-indigo-100' : 'border-emerald-100';
   const accentBgMedium = isMitsuki ? 'bg-indigo-100' : 'bg-emerald-100';

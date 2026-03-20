@@ -59,8 +59,6 @@ export default function MissionPage() {
 
       const isMitsuki = s.currentUser === 'mitsuki';
       const todayStr = getToday();
-      const todayLog = s.dailyLogs[todayStr];
-
       const baseMissions = buildMissions(isMitsuki);
 
       // Check localStorage for per-mission completion tracking
@@ -113,7 +111,6 @@ export default function MissionPage() {
   }
 
   const isMitsuki = state.currentUser === 'mitsuki';
-  const accentBg = isMitsuki ? 'bg-indigo-500' : 'bg-emerald-500';
   const accentText = isMitsuki ? 'text-indigo-600' : 'text-emerald-600';
   const accentBorder = isMitsuki ? 'border-indigo-200' : 'border-emerald-200';
   const accentLight = isMitsuki ? 'bg-indigo-50' : 'bg-emerald-50';

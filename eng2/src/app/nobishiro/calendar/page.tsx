@@ -24,12 +24,6 @@ function getToday(): string {
 
 const DAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
 
-const ENCOURAGING_MESSAGES = [
-  '春休みの地図が埋まってきたね！',
-  'すこしずつ前に進んでる！',
-  'がんばった日がキラキラしてる！',
-  '自分のペースでOK！',
-];
 
 function getEncouragement(studiedDays: number): string {
   if (studiedDays === 0) return 'さあ、春休みの冒険を始めよう！';
@@ -169,7 +163,6 @@ export default function CalendarPage() {
               const parentCommented = log?.parentCommented;
               const isStreakDay = streakDays.has(day);
               const dayNum = new Date(day).getDate();
-              const isPast = day < today;
               const isFuture = day > today;
 
               return (

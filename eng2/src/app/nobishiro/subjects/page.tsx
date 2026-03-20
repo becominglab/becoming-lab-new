@@ -92,8 +92,6 @@ function SubjectsContent() {
 
   const gradFrom = isMitsuki ? 'from-indigo-500' : 'from-emerald-500';
   const gradTo = isMitsuki ? 'to-slate-600' : 'to-teal-500';
-  const accentBg = isMitsuki ? 'bg-indigo-500' : 'bg-emerald-500';
-  const accentText = isMitsuki ? 'text-indigo-600' : 'text-emerald-600';
 
   // Find recommended units (growth status)
   const growthUnits = subject.units.filter(

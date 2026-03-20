@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo, Suspense } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { AppState, Question } from '@/lib/nobishiro/types';
 
@@ -232,7 +232,7 @@ function QuizInner() {
 
   const currentQuestion = questions[currentIndex] ?? null;
   const total = questions.length;
-  const progress = total > 0 ? ((currentIndex) / total) * 100 : 0;
+  // progress calculated inline where needed
 
   const handleAnswer = useCallback(
     (choice: string) => {
