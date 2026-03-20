@@ -222,24 +222,29 @@ function PropertyDetail({ item, onBack }: { item: RankingItem; onBack: () => voi
   const sc = item.scores;
 
   // --- インタラクティブ入力 ---
+  const defaultSelfFunding = p.selfFundingJpy ?? Math.round(p.price * 0.1);
+  const [selfFundingMan, setSelfFundingMan] = useState(Math.round(defaultSelfFunding / 10_000));
   const [loanYears, setLoanYears] = useState(p.loanYears);
   const [interestPct, setInterestPct] = useState(p.loanInterestPct);
   const [brokeragePct, setBrokeragePct] = useState(3.0);
+  const [expenseRatioPct, setExpenseRatioPct] = useState(16.0);
 
   // --- リアルタイム再計算 ---
+  const selfFundingJpy = selfFundingMan * 10_000;
   const initialCostsJpy = Math.round(p.price * (brokeragePct / 100));
-  const selfFundingJpy = p.selfFundingJpy ?? 15_000_000;
   const totalInvestment = selfFundingJpy + initialCostsJpy;
-  const borrowAmount = p.price - selfFundingJpy;
+  const borrowAmount = Math.max(0, p.price - selfFundingJpy);
   const annualLoanPayment = borrowAmount > 0 ? calcPMT(interestPct / 100, loanYears, borrowAmount) : 0;
   const monthlyLoanPayment = annualLoanPayment / 12;
   const annualFullRent = p.annualFullRentJpy ?? 0;
-  const annualExpense = annualFullRent * ((p.selfFundingJpy ? 16 : 16) / 100);
+  const annualExpense = annualFullRent * (expenseRatioPct / 100);
   const annualFullCf = annualFullRent - annualExpense - annualLoanPayment;
   const monthlyFullCf = annualFullCf / 12;
   const grossYieldPct = p.price > 0 && annualFullRent > 0 ? (annualFullRent / p.price) * 100 : 0;
   const ccrPct = totalInvestment > 0 ? (annualFullCf / totalInvestment) * 100 : null;
   const loanRepaymentRatioPct = annualFullRent > 0 ? (annualLoanPayment / annualFullRent) * 100 : 0;
+  const selfFundingPct = p.price > 0 ? (selfFundingJpy / p.price) * 100 : 0;
+  const ltv = p.price > 0 ? (borrowAmount / p.price) * 100 : 0;
 
   const annualCurrentRent = p.annualCurrentRentJpy ?? null;
   const annualCurrentCf = annualCurrentRent != null ? annualCurrentRent - annualExpense - annualLoanPayment : null;
@@ -377,6 +382,42 @@ function PropertyDetail({ item, onBack }: { item: RankingItem; onBack: () => voi
         <div className="bg-gray-50 rounded-lg p-4 mb-4 space-y-4">
           <div className="text-xs font-medium text-gray-500 mb-2">条件を変更してシミュレーション</div>
 
+          {/* 自己資金 */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs text-gray-600">自己資金（頭金）</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={0}
+                  max={Math.round(p.price / 10_000)}
+                  value={selfFundingMan}
+                  onChange={(e) => setSelfFundingMan(Math.max(0, Math.min(Math.round(p.price / 10_000), Number(e.target.value) || 0)))}
+                  className="w-20 text-sm text-right font-medium border border-gray-300 rounded px-1.5 py-0.5 focus:outline-none focus:border-[#1B6B7A]"
+                />
+                <span className="text-xs text-gray-500">万円</span>
+              </div>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={Math.round(p.price / 10_000)}
+              value={selfFundingMan}
+              onChange={(e) => setSelfFundingMan(Number(e.target.value))}
+              className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+              style={{ accentColor: TEAL }}
+            />
+            <div className="flex justify-between text-[10px] text-gray-400 mt-0.5">
+              <span>0万（フルローン）</span>
+              <span>{selfFundingPct.toFixed(0)}%</span>
+              <span>{formatJpy(p.price)}（全額自己資金）</span>
+            </div>
+            <div className="text-[10px] text-gray-500 mt-1">
+              借入額: <span className="font-medium text-gray-700">{formatJpy(borrowAmount)}</span>
+              <span className="ml-2">（LTV {ltv.toFixed(0)}%）</span>
+            </div>
+          </div>
+
           {/* 借入年数 */}
           <div>
             <div className="flex items-center justify-between mb-1">
@@ -456,6 +497,39 @@ function PropertyDetail({ item, onBack }: { item: RankingItem; onBack: () => voi
                 <span className="text-xs text-gray-500">%</span>
                 <span className="text-xs text-gray-400 ml-1">= {formatJpy(initialCostsJpy)}</span>
               </div>
+            </div>
+          </div>
+
+          {/* 経費率 */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs text-gray-600">経費率（管理費・修繕・税等）</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={5}
+                  max={40}
+                  step={1}
+                  value={expenseRatioPct}
+                  onChange={(e) => setExpenseRatioPct(Math.max(5, Math.min(40, Number(e.target.value) || 16)))}
+                  className="w-14 text-sm text-right font-medium border border-gray-300 rounded px-1.5 py-0.5 focus:outline-none focus:border-[#1B6B7A]"
+                />
+                <span className="text-xs text-gray-500">%</span>
+                <span className="text-xs text-gray-400 ml-1">= {formatJpy(annualExpense)}/年</span>
+              </div>
+            </div>
+            <input
+              type="range"
+              min={5}
+              max={40}
+              step={1}
+              value={expenseRatioPct}
+              onChange={(e) => setExpenseRatioPct(Number(e.target.value))}
+              className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+              style={{ accentColor: TEAL }}
+            />
+            <div className="flex justify-between text-[10px] text-gray-400 mt-0.5">
+              <span>5%</span><span>16%（標準）</span><span>25%</span><span>40%</span>
             </div>
           </div>
         </div>
