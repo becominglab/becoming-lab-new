@@ -33,8 +33,8 @@ const children = [
     activeBorder: 'border-indigo-400',
     accent: 'text-indigo-600',
     btnBg: 'bg-gradient-to-r from-indigo-500 to-slate-600',
-    href: 'https://becominglab.life/mm/select?user=mitsuki',
-    external: true,
+    href: '/nobishiro/select?user=mitsuki',
+    external: false,
   },
   {
     id: 'michiru',
@@ -49,8 +49,8 @@ const children = [
     activeBorder: 'border-emerald-400',
     accent: 'text-emerald-600',
     btnBg: 'bg-gradient-to-r from-emerald-500 to-teal-500',
-    href: 'https://becominglab.life/mm/select?user=michiru',
-    external: true,
+    href: '/nobishiro/select?user=michiru',
+    external: false,
   },
 ];
 
