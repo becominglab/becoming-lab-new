@@ -1066,6 +1066,15 @@ interface ScreeningFilters {
   ward: string;
   judgments: string[];
   sortBy: "rank" | "price_asc" | "price_desc" | "yield_desc" | "cf_desc" | "score_desc" | "ccr_desc";
+  // 楽待スタイル追加フィルター
+  structures: string[];
+  ageMax: number;
+  walkMax: number;
+  totalUnitsMin: number;
+  buildingAreaMin: number;
+  landAreaMin: number;
+  reBuildableOnly: boolean;
+  occupancyMin: number;
 }
 
 const DEFAULT_FILTERS: ScreeningFilters = {
@@ -1077,6 +1086,14 @@ const DEFAULT_FILTERS: ScreeningFilters = {
   ward: "",
   judgments: [],
   sortBy: "rank",
+  structures: [],
+  ageMax: 0,
+  walkMax: 0,
+  totalUnitsMin: 0,
+  buildingAreaMin: 0,
+  landAreaMin: 0,
+  reBuildableOnly: false,
+  occupancyMin: 0,
 };
 
 const SORT_OPTIONS: { value: ScreeningFilters["sortBy"]; label: string }[] = [
@@ -1095,6 +1112,33 @@ const JUDGMENT_OPTIONS = [
   { value: "review", label: "要精査", color: "bg-amber-500" },
   { value: "watch", label: "様子見", color: "bg-orange-400" },
   { value: "pass", label: "見送り", color: "bg-gray-400" },
+];
+
+const STRUCTURE_OPTIONS = [
+  { value: "SRC", label: "SRC造" },
+  { value: "RC", label: "RC造" },
+  { value: "S", label: "鉄骨造" },
+  { value: "LS", label: "軽量鉄骨造" },
+  { value: "W", label: "木造" },
+];
+
+const WALK_OPTIONS = [
+  { value: 0, label: "指定なし" },
+  { value: 3, label: "3分以内" },
+  { value: 5, label: "5分以内" },
+  { value: 7, label: "7分以内" },
+  { value: 10, label: "10分以内" },
+  { value: 15, label: "15分以内" },
+  { value: 20, label: "20分以内" },
+];
+
+const AGE_OPTIONS = [
+  { value: 0, label: "指定なし" },
+  { value: 10, label: "10年以内" },
+  { value: 20, label: "20年以内" },
+  { value: 30, label: "30年以内" },
+  { value: 40, label: "40年以内" },
+  { value: 50, label: "50年以内" },
 ];
 
 /* ========== Screening Filter Panel ========== */
@@ -1120,7 +1164,15 @@ function FilterPanel({
     filters.cfPositiveOnly ||
     filters.ward !== "" ||
     filters.judgments.length > 0 ||
-    filters.sortBy !== "rank";
+    filters.sortBy !== "rank" ||
+    filters.structures.length > 0 ||
+    filters.ageMax > 0 ||
+    filters.walkMax > 0 ||
+    filters.totalUnitsMin > 0 ||
+    filters.buildingAreaMin > 0 ||
+    filters.landAreaMin > 0 ||
+    filters.reBuildableOnly ||
+    filters.occupancyMin > 0;
 
   const activeCount = [
     filters.priceMin > 0 || filters.priceMax < 50000,
@@ -1130,6 +1182,13 @@ function FilterPanel({
     filters.ward !== "",
     filters.judgments.length > 0,
     filters.sortBy !== "rank",
+    filters.structures.length > 0,
+    filters.ageMax > 0,
+    filters.walkMax > 0,
+    filters.totalUnitsMin > 0,
+    filters.buildingAreaMin > 0 || filters.landAreaMin > 0,
+    filters.reBuildableOnly,
+    filters.occupancyMin > 0,
   ].filter(Boolean).length;
 
   const toggleJudgment = (j: string) => {
@@ -1137,6 +1196,13 @@ function FilterPanel({
       ? filters.judgments.filter((x) => x !== j)
       : [...filters.judgments, j];
     onChange({ ...filters, judgments: next });
+  };
+
+  const toggleStructure = (s: string) => {
+    const next = filters.structures.includes(s)
+      ? filters.structures.filter((x) => x !== s)
+      : [...filters.structures, s];
+    onChange({ ...filters, structures: next });
   };
 
   return (
@@ -1303,18 +1369,153 @@ function FilterPanel({
             </select>
           </div>
 
-          {/* CFプラスのみ */}
+          {/* 建物構造 */}
           <div>
-            <label className="flex items-center gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={filters.cfPositiveOnly}
-                onChange={(e) => onChange({ ...filters, cfPositiveOnly: e.target.checked })}
-                className="w-4 h-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
-                style={{ accentColor: TEAL }}
-              />
-              <span className="text-xs font-medium text-gray-700">CF（キャッシュフロー）がプラスの物件のみ表示</span>
+            <label className="text-xs font-semibold text-gray-600 mb-2 block">建物構造</label>
+            <div className="flex flex-wrap gap-1.5">
+              {STRUCTURE_OPTIONS.map((opt) => {
+                const active = filters.structures.includes(opt.value);
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => toggleStructure(opt.value)}
+                    className={`text-xs px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
+                      active
+                        ? "text-white border-teal-600 shadow-sm"
+                        : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
+                    }`}
+                    style={active ? { backgroundColor: TEAL } : {}}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 築年数・駅徒歩 */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-semibold text-gray-600 mb-2 block">築年数</label>
+              <select
+                value={filters.ageMax}
+                onChange={(e) => onChange({ ...filters, ageMax: Number(e.target.value) })}
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent bg-white"
+              >
+                {AGE_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-gray-600 mb-2 block">駅からの徒歩分数</label>
+              <select
+                value={filters.walkMax}
+                onChange={(e) => onChange({ ...filters, walkMax: Number(e.target.value) })}
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-transparent bg-white"
+              >
+                {WALK_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* 面積・戸数 */}
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-gray-600 mb-2 block">建物面積</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="下限"
+                  value={filters.buildingAreaMin || ""}
+                  onChange={(e) => onChange({ ...filters, buildingAreaMin: Number(e.target.value) || 0 })}
+                  className="w-full text-sm border border-gray-200 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300"
+                />
+                <span className="text-[10px] text-gray-400 shrink-0">㎡〜</span>
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-gray-600 mb-2 block">土地面積</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="下限"
+                  value={filters.landAreaMin || ""}
+                  onChange={(e) => onChange({ ...filters, landAreaMin: Number(e.target.value) || 0 })}
+                  className="w-full text-sm border border-gray-200 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300"
+                />
+                <span className="text-[10px] text-gray-400 shrink-0">㎡〜</span>
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-gray-600 mb-2 block">総戸数</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="下限"
+                  value={filters.totalUnitsMin || ""}
+                  onChange={(e) => onChange({ ...filters, totalUnitsMin: Number(e.target.value) || 0 })}
+                  className="w-full text-sm border border-gray-200 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-teal-300"
+                />
+                <span className="text-[10px] text-gray-400 shrink-0">戸〜</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 入居率 */}
+          <div>
+            <label className="text-xs font-semibold text-gray-600 mb-2 block">
+              入居率
+              {filters.occupancyMin > 0 && <span className="ml-2 font-normal text-gray-400">{filters.occupancyMin}%以上</span>}
             </label>
+            <div className="flex flex-wrap gap-1.5">
+              {[0, 50, 70, 80, 90, 100].map((v) => (
+                <button
+                  key={v}
+                  onClick={() => onChange({ ...filters, occupancyMin: v })}
+                  className={`text-xs px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
+                    filters.occupancyMin === v
+                      ? "text-white border-teal-600 shadow-sm"
+                      : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
+                  }`}
+                  style={filters.occupancyMin === v ? { backgroundColor: TEAL } : {}}
+                >
+                  {v === 0 ? "指定なし" : v === 100 ? "満室のみ" : `${v}%以上`}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* こだわり条件 */}
+          <div>
+            <label className="text-xs font-semibold text-gray-600 mb-2 block">こだわり条件</label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={filters.cfPositiveOnly}
+                  onChange={(e) => onChange({ ...filters, cfPositiveOnly: e.target.checked })}
+                  className="w-4 h-4 rounded border-gray-300"
+                  style={{ accentColor: TEAL }}
+                />
+                <span className="text-xs font-medium text-gray-700">CF（キャッシュフロー）がプラスの物件のみ</span>
+              </label>
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={filters.reBuildableOnly}
+                  onChange={(e) => onChange({ ...filters, reBuildableOnly: e.target.checked })}
+                  className="w-4 h-4 rounded border-gray-300"
+                  style={{ accentColor: TEAL }}
+                />
+                <span className="text-xs font-medium text-gray-700">再建築不可を除く</span>
+              </label>
+            </div>
           </div>
 
           {/* リセット */}
@@ -1336,8 +1537,10 @@ function FilterPanel({
 
 /* ========== Filter Logic ========== */
 function applyFilters(rankings: RankingItem[], filters: ScreeningFilters): RankingItem[] {
+  const currentYear = new Date().getFullYear();
   let result = rankings.filter((item) => {
-    const priceMan = Math.round(item.property.price / 10_000);
+    const p = item.property;
+    const priceMan = Math.round(p.price / 10_000);
     if (filters.priceMin > 0 && priceMan < filters.priceMin) return false;
     if (filters.priceMax < 50000 && priceMan > filters.priceMax) return false;
     if (filters.yieldMin > 0 && item.finance.grossYieldPct < filters.yieldMin) return false;
@@ -1345,6 +1548,27 @@ function applyFilters(rankings: RankingItem[], filters: ScreeningFilters): Ranki
     if (filters.cfPositiveOnly && item.finance.annualFullCfJpy < 0) return false;
     if (filters.ward && item.ward !== filters.ward) return false;
     if (filters.judgments.length > 0 && !filters.judgments.includes(item.buyJudgment)) return false;
+    // 建物構造
+    if (filters.structures.length > 0 && p.structureType && !filters.structures.includes(p.structureType)) return false;
+    // 築年数
+    if (filters.ageMax > 0 && p.builtYear) {
+      const age = currentYear - p.builtYear;
+      if (age > filters.ageMax) return false;
+    }
+    // 駅徒歩
+    if (filters.walkMax > 0 && p.station1?.walkMin != null) {
+      if (p.station1.walkMin > filters.walkMax) return false;
+    }
+    // 総戸数
+    if (filters.totalUnitsMin > 0 && p.totalUnits != null && p.totalUnits < filters.totalUnitsMin) return false;
+    // 建物面積
+    if (filters.buildingAreaMin > 0 && p.buildingAreaSqm != null && p.buildingAreaSqm < filters.buildingAreaMin) return false;
+    // 土地面積
+    if (filters.landAreaMin > 0 && p.landAreaSqm != null && p.landAreaSqm < filters.landAreaMin) return false;
+    // 再建築可否
+    if (filters.reBuildableOnly && p.reBuildable === false) return false;
+    // 入居率
+    if (filters.occupancyMin > 0 && p.occupancyRate != null && p.occupancyRate < filters.occupancyMin) return false;
     return true;
   });
 
