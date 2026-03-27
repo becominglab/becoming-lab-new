@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Flame, ChevronRight, Sparkles, ArrowRight } from "lucide-react";
+import { Flame, ChevronRight, Sparkles, ArrowRight, Trophy } from "lucide-react";
 
 interface BodyHomeProps {
   userName: string | null;
@@ -47,6 +47,16 @@ function calcScore(log: Log | null): number {
 const MEAL_LABELS = ["", "崩れた", "普通", "良い"];
 const WORKOUT_LABELS = ["", "何もしてない", "軽く動いた", "しっかりやった"];
 const MOOD_EMOJIS = ["", "😢", "😐", "😊"];
+
+function getStreakBadge(streak: number): { emoji: string; label: string } | null {
+  if (streak >= 100) return { emoji: "👑", label: "伝説" };
+  if (streak >= 50) return { emoji: "💎", label: "ダイヤモンド" };
+  if (streak >= 30) return { emoji: "🏆", label: "マスター" };
+  if (streak >= 14) return { emoji: "🌳", label: "定着" };
+  if (streak >= 7) return { emoji: "🌿", label: "習慣の芽" };
+  if (streak >= 3) return { emoji: "🌱", label: "スタート" };
+  return null;
+}
 
 export default function BodyHome({ userName }: BodyHomeProps) {
   const router = useRouter();
@@ -225,12 +235,14 @@ export default function BodyHome({ userName }: BodyHomeProps) {
           </div>
           <div className="flex gap-1 mt-2">
             {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className={`h-1.5 flex-1 rounded-full ${
-                  i <= score ? "bg-emerald-400" : "bg-stone-100"
-                }`}
-              />
+              <div key={i} className="h-1.5 flex-1 rounded-full bg-stone-100 overflow-hidden">
+                {i <= score && (
+                  <div
+                    className="h-full bg-emerald-400 rounded-full animate-score-grow"
+                    style={{ animationDelay: `${i * 0.15}s` }}
+                  />
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -247,11 +259,25 @@ export default function BodyHome({ userName }: BodyHomeProps) {
             </span>
             <span className="text-sm text-stone-300">日</span>
           </div>
-          {streak.max_streak > 0 && (
-            <p className="text-[10px] text-stone-400 mt-2">
-              最高: {streak.max_streak}日
-            </p>
-          )}
+          {(() => {
+            const badge = getStreakBadge(streak.current_streak);
+            if (badge) {
+              return (
+                <div className="flex items-center gap-1 mt-2">
+                  <span className="text-xs">{badge.emoji}</span>
+                  <span className="text-[10px] text-stone-500">{badge.label}</span>
+                </div>
+              );
+            }
+            if (streak.max_streak > 0) {
+              return (
+                <p className="text-[10px] text-stone-400 mt-2">
+                  最高: {streak.max_streak}日
+                </p>
+              );
+            }
+            return null;
+          })()}
         </div>
       </div>
 
