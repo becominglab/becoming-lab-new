@@ -24,5 +24,7 @@ export const config = {
     "/api/activities/:path*",
     "/api/health/:path*",
     "/api/auth/:path*",
+    "/body/:path*",
+    "/api/body/:path*",
   ],
 };
