@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Check, Trophy, Sparkles } from "lucide-react";
 import Link from "next/link";
 
@@ -34,6 +34,7 @@ const MILESTONES: Record<number, { emoji: string; label: string }> = {
 
 export default function BodyLog() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [meal, setMeal] = useState<number | null>(null);
   const [workout, setWorkout] = useState<number | null>(null);
   const [mood, setMood] = useState<number | null>(null);
@@ -44,10 +45,14 @@ export default function BodyLog() {
   const [milestone, setMilestone] = useState<{ emoji: string; label: string } | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
 
-  const today = new Date().toISOString().split("T")[0];
+  const todayStr = new Date().toISOString().split("T")[0];
+  const dateParam = searchParams.get("date");
+  // Allow logging for yesterday or today only
+  const targetDate = dateParam && dateParam >= (() => { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().split("T")[0]; })() && dateParam <= todayStr ? dateParam : todayStr;
+  const isBackfill = targetDate !== todayStr;
 
   useEffect(() => {
-    fetch(`/api/body/logs?from=${today}&to=${today}`)
+    fetch(`/api/body/logs?from=${targetDate}&to=${targetDate}`)
       .then((r) => r.json())
       .then((d) => {
         if (d.logs?.length > 0) {
@@ -59,7 +64,7 @@ export default function BodyLog() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [today]);
+  }, [targetDate]);
 
   const canSubmit = meal !== null && workout !== null && mood !== null;
 
@@ -72,7 +77,7 @@ export default function BodyLog() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          date: today,
+          date: targetDate,
           meal_score: meal,
           workout_score: workout,
           mood,
@@ -187,10 +192,10 @@ export default function BodyLog() {
         </Link>
         <div>
           <p className="text-[10px] tracking-[0.35em] text-stone-400 uppercase">
-            TODAY&apos;S LOG
+            {isBackfill ? "YESTERDAY'S LOG" : "TODAY'S LOG"}
           </p>
           <h1 className="text-xl font-light text-gray-900 mt-1">
-            今日の更新
+            {isBackfill ? "昨日の記録" : "今日の更新"}
           </h1>
         </div>
       </div>
