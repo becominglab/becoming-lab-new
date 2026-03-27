@@ -15,6 +15,7 @@ export default function BodyProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/body/profile")
@@ -31,9 +32,18 @@ export default function BodyProfile() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Auto-dismiss error
+  useEffect(() => {
+    if (error) {
+      const t = setTimeout(() => setError(null), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [error]);
+
   const handleSave = async () => {
     if (saving) return;
     setSaving(true);
+    setError(null);
     try {
       const res = await fetch("/api/body/profile", {
         method: "POST",
@@ -48,7 +58,12 @@ export default function BodyProfile() {
       if (res.ok) {
         setSaved(true);
         setTimeout(() => router.push("/body"), 1000);
+      } else {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || "保存に失敗しました。もう一度お試しください。");
       }
+    } catch {
+      setError("通信エラーが発生しました。接続を確認してください。");
     } finally {
       setSaving(false);
     }
@@ -64,6 +79,15 @@ export default function BodyProfile() {
 
   return (
     <div className="px-6 pt-12 pb-28">
+      {/* Error Toast */}
+      {error && (
+        <div className="fixed top-4 left-4 right-4 z-50 animate-slide-down">
+          <div className="mx-auto max-w-md bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm shadow-lg">
+            {error}
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center gap-3 mb-10">
         <Link href="/body" className="text-stone-400 hover:text-stone-600">
