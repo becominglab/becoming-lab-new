@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Trophy, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 const MEAL_OPTIONS = [
@@ -23,6 +23,15 @@ const MOOD_OPTIONS = [
   { value: 3, label: "😊", sublabel: "良い", color: "bg-emerald-50 border-emerald-200", activeColor: "bg-emerald-500 text-white border-emerald-500" },
 ];
 
+const MILESTONES: Record<number, { emoji: string; label: string }> = {
+  3: { emoji: "🌱", label: "3日連続！芽が出た" },
+  7: { emoji: "🌿", label: "1週間達成！習慣の種" },
+  14: { emoji: "🌳", label: "2週間！根を張った" },
+  30: { emoji: "🏆", label: "30日達成！もう止まらない" },
+  50: { emoji: "💎", label: "50日！ダイヤモンドの意志" },
+  100: { emoji: "👑", label: "100日！伝説の始まり" },
+};
+
 export default function BodyLog() {
   const router = useRouter();
   const [meal, setMeal] = useState<number | null>(null);
@@ -31,6 +40,9 @@ export default function BodyLog() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [milestone, setMilestone] = useState<{ emoji: string; label: string } | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -54,6 +66,7 @@ export default function BodyLog() {
   const handleSubmit = async () => {
     if (!canSubmit || saving) return;
     setSaving(true);
+    setError(null);
     try {
       const res = await fetch("/api/body/logs", {
         method: "POST",
@@ -66,13 +79,35 @@ export default function BodyLog() {
         }),
       });
       if (res.ok) {
+        const data = await res.json();
         setSaved(true);
-        setTimeout(() => router.push("/body"), 800);
+        setShowCelebration(true);
+
+        // Check for milestone
+        const streak = data.streak?.current_streak;
+        if (streak && MILESTONES[streak]) {
+          setMilestone(MILESTONES[streak]);
+        }
+
+        setTimeout(() => router.push("/body"), milestone ? 2500 : 1500);
+      } else {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || "保存に失敗しました。もう一度お試しください。");
       }
+    } catch {
+      setError("通信エラーが発生しました。接続を確認してください。");
     } finally {
       setSaving(false);
     }
   };
+
+  // Auto-dismiss error after 4s
+  useEffect(() => {
+    if (error) {
+      const t = setTimeout(() => setError(null), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [error]);
 
   if (loading) {
     return (
@@ -82,8 +117,69 @@ export default function BodyLog() {
     );
   }
 
+  // ── Celebration overlay ──
+  if (showCelebration) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-stone-50">
+        <div className="animate-bounce-in">
+          <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mb-6 mx-auto shadow-lg shadow-emerald-200">
+            <Check size={40} className="text-white" strokeWidth={3} />
+          </div>
+          <p className="text-xl font-light text-gray-900 text-center mb-2">
+            記録しました！
+          </p>
+          <p className="text-sm text-stone-400 text-center">
+            今日も自分を更新できた
+          </p>
+        </div>
+
+        {milestone && (
+          <div className="mt-8 animate-fade-in-up">
+            <div className="bg-white rounded-2xl px-8 py-6 border border-amber-100 shadow-lg shadow-amber-50 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Trophy size={18} className="text-amber-500" />
+                <span className="text-[10px] tracking-[0.3em] text-amber-500 uppercase font-medium">
+                  MILESTONE
+                </span>
+              </div>
+              <p className="text-4xl mb-2">{milestone.emoji}</p>
+              <p className="text-sm font-medium text-gray-800">
+                {milestone.label}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Confetti particles */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 rounded-full animate-confetti"
+              style={{
+                left: `${10 + Math.random() * 80}%`,
+                backgroundColor: ["#10b981", "#f59e0b", "#6366f1", "#ec4899", "#14b8a6"][i % 5],
+                animationDelay: `${i * 0.1}s`,
+                animationDuration: `${1 + Math.random() * 0.5}s`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-6 pt-12 pb-28">
+      {/* Error Toast */}
+      {error && (
+        <div className="fixed top-4 left-4 right-4 z-50 animate-slide-down">
+          <div className="mx-auto max-w-md bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm shadow-lg">
+            {error}
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center gap-3 mb-10">
         <Link href="/body" className="text-stone-400 hover:text-stone-600">

@@ -32,7 +32,7 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // 保護されたページで未認証 → ログインへリダイレクト
-  const protectedPages = ["/home", "/mypage", "/profile"];
+  const protectedPages = ["/home", "/mypage", "/profile", "/body"];
   const isProtectedPage = protectedPages.some(
     (p) => pathname === p || pathname.startsWith(p + "/")
   );
@@ -51,6 +51,7 @@ export async function updateSession(request: NextRequest) {
     "/api/integrations",
     "/api/activities",
     "/api/health",
+    "/api/body",
   ];
   const isProtectedApi = protectedApis.some(
     (p) => pathname === p || pathname.startsWith(p + "/")
