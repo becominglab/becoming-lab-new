@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Flame, ChevronRight, Sparkles, ArrowRight, Trophy } from "lucide-react";
+import { Flame, ChevronRight, Sparkles, ArrowRight, AlertCircle } from "lucide-react";
 
 interface BodyHomeProps {
   userName: string | null;
@@ -47,6 +47,7 @@ function calcScore(log: Log | null): number {
 const MEAL_LABELS = ["", "崩れた", "普通", "良い"];
 const WORKOUT_LABELS = ["", "何もしてない", "軽く動いた", "しっかりやった"];
 const MOOD_EMOJIS = ["", "😢", "😐", "😊"];
+const DAY_NAMES = ["日", "月", "火", "水", "木", "金", "土"];
 
 function getStreakBadge(streak: number): { emoji: string; label: string } | null {
   if (streak >= 100) return { emoji: "👑", label: "伝説" };
@@ -58,9 +59,20 @@ function getStreakBadge(streak: number): { emoji: string; label: string } | null
   return null;
 }
 
+function getLast7Days(): string[] {
+  const days: string[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().split("T")[0]);
+  }
+  return days;
+}
+
 export default function BodyHome({ userName }: BodyHomeProps) {
   const router = useRouter();
   const [todayLog, setTodayLog] = useState<Log | null>(null);
+  const [recentLogs, setRecentLogs] = useState<Log[]>([]);
   const [streak, setStreak] = useState<Streak>({ current_streak: 0, max_streak: 0, last_log_date: null });
   const [coachMessage, setCoachMessage] = useState<string>("");
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -68,28 +80,32 @@ export default function BodyHome({ userName }: BodyHomeProps) {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const last7 = useMemo(() => getLast7Days(), []);
+  const weekFrom = last7[0];
 
   useEffect(() => {
     Promise.all([
-      fetch(`/api/body/logs?from=${today}&to=${today}`).then((r) => r.json()),
+      fetch(`/api/body/logs?from=${weekFrom}&to=${today}&limit=7`).then((r) => r.json()),
       fetch("/api/body/streaks").then((r) => r.json()),
       fetch("/api/body/coach").then((r) => r.json()),
       fetch("/api/body/profile").then((r) => r.json()),
     ])
       .then(([logsData, streakData, coachData, profileData]) => {
-        if (logsData.logs?.length > 0) setTodayLog(logsData.logs[0]);
+        const logs: Log[] = logsData.logs || [];
+        setRecentLogs(logs);
+        const todayEntry = logs.find((l: Log) => l.date === today);
+        if (todayEntry) setTodayLog(todayEntry);
         if (streakData.streak) setStreak(streakData.streak);
         if (coachData.message) setCoachMessage(coachData.message);
         if (profileData.profile) {
           setProfile(profileData.profile);
         } else {
-          // No profile yet — show onboarding
           setShowOnboarding(true);
         }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [today]);
+  }, [today, weekFrom]);
 
   if (loading) {
     return (
@@ -165,6 +181,15 @@ export default function BodyHome({ userName }: BodyHomeProps) {
   const score = calcScore(todayLog);
   const logged = todayLog !== null;
 
+  // Check if yesterday is missing
+  const yesterday = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return d.toISOString().split("T")[0];
+  })();
+  const yesterdayLogged = recentLogs.some((l) => l.date === yesterday);
+  const logsByDate = new Map(recentLogs.map((l) => [l.date, l]));
+
   return (
     <div className="px-6 pt-14 pb-8">
       {/* Greeting */}
@@ -179,6 +204,24 @@ export default function BodyHome({ userName }: BodyHomeProps) {
           )}
         </h1>
       </div>
+
+      {/* Yesterday Missing Banner */}
+      {!yesterdayLogged && streak.current_streak > 0 && (
+        <Link href={`/body/log?date=${yesterday}`}>
+          <div className="bg-amber-50 rounded-2xl p-4 mb-6 border border-amber-100 flex items-center gap-3 hover:bg-amber-100 transition-colors">
+            <AlertCircle size={18} className="text-amber-500 shrink-0" />
+            <div>
+              <p className="text-sm text-amber-800 font-medium">
+                昨日の記録がまだです
+              </p>
+              <p className="text-xs text-amber-600 mt-0.5">
+                タップして記録すればストリーク継続！
+              </p>
+            </div>
+            <ChevronRight size={16} className="text-amber-300 ml-auto shrink-0" />
+          </div>
+        </Link>
+      )}
 
       {/* AI Coach Message */}
       {coachMessage && (
@@ -221,6 +264,45 @@ export default function BodyHome({ userName }: BodyHomeProps) {
           )}
         </div>
       </Link>
+
+      {/* 7-Day Mini Calendar */}
+      <div className="bg-white rounded-2xl p-4 mb-6 border border-stone-100 shadow-sm">
+        <p className="text-[10px] tracking-[0.2em] text-stone-400 uppercase mb-3">
+          THIS WEEK
+        </p>
+        <div className="flex justify-between">
+          {last7.map((dateStr) => {
+            const d = new Date(dateStr + "T00:00:00");
+            const dayName = DAY_NAMES[d.getDay()];
+            const isToday = dateStr === today;
+            const log = logsByDate.get(dateStr);
+            const logScore = log ? calcScore(log) : -1;
+
+            return (
+              <div key={dateStr} className="flex flex-col items-center gap-1.5">
+                <span className={`text-[10px] ${isToday ? "text-gray-900 font-medium" : "text-stone-400"}`}>
+                  {dayName}
+                </span>
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs transition-all ${
+                    isToday && !log
+                      ? "border-2 border-dashed border-stone-300 text-stone-300"
+                      : logScore === 3
+                        ? "bg-emerald-500 text-white"
+                        : logScore >= 1
+                          ? "bg-emerald-100 text-emerald-700"
+                          : dateStr > today
+                            ? "bg-stone-50 text-stone-200"
+                            : "bg-stone-100 text-stone-300"
+                  }`}
+                >
+                  {log ? logScore : isToday ? "?" : dateStr > today ? "" : "·"}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Score & Streak */}
       <div className="grid grid-cols-2 gap-4 mb-6">
