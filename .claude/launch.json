@@ -2,10 +2,24 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "becominglab-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
       "name": "eng2-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "eng2"],
       "port": 3001,
+      "autoPort": true
+    },
+    {
+      "name": "becoming-coach",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "/Users/otsukatakao/projects/becoming-coach"],
+      "port": 3099,
       "autoPort": true
     }
   ]
