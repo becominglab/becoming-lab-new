@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Bell } from "lucide-react";
 import Link from "next/link";
 
 export default function BodyProfile() {
   const router = useRouter();
   const [whyText, setWhyText] = useState("");
   const [goalText, setGoalText] = useState("");
+  const [lineCode, setLineCode] = useState("");
+  const [lineLinked, setLineLinked] = useState(false);
+  const [lineRemind, setLineRemind] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -20,6 +23,8 @@ export default function BodyProfile() {
         if (d.profile) {
           setWhyText(d.profile.why_text || "");
           setGoalText(d.profile.goal_text || "");
+          setLineLinked(!!d.profile.line_user_id);
+          setLineRemind(d.profile.line_remind || false);
         }
       })
       .catch(() => {})
@@ -33,7 +38,12 @@ export default function BodyProfile() {
       const res = await fetch("/api/body/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ why_text: whyText.trim(), goal_text: goalText.trim() }),
+        body: JSON.stringify({
+          why_text: whyText.trim(),
+          goal_text: goalText.trim(),
+          line_code: lineCode.trim() || undefined,
+          line_remind: lineRemind,
+        }),
       });
       if (res.ok) {
         setSaved(true);
@@ -53,7 +63,7 @@ export default function BodyProfile() {
   }
 
   return (
-    <div className="px-6 pt-12 pb-8">
+    <div className="px-6 pt-12 pb-28">
       {/* Header */}
       <div className="flex items-center gap-3 mb-10">
         <Link href="/body" className="text-stone-400 hover:text-stone-600">
@@ -95,6 +105,54 @@ export default function BodyProfile() {
           rows={3}
           className="w-full px-4 py-3 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-stone-300 bg-white resize-none"
         />
+      </div>
+
+      {/* LINE Reminder Section */}
+      <div className="mb-10">
+        <div className="flex items-center gap-2 mb-4">
+          <Bell size={16} className="text-emerald-600" />
+          <span className="text-sm font-medium text-gray-700">LINEリマインダー</span>
+        </div>
+
+        {lineLinked ? (
+          <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-emerald-800 font-medium">LINE連携済み</p>
+                <p className="text-xs text-emerald-600 mt-1">毎日20時にリマインドが届きます</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setLineRemind(!lineRemind)}
+                className={`relative w-12 h-7 rounded-full transition-colors ${
+                  lineRemind ? "bg-emerald-500" : "bg-stone-300"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${
+                    lineRemind ? "translate-x-5" : ""
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-stone-50 rounded-xl p-4 border border-stone-200">
+            <p className="text-xs text-stone-500 mb-3">
+              LINEで毎日リマインドを受け取れます。
+              <br />
+              Bot を友だち追加し、連携コードを入力してください。
+            </p>
+            <input
+              type="text"
+              value={lineCode}
+              onChange={(e) => setLineCode(e.target.value)}
+              placeholder="連携コード（8文字）"
+              maxLength={8}
+              className="w-full px-4 py-3 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-stone-300 bg-white"
+            />
+          </div>
+        )}
       </div>
 
       {/* Save */}

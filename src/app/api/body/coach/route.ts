@@ -40,6 +40,68 @@ function getFallbackMessage(): string {
   return FALLBACK_MESSAGES[day % FALLBACK_MESSAGES.length];
 }
 
+interface LogRow {
+  date: string;
+  meal_score: number;
+  workout_score: number;
+  mood: number;
+}
+
+function analyzeTrends(logs: LogRow[]): string {
+  if (logs.length === 0) return "";
+
+  const sorted = [...logs].sort((a, b) => a.date.localeCompare(b.date));
+  const latest = sorted[sorted.length - 1];
+  const lines: string[] = [];
+
+  // Meal trend
+  const mealAvg = logs.reduce((s, l) => s + l.meal_score, 0) / logs.length;
+  const workoutAvg = logs.reduce((s, l) => s + l.workout_score, 0) / logs.length;
+  const moodAvg = logs.reduce((s, l) => s + l.mood, 0) / logs.length;
+
+  // Identify best/worst areas
+  const areas = [
+    { name: "食事", avg: mealAvg, latest: latest.meal_score },
+    { name: "運動", avg: workoutAvg, latest: latest.workout_score },
+    { name: "気分", avg: moodAvg, latest: latest.mood },
+  ];
+  const best = areas.reduce((a, b) => (a.avg > b.avg ? a : b));
+  const weakest = areas.reduce((a, b) => (a.avg < b.avg ? a : b));
+
+  lines.push(`・得意エリア: ${best.name}（平均${best.avg.toFixed(1)}）`);
+  lines.push(`・改善余地: ${weakest.name}（平均${weakest.avg.toFixed(1)}）`);
+
+  // Trend direction (compare first half vs second half)
+  if (sorted.length >= 4) {
+    const half = Math.floor(sorted.length / 2);
+    const firstHalf = sorted.slice(0, half);
+    const secondHalf = sorted.slice(half);
+    const firstAvg = firstHalf.reduce((s, l) => s + l.meal_score + l.workout_score + l.mood, 0) / (firstHalf.length * 3);
+    const secondAvg = secondHalf.reduce((s, l) => s + l.meal_score + l.workout_score + l.mood, 0) / (secondHalf.length * 3);
+
+    if (secondAvg > firstAvg + 0.2) {
+      lines.push("・トレンド: 上昇傾向 📈");
+    } else if (secondAvg < firstAvg - 0.2) {
+      lines.push("・トレンド: 少し下降気味 — でも戻すチャンスは今日");
+    } else {
+      lines.push("・トレンド: 安定して継続中");
+    }
+  }
+
+  // Consecutive patterns
+  const lowMoodDays = sorted.filter((l) => l.mood === 1).length;
+  if (lowMoodDays >= 3) {
+    lines.push(`・気分が低い日が${lowMoodDays}日 — 無理せず、自分を労わって`);
+  }
+
+  const perfectDays = sorted.filter((l) => l.meal_score >= 2 && l.workout_score >= 2 && l.mood >= 2).length;
+  if (perfectDays > 0) {
+    lines.push(`・スコア2以上の日: ${perfectDays}/${sorted.length}日`);
+  }
+
+  return lines.join("\n");
+}
+
 export async function GET() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -55,13 +117,15 @@ export async function GET() {
   }
 
   // Fetch user context for personalization
-  const [profileRes, logsRes] = await Promise.all([
+  const [profileRes, logsRes, streakRes] = await Promise.all([
     supabase.from("body_profiles").select("why_text, goal_text").eq("user_id", user.id).maybeSingle(),
     supabase.from("body_logs").select("*").eq("user_id", user.id).order("date", { ascending: false }).limit(7),
+    supabase.from("body_streaks").select("*").eq("user_id", user.id).maybeSingle(),
   ]);
 
   const profile = profileRes.data;
-  const recentLogs = logsRes.data || [];
+  const recentLogs: LogRow[] = logsRes.data || [];
+  const streakData = streakRes.data;
 
   // Try AI generation
   try {
@@ -70,34 +134,59 @@ export async function GET() {
 
     const client = new OpenAI({ apiKey });
 
-    // Build context
+    // Build rich context
     let context = "ユーザーの状況:\n";
     if (profile?.why_text) context += `・変わりたい理由: ${profile.why_text}\n`;
     if (profile?.goal_text) context += `・なりたい自分: ${profile.goal_text}\n`;
+
+    if (streakData) {
+      context += `・現在のストリーク: ${streakData.current_streak}日連続\n`;
+      context += `・最高ストリーク: ${streakData.max_streak}日\n`;
+    }
+
     if (recentLogs.length > 0) {
-      const streak = recentLogs.length;
-      const avgMeal = recentLogs.reduce((s: number, l: { meal_score: number }) => s + l.meal_score, 0) / streak;
-      const avgWorkout = recentLogs.reduce((s: number, l: { workout_score: number }) => s + l.workout_score, 0) / streak;
-      context += `・直近${streak}日の記録あり（食事平均: ${avgMeal.toFixed(1)}, 運動平均: ${avgWorkout.toFixed(1)}）\n`;
+      context += `・直近${recentLogs.length}日の記録あり\n`;
+      context += analyzeTrends(recentLogs) + "\n";
+
+      // Yesterday's specific log for immediate feedback
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split("T")[0];
+      const yesterdayLog = recentLogs.find((l) => l.date === yesterdayStr);
+      if (yesterdayLog) {
+        const mealLabels = ["", "崩れた", "普通", "良い"];
+        const workoutLabels = ["", "何もしてない", "軽く動いた", "しっかりやった"];
+        context += `・昨日: 食事=${mealLabels[yesterdayLog.meal_score]}, 運動=${workoutLabels[yesterdayLog.workout_score]}, 気分=${yesterdayLog.mood === 3 ? "良い" : yesterdayLog.mood === 2 ? "普通" : "低い"}\n`;
+      }
     } else {
       context += "・まだ記録がありません（初日 or 復帰）\n";
     }
 
+    // Check if today is already logged
+    const todayLog = recentLogs.find((l) => l.date === today);
+    if (todayLog) {
+      context += "・今日は既に記録済み\n";
+    } else {
+      context += "・今日はまだ未記録\n";
+    }
+
     const res = await client.chat.completions.create({
       model: "gpt-4o-mini",
-      max_tokens: 150,
+      max_tokens: 200,
       temperature: 0.9,
       messages: [
         {
           role: "system",
           content: `あなたはBecoming BodyのAIコーチです。Becoming Bodyは「痩せる」ではなく「更新される自分を積み上げる」アプリです。
 
-以下のルールで、今日の一言メッセージを1つだけ生成してください:
-- 20〜60文字
+以下のルールで、今日のメッセージを生成してください:
+- 30〜80文字
 - 温かく、でも芯がある
 - 頑張らせるのではなく、自然に続けたくなる言葉
-- ユーザーの状況に寄り添う
-- 装飾不要、句読点のみ`,
+- ユーザーのデータに基づく具体的なコメントを含む（例: 「運動を3日連続でやってますね」「食事の調子が上がってきてる」）
+- ただし数字の羅列にならず、感情に寄り添う
+- 装飾不要、句読点のみ
+- 一言目で具体的な事実、二言目で応援や気づきを入れる`,
         },
         {
           role: "user",

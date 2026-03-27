@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Flame, ChevronRight, Sparkles } from "lucide-react";
+import { Flame, ChevronRight, Sparkles, ArrowRight } from "lucide-react";
 
 interface BodyHomeProps {
   userName: string | null;
@@ -48,13 +49,15 @@ const WORKOUT_LABELS = ["", "何もしてない", "軽く動いた", "しっか�
 const MOOD_EMOJIS = ["", "😢", "😐", "😊"];
 
 export default function BodyHome({ userName }: BodyHomeProps) {
+  const router = useRouter();
   const [todayLog, setTodayLog] = useState<Log | null>(null);
   const [streak, setStreak] = useState<Streak>({ current_streak: 0, max_streak: 0, last_log_date: null });
   const [coachMessage, setCoachMessage] = useState<string>("");
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
 
   useEffect(() => {
     Promise.all([
@@ -67,7 +70,12 @@ export default function BodyHome({ userName }: BodyHomeProps) {
         if (logsData.logs?.length > 0) setTodayLog(logsData.logs[0]);
         if (streakData.streak) setStreak(streakData.streak);
         if (coachData.message) setCoachMessage(coachData.message);
-        if (profileData.profile) setProfile(profileData.profile);
+        if (profileData.profile) {
+          setProfile(profileData.profile);
+        } else {
+          // No profile yet — show onboarding
+          setShowOnboarding(true);
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -77,6 +85,69 @@ export default function BodyHome({ userName }: BodyHomeProps) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="w-5 h-5 border-2 border-stone-300 border-t-stone-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // ── Onboarding (first-time user) ──
+  if (showOnboarding) {
+    return (
+      <div className="px-6 pt-20 pb-8 flex flex-col items-center text-center">
+        <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mb-8">
+          <Sparkles size={28} className="text-white" />
+        </div>
+
+        <h1 className="text-2xl font-light text-gray-900 mb-3">
+          Becoming Body へようこそ
+        </h1>
+        <p className="text-sm text-stone-500 font-light leading-relaxed mb-2">
+          痩せるんじゃない、更新する。
+        </p>
+        <p className="text-sm text-stone-400 font-light leading-relaxed mb-10 max-w-xs">
+          毎日10秒、食事・運動・気分を記録するだけ。
+          <br />
+          小さな積み重ねが、あなたを変えていきます。
+        </p>
+
+        <div className="w-full space-y-4 mb-10">
+          <div className="bg-white rounded-2xl p-5 border border-stone-100 text-left">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600 text-sm font-medium">1</span>
+              <span className="text-sm font-medium text-gray-800">Whyを設定する</span>
+            </div>
+            <p className="text-xs text-stone-400 ml-11">なぜ変わりたいのか、言葉にしましょう</p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-5 border border-stone-100 text-left">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="w-8 h-8 bg-stone-100 rounded-lg flex items-center justify-center text-stone-500 text-sm font-medium">2</span>
+              <span className="text-sm font-medium text-gray-800">毎日10秒で記録</span>
+            </div>
+            <p className="text-xs text-stone-400 ml-11">食事・運動・気分を3択でタップ</p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-5 border border-stone-100 text-left">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="w-8 h-8 bg-stone-100 rounded-lg flex items-center justify-center text-stone-500 text-sm font-medium">3</span>
+              <span className="text-sm font-medium text-gray-800">変化を振り返る</span>
+            </div>
+            <p className="text-xs text-stone-400 ml-11">週間・月間で自分の変化が見える</p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => router.push("/body/profile")}
+          className="w-full bg-gray-900 text-white py-4 rounded-xl text-sm font-medium hover:bg-gray-800 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+        >
+          まずWhyを設定する <ArrowRight size={16} />
+        </button>
+
+        <button
+          onClick={() => setShowOnboarding(false)}
+          className="mt-4 text-xs text-stone-400 hover:text-stone-600 transition-colors"
+        >
+          あとで設定する
+        </button>
       </div>
     );
   }
@@ -183,6 +254,17 @@ export default function BodyHome({ userName }: BodyHomeProps) {
           )}
         </div>
       </div>
+
+      {/* History Link */}
+      <Link href="/body/history">
+        <div className="bg-white rounded-2xl p-4 mb-6 border border-stone-100 shadow-sm hover:shadow-md transition-shadow flex items-center justify-between">
+          <div>
+            <p className="text-[10px] tracking-[0.2em] text-stone-400 uppercase mb-1">HISTORY</p>
+            <p className="text-sm text-gray-700 font-light">週間・月間の振り返りを見る</p>
+          </div>
+          <ChevronRight size={16} className="text-stone-300" />
+        </div>
+      </Link>
 
       {/* Why */}
       <Link href="/body/profile">

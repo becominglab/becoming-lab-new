@@ -83,7 +83,7 @@ export default function BodyLog() {
   }
 
   return (
-    <div className="px-6 pt-12 pb-8">
+    <div className="px-6 pt-12 pb-28">
       {/* Header */}
       <div className="flex items-center gap-3 mb-10">
         <Link href="/body" className="text-stone-400 hover:text-stone-600">

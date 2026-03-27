@@ -2,11 +2,12 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Home, PlusCircle, User } from "lucide-react";
+import { Home, PlusCircle, BarChart3, User } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/body", label: "ホーム", icon: Home },
   { href: "/body/log", label: "記録", icon: PlusCircle },
+  { href: "/body/history", label: "振返り", icon: BarChart3 },
   { href: "/body/profile", label: "Why", icon: User },
 ];
 
@@ -22,7 +23,7 @@ export default function BodyNav() {
             <Link
               key={href}
               href={href}
-              className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-colors ${
+              className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors ${
                 active
                   ? "text-gray-900"
                   : "text-stone-400 hover:text-stone-600"
