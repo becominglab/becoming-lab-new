@@ -92,7 +92,7 @@ export default function BodyHome({ userName }: BodyHomeProps) {
   // ── Onboarding (first-time user) ──
   if (showOnboarding) {
     return (
-      <div className="px-6 pt-20 pb-8 flex flex-col items-center text-center">
+      <div className="px-6 pt-20 pb-28 flex flex-col items-center text-center">
         <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mb-8">
           <Sparkles size={28} className="text-white" />
         </div>
