@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: "not_authenticated" }, { status: 401 });
 
   const body = await request.json();
-  const { date, meal_score, workout_score, mood } = body;
+  const { date, meal_score, workout_score, mood, weight_kg } = body;
 
   const logDate = date || new Date().toISOString().split("T")[0];
 
@@ -45,19 +45,29 @@ export async function POST(request: Request) {
     }
   }
 
+  // Validate weight if provided
+  if (weight_kg !== undefined && weight_kg !== null) {
+    const w = Number(weight_kg);
+    if (isNaN(w) || w < 20 || w > 300) {
+      return NextResponse.json({ error: "weight_kg must be between 20 and 300" }, { status: 400 });
+    }
+  }
+
   // Upsert the daily log
+  const upsertPayload: Record<string, unknown> = {
+    user_id: user.id,
+    date: logDate,
+    meal_score,
+    workout_score,
+    mood,
+  };
+  if (weight_kg !== undefined && weight_kg !== null) {
+    upsertPayload.weight_kg = Number(weight_kg);
+  }
+
   const { data: log, error: logError } = await supabase
     .from("body_logs")
-    .upsert(
-      {
-        user_id: user.id,
-        date: logDate,
-        meal_score,
-        workout_score,
-        mood,
-      },
-      { onConflict: "user_id,date" }
-    )
+    .upsert(upsertPayload, { onConflict: "user_id,date" })
     .select()
     .single();
 

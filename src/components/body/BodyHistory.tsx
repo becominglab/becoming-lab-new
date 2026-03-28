@@ -35,11 +35,22 @@ const Tooltip = dynamic(
   { ssr: false }
 );
 
+// Dynamic imports for LineChart
+const LineChart = dynamic(
+  () => import("recharts").then((m) => m.LineChart),
+  { ssr: false }
+);
+const Line = dynamic(
+  () => import("recharts").then((m) => m.Line),
+  { ssr: false }
+);
+
 interface Log {
   date: string;
   meal_score: number;
   workout_score: number;
   mood: number;
+  weight_kg?: number | null;
 }
 
 function calcScore(log: Log): number {
@@ -122,24 +133,33 @@ export default function BodyHistory() {
   const logByDate = new Map(weekLogs.map((l) => [l.date, l]));
 
   // Build chart data for month view
-  const chartData = useMemo(() => {
+  const { chartData, weightData, hasWeight } = useMemo(() => {
     const { from } = getMonthRange();
     const fromDate = new Date(from + "T00:00:00");
     const monthMap = new Map(monthLogs.map((l) => [l.date, l]));
-    const data: { date: string; label: string; score: number | null }[] = [];
+    const scoreArr: { date: string; label: string; score: number | null }[] = [];
+    const weightArr: { date: string; label: string; weight: number | null }[] = [];
+    let anyWeight = false;
 
     for (let i = 0; i < 30; i++) {
       const d = new Date(fromDate);
       d.setDate(fromDate.getDate() + i);
       const dateStr = d.toISOString().split("T")[0];
       const log = monthMap.get(dateStr);
-      data.push({
+      scoreArr.push({
         date: dateStr,
         label: `${d.getMonth() + 1}/${d.getDate()}`,
         score: log ? calcScore(log) : null,
       });
+      const w = log?.weight_kg ? Number(log.weight_kg) : null;
+      if (w) anyWeight = true;
+      weightArr.push({
+        date: dateStr,
+        label: `${d.getMonth() + 1}/${d.getDate()}`,
+        weight: w,
+      });
     }
-    return data;
+    return { chartData: scoreArr, weightData: weightArr, hasWeight: anyWeight };
   }, [monthLogs]);
 
   if (loading) {
@@ -283,8 +303,8 @@ export default function BodyHistory() {
         })}
       </div>
 
-      {/* Monthly Chart */}
-      <div className="mb-4">
+      {/* Monthly Score Chart */}
+      <div className="mb-8">
         <p className="text-[10px] tracking-[0.35em] text-stone-400 uppercase mb-4">
           30-DAY SCORE TREND
         </p>
@@ -336,6 +356,55 @@ export default function BodyHistory() {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* Weight Chart (shown only if user has weight data) */}
+      {hasWeight && (
+        <div className="mb-4">
+          <p className="text-[10px] tracking-[0.35em] text-stone-400 uppercase mb-4">
+            WEIGHT TREND
+          </p>
+          <div className="bg-white rounded-2xl p-4 border border-stone-100">
+            <ResponsiveContainer width="100%" height={180}>
+              <LineChart data={weightData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f4" />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 10, fill: "#a8a29e" }}
+                  tickLine={false}
+                  axisLine={false}
+                  interval={6}
+                />
+                <YAxis
+                  domain={["dataMin - 1", "dataMax + 1"]}
+                  tick={{ fontSize: 10, fill: "#a8a29e" }}
+                  tickLine={false}
+                  axisLine={false}
+                  width={30}
+                  unit="kg"
+                />
+                <Tooltip
+                  formatter={(value: unknown) => [`${value} kg`, "体重"]}
+                  labelFormatter={(label: unknown) => String(label)}
+                  contentStyle={{
+                    fontSize: 12,
+                    borderRadius: 8,
+                    border: "1px solid #e7e5e4",
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="weight"
+                  stroke="#6366f1"
+                  strokeWidth={2}
+                  connectNulls
+                  dot={{ r: 2, fill: "#6366f1" }}
+                  activeDot={{ r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

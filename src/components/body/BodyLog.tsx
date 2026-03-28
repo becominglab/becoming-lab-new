@@ -38,6 +38,7 @@ export default function BodyLog() {
   const [meal, setMeal] = useState<number | null>(null);
   const [workout, setWorkout] = useState<number | null>(null);
   const [mood, setMood] = useState<number | null>(null);
+  const [weightKg, setWeightKg] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -60,6 +61,7 @@ export default function BodyLog() {
           setMeal(log.meal_score);
           setWorkout(log.workout_score);
           setMood(log.mood);
+          if (log.weight_kg) setWeightKg(String(log.weight_kg));
         }
       })
       .catch(() => {})
@@ -81,6 +83,7 @@ export default function BodyLog() {
           meal_score: meal,
           workout_score: workout,
           mood,
+          ...(weightKg ? { weight_kg: parseFloat(weightKg) } : {}),
         }),
       });
       if (res.ok) {
@@ -253,6 +256,33 @@ export default function BodyLog() {
           ))}
         </div>
       </Section>
+
+      {/* Weight (optional) */}
+      <div className="mb-8">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="w-5 h-5 rounded-full bg-stone-100 text-[10px] flex items-center justify-center text-stone-400 font-medium">
+            +
+          </span>
+          <span className="text-sm font-medium text-gray-700">体重</span>
+          <span className="text-[10px] text-stone-400 ml-1">任意</span>
+        </div>
+        <div className="relative">
+          <input
+            type="number"
+            inputMode="decimal"
+            step="0.1"
+            min="20"
+            max="300"
+            placeholder="65.0"
+            value={weightKg}
+            onChange={(e) => setWeightKg(e.target.value)}
+            className="w-full py-4 px-4 pr-12 rounded-xl border-2 border-stone-200 text-sm text-gray-900 placeholder:text-stone-300 focus:outline-none focus:border-stone-400 transition-colors bg-white"
+          />
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-stone-400">
+            kg
+          </span>
+        </div>
+      </div>
 
       {/* Submit */}
       <button

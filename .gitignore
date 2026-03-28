@@ -44,3 +44,4 @@ next-env.d.ts
 # real-estate-screener data
 real-estate-screener/data/
 real-estate-screener/node_modules/
+supabase/.temp/
