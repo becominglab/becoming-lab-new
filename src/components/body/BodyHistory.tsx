@@ -308,6 +308,12 @@ export default function BodyHistory() {
         <p className="text-[10px] tracking-[0.35em] text-stone-400 uppercase mb-4">
           30-DAY SCORE TREND
         </p>
+        {monthLogs.length === 0 ? (
+          <div className="bg-white rounded-2xl p-8 border border-stone-100 text-center">
+            <p className="text-sm text-stone-400 font-light">記録が増えるとグラフが表示されます</p>
+            <p className="text-xs text-stone-300 mt-1">まずは1日記録してみましょう</p>
+          </div>
+        ) : (
         <div className="bg-white rounded-2xl p-4 border border-stone-100">
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={chartData}>
@@ -355,6 +361,7 @@ export default function BodyHistory() {
             </AreaChart>
           </ResponsiveContainer>
         </div>
+        )}
       </div>
 
       {/* Weight Chart (shown only if user has weight data) */}
@@ -375,7 +382,7 @@ export default function BodyHistory() {
                   interval={6}
                 />
                 <YAxis
-                  domain={["dataMin - 1", "dataMax + 1"]}
+                  domain={[(min: number) => Math.floor(min - 1), (max: number) => Math.ceil(max + 1)]}
                   tick={{ fontSize: 10, fill: "#a8a29e" }}
                   tickLine={false}
                   axisLine={false}
