@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, Check, Trophy, Sparkles } from "lucide-react";
+import { ArrowLeft, Check, Trophy, Sparkles, RefreshCw, Link2 } from "lucide-react";
 import Link from "next/link";
 
 const MEAL_OPTIONS = [
@@ -45,6 +45,8 @@ export default function BodyLog() {
   const [error, setError] = useState<string | null>(null);
   const [milestone, setMilestone] = useState<{ emoji: string; label: string } | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [tanitaStatus, setTanitaStatus] = useState<"loading" | "connected" | "not_connected" | "synced">("loading");
+  const [tanitaSyncing, setTanitaSyncing] = useState(false);
 
   const todayStr = new Date().toISOString().split("T")[0];
   const yesterdayStr = (() => { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().split("T")[0]; })();
@@ -68,6 +70,42 @@ export default function BodyLog() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [targetDate]);
+
+  // Fetch Tanita weight on mount (only if no weight already set)
+  useEffect(() => {
+    fetch("/api/body/tanita")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.connected) {
+          setTanitaStatus("connected");
+          // Auto-fill weight if not already set by existing log
+          if (d.weight_kg && !weightKg) {
+            setWeightKg(String(d.weight_kg));
+            setTanitaStatus("synced");
+          }
+        } else {
+          setTanitaStatus("not_connected");
+        }
+      })
+      .catch(() => setTanitaStatus("not_connected"));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleTanitaSync = async () => {
+    setTanitaSyncing(true);
+    try {
+      const res = await fetch("/api/body/tanita", { method: "POST" });
+      const d = await res.json();
+      if (d.weight_kg) {
+        setWeightKg(String(d.weight_kg));
+        setTanitaStatus("synced");
+      }
+    } catch {
+      // ignore
+    } finally {
+      setTanitaSyncing(false);
+    }
+  };
 
   const canSubmit = meal !== null && workout !== null && mood !== null;
 
@@ -260,12 +298,40 @@ export default function BodyLog() {
 
       {/* Weight (optional) */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="w-5 h-5 rounded-full bg-stone-100 text-[10px] flex items-center justify-center text-stone-400 font-medium">
-            +
-          </span>
-          <span className="text-sm font-medium text-gray-700">体重</span>
-          <span className="text-[10px] text-stone-400 ml-1">任意</span>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-stone-100 text-[10px] flex items-center justify-center text-stone-400 font-medium">
+              +
+            </span>
+            <span className="text-sm font-medium text-gray-700">体重</span>
+            <span className="text-[10px] text-stone-400 ml-1">任意</span>
+          </div>
+          {/* Tanita sync button */}
+          {tanitaStatus === "connected" && (
+            <button
+              onClick={handleTanitaSync}
+              disabled={tanitaSyncing}
+              className="flex items-center gap-1.5 text-[10px] text-indigo-500 hover:text-indigo-700 transition-colors"
+            >
+              <RefreshCw size={12} className={tanitaSyncing ? "animate-spin" : ""} />
+              タニタから取得
+            </button>
+          )}
+          {tanitaStatus === "synced" && (
+            <span className="flex items-center gap-1 text-[10px] text-emerald-500">
+              <Check size={12} />
+              タニタ連携済み
+            </span>
+          )}
+          {tanitaStatus === "not_connected" && (
+            <a
+              href="/api/healthplanet/auth"
+              className="flex items-center gap-1.5 text-[10px] text-stone-400 hover:text-indigo-500 transition-colors"
+            >
+              <Link2 size={12} />
+              タニタ連携
+            </a>
+          )}
         </div>
         <div className="relative">
           <input
@@ -276,17 +342,23 @@ export default function BodyLog() {
             value={weightKg}
             onChange={(e) => {
               const v = e.target.value;
-              // Only allow digits and one decimal point
               if (v === "" || /^\d{0,3}(\.\d{0,1})?$/.test(v)) {
                 setWeightKg(v);
               }
             }}
-            className="w-full py-4 px-4 pr-12 rounded-xl border-2 border-stone-200 text-sm text-gray-900 placeholder:text-stone-300 focus:outline-none focus:border-stone-400 transition-colors bg-white"
+            className={`w-full py-4 px-4 pr-12 rounded-xl border-2 text-sm text-gray-900 placeholder:text-stone-300 focus:outline-none focus:border-stone-400 transition-colors bg-white ${
+              tanitaStatus === "synced" ? "border-indigo-200 bg-indigo-50/30" : "border-stone-200"
+            }`}
           />
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-stone-400">
             kg
           </span>
         </div>
+        {tanitaStatus === "synced" && (
+          <p className="text-[10px] text-indigo-400 mt-1.5 ml-1">
+            タニタの体組成計から自動取得しました
+          </p>
+        )}
       </div>
 
       {/* Submit */}

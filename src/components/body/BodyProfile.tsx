@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Check, Bell } from "lucide-react";
+import { ArrowLeft, Check, Bell, Scale } from "lucide-react";
 import Link from "next/link";
 
 export default function BodyProfile() {
@@ -16,6 +16,7 @@ export default function BodyProfile() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tanitaConnected, setTanitaConnected] = useState(false);
 
   useEffect(() => {
     fetch("/api/body/profile")
@@ -30,6 +31,12 @@ export default function BodyProfile() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+
+    // Check Tanita connection status
+    fetch("/api/body/tanita")
+      .then((r) => r.json())
+      .then((d) => setTanitaConnected(d.connected === true))
+      .catch(() => {});
   }, []);
 
   // Auto-dismiss error
@@ -175,6 +182,40 @@ export default function BodyProfile() {
               maxLength={8}
               className="w-full px-4 py-3 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-stone-300 bg-white"
             />
+          </div>
+        )}
+      </div>
+
+      {/* Tanita Section */}
+      <div className="mb-10">
+        <div className="flex items-center gap-2 mb-4">
+          <Scale size={16} className="text-indigo-600" />
+          <span className="text-sm font-medium text-gray-700">タニタ体組成計</span>
+        </div>
+
+        {tanitaConnected ? (
+          <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
+            <div className="flex items-center gap-2">
+              <Check size={16} className="text-indigo-600" />
+              <div>
+                <p className="text-sm text-indigo-800 font-medium">連携済み</p>
+                <p className="text-xs text-indigo-600 mt-0.5">
+                  記録時に体重が自動入力されます
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-stone-50 rounded-xl p-4 border border-stone-200">
+            <p className="text-xs text-stone-500 mb-3">
+              タニタの体組成計を連携すると、記録時に体重が自動で入力されます。
+            </p>
+            <a
+              href="/api/healthplanet/auth"
+              className="block w-full py-3 text-center bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 active:scale-[0.98] transition-all"
+            >
+              Health Planet と連携する
+            </a>
           </div>
         )}
       </div>
