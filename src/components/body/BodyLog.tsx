@@ -47,9 +47,10 @@ export default function BodyLog() {
   const [showCelebration, setShowCelebration] = useState(false);
 
   const todayStr = new Date().toISOString().split("T")[0];
+  const yesterdayStr = (() => { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().split("T")[0]; })();
   const dateParam = searchParams.get("date");
   // Allow logging for yesterday or today only
-  const targetDate = dateParam && dateParam >= (() => { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().split("T")[0]; })() && dateParam <= todayStr ? dateParam : todayStr;
+  const targetDate = dateParam && dateParam >= yesterdayStr && dateParam <= todayStr ? dateParam : todayStr;
   const isBackfill = targetDate !== todayStr;
 
   useEffect(() => {
@@ -268,14 +269,18 @@ export default function BodyLog() {
         </div>
         <div className="relative">
           <input
-            type="number"
+            type="text"
             inputMode="decimal"
-            step="0.1"
-            min="20"
-            max="300"
+            pattern="[0-9]*\.?[0-9]*"
             placeholder="65.0"
             value={weightKg}
-            onChange={(e) => setWeightKg(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              // Only allow digits and one decimal point
+              if (v === "" || /^\d{0,3}(\.\d{0,1})?$/.test(v)) {
+                setWeightKg(v);
+              }
+            }}
             className="w-full py-4 px-4 pr-12 rounded-xl border-2 border-stone-200 text-sm text-gray-900 placeholder:text-stone-300 focus:outline-none focus:border-stone-400 transition-colors bg-white"
           />
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-stone-400">
