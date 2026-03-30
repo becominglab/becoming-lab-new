@@ -106,7 +106,16 @@ export default function CirclesView() {
         ) : (
           <div className="space-y-3">
             {circles.map((circle) => (
-              <CircleCard key={circle.id} circle={circle} />
+              <CircleCard
+                key={circle.id}
+                circle={circle}
+                showJoinButton={tab === "discover"}
+                onJoined={() => {
+                  setTimeout(() => {
+                    setTab("joined");
+                  }, 1400);
+                }}
+              />
             ))}
           </div>
         )}
