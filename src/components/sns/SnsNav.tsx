@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 function IconFeed({ active }: { active: boolean }) {
@@ -87,30 +88,65 @@ function IconProfile({ active }: { active: boolean }) {
 }
 
 const NAV_ITEMS = [
-  { href: "/sns", label: "フィード", Icon: IconFeed },
-  { href: "/sns/search", label: "さがす", Icon: IconSearch },
-  { href: "/sns/circles", label: "サークル", Icon: IconCircles },
-  { href: "/sns/profile", label: "プロフィール", Icon: IconProfile },
+  { href: "/sns", label: "フィード", Icon: IconFeed, showBadge: true },
+  { href: "/sns/search", label: "さがす", Icon: IconSearch, showBadge: false },
+  { href: "/sns/circles", label: "サークル", Icon: IconCircles, showBadge: false },
+  { href: "/sns/profile", label: "プロフィール", Icon: IconProfile, showBadge: false },
 ];
 
 export default function SnsNav() {
   const pathname = usePathname();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // 未読通知数をポーリング（30秒ごと）
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch("/api/sns/notifications?unread_only=true");
+        if (!res.ok) return;
+        const data = await res.json();
+        setUnreadCount(data.unread_count || 0);
+      } catch {
+        // silently fail
+      }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // フィードページに来たら既読にする
+  useEffect(() => {
+    if (pathname === "/sns" && unreadCount > 0) {
+      fetch("/api/sns/notifications", { method: "PATCH" }).then(() => {
+        setUnreadCount(0);
+      });
+    }
+  }, [pathname, unreadCount]);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 z-50">
       <div className="mx-auto max-w-md flex justify-around items-center h-16">
-        {NAV_ITEMS.map(({ href, label, Icon }) => {
+        {NAV_ITEMS.map(({ href, label, Icon, showBadge }) => {
           const active =
             pathname === href || (href !== "/sns" && pathname.startsWith(href));
+          const badgeCount = showBadge ? unreadCount : 0;
           return (
             <Link
               key={href}
               href={href}
-              className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors ${
+              className={`relative flex flex-col items-center gap-0.5 px-3 py-2 transition-colors ${
                 active ? "text-teal-600" : "text-stone-400 hover:text-stone-600"
               }`}
             >
-              <Icon active={active} />
+              <div className="relative">
+                <Icon active={active} />
+                {badgeCount > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-0.5">
+                    {badgeCount > 99 ? "99+" : badgeCount}
+                  </span>
+                )}
+              </div>
               <span className={`text-[10px] tracking-wide ${active ? "font-medium" : ""}`}>
                 {label}
               </span>

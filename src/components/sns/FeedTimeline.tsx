@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import PostCard from "./PostCard";
 import PostComposer from "./PostComposer";
+import CommentSection from "./CommentSection";
 import { Loader2 } from "lucide-react";
 
 interface Props {
@@ -15,6 +16,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const [commentPostId, setCommentPostId] = useState<string | null>(null);
   const observerRef = useRef<HTMLDivElement>(null);
 
   const fetchPosts = useCallback(async (cursorParam?: string | null) => {
@@ -69,6 +71,16 @@ export default function FeedTimeline({ currentUserId }: Props) {
     fetchPosts();
   };
 
+  const handleDeleted = (postId: string) => {
+    setPosts((prev) => prev.filter((p) => p.id !== postId));
+  };
+
+  const handleCommentClose = () => {
+    setCommentPostId(null);
+    // コメント数の更新のため再取得
+    fetchPosts();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -82,13 +94,20 @@ export default function FeedTimeline({ currentUserId }: Props) {
       <PostComposer onPosted={handlePosted} />
 
       {posts.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-stone-400 text-sm">まだ投稿がありません</p>
-          <p className="text-stone-400 text-xs mt-1">誰かをフォローするか、最初の更新を投稿しましょう</p>
+        <div className="text-center py-12 space-y-2">
+          <p className="text-3xl">🌱</p>
+          <p className="text-stone-500 text-sm font-medium">まだ投稿がありません</p>
+          <p className="text-stone-400 text-xs">「さがす」タブから仲間を見つけてフォローしましょう</p>
         </div>
       ) : (
         posts.map((post) => (
-          <PostCard key={post.id} post={post} currentUserId={currentUserId} />
+          <PostCard
+            key={post.id}
+            post={post}
+            currentUserId={currentUserId}
+            onDeleted={handleDeleted}
+            onCommentClick={(id) => setCommentPostId(id)}
+          />
         ))
       )}
 
@@ -96,6 +115,11 @@ export default function FeedTimeline({ currentUserId }: Props) {
       <div ref={observerRef} className="h-10 flex items-center justify-center">
         {loadingMore && <Loader2 size={18} className="animate-spin text-stone-400" />}
       </div>
+
+      {/* コメントセクション */}
+      {commentPostId && (
+        <CommentSection postId={commentPostId} onClose={handleCommentClose} />
+      )}
     </div>
   );
 }

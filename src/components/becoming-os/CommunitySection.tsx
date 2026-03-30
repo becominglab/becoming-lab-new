@@ -115,7 +115,7 @@ export default function CommunitySection() {
       </div>
 
       {/* Community Links */}
-      <div className="grid grid-cols-2 gap-3 mt-8">
+      <div className="grid grid-cols-3 gap-3 mt-8">
         <Link
           href="/members"
           className="p-4 rounded-xl hover:bg-stone-100/80 transition-colors text-center group"
@@ -126,6 +126,18 @@ export default function CommunitySection() {
           </p>
           <p className="text-sm text-gray-700 group-hover:text-[#1B6B7A] transition-colors">
             挑戦者たち
+          </p>
+        </Link>
+        <Link
+          href="/sns"
+          className="p-4 rounded-xl hover:bg-stone-100/80 transition-colors text-center group border border-teal-100"
+          style={{ backgroundColor: "rgba(20, 184, 166, 0.05)" }}
+        >
+          <p className="text-[10px] tracking-[0.2em] mb-1 text-teal-600">
+            SNS
+          </p>
+          <p className="text-sm text-gray-700 group-hover:text-teal-600 transition-colors">
+            仲間とつながる
           </p>
         </Link>
         <Link

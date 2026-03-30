@@ -268,14 +268,22 @@ export default function ChallengeSection() {
                     </div>
                   )}
 
-                  {/* Bottom meta */}
-                  {milestones.length > 0 && (
-                    <div className="flex items-center gap-4 mt-4 pt-3 border-t border-stone-100">
+                  {/* Bottom meta + SNS投稿ボタン */}
+                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-100">
+                    {milestones.length > 0 ? (
                       <span className="text-[10px] text-stone-300">
                         {doneMilestones}/{milestones.length} マイルストーン
                       </span>
-                    </div>
-                  )}
+                    ) : (
+                      <span />
+                    )}
+                    <a
+                      href={`/sns?compose=update&challenge=${encodeURIComponent(c.title)}&progress=${c.progress}`}
+                      className="flex items-center gap-1 text-[10px] px-3 py-1.5 rounded-lg border border-teal-200 text-teal-600 hover:bg-teal-50 transition-colors"
+                    >
+                      📢 今日の進捗をSNSに投稿
+                    </a>
+                  </div>
                 </div>
               );
             })}

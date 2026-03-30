@@ -1,18 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { Send, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Send, ChevronUp, Loader2 } from "lucide-react";
 
 interface Props {
   onPosted?: () => void;
 }
 
 export default function PostComposer({ onPosted }: Props) {
-  const [expanded, setExpanded] = useState(false);
-  const [did, setDid] = useState("");
+  const searchParams = useSearchParams();
+  const challengeTitle = searchParams.get("challenge");
+  const challengeProgress = searchParams.get("progress");
+
+  // 挑戦からの遷移時は自動展開・初期テキスト設定
+  const [expanded, setExpanded] = useState(!!challengeTitle);
+  const [did, setDid] = useState(
+    challengeTitle
+      ? `「${challengeTitle}」進捗${challengeProgress ? ` ${challengeProgress}%` : ""}`
+      : ""
+  );
   const [learned, setLearned] = useState("");
   const [tomorrow, setTomorrow] = useState("");
   const [posting, setPosting] = useState(false);
+
+  useEffect(() => {
+    if (challengeTitle) setExpanded(true);
+  }, [challengeTitle]);
 
   const handleSubmit = async () => {
     if (!did.trim()) return;
@@ -50,18 +64,22 @@ export default function PostComposer({ onPosted }: Props) {
     return (
       <button
         onClick={() => setExpanded(true)}
-        className="w-full p-4 bg-white rounded-xl border border-stone-200 text-left text-sm text-stone-400 hover:border-stone-300 transition-colors"
+        className="w-full p-4 bg-white rounded-xl border border-stone-200 text-left text-sm text-stone-400 hover:border-teal-200 hover:text-stone-500 transition-colors flex items-center gap-2"
       >
+        <span className="text-lg">✏️</span>
         今日の更新を記録する...
       </button>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl border border-stone-200 p-4 space-y-3">
+    <div className="bg-white rounded-xl border border-teal-200 p-4 space-y-3 shadow-sm">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-stone-800">きょうの更新</h3>
-        <button onClick={() => setExpanded(false)} className="text-stone-400 hover:text-stone-600">
+        <h3 className="text-sm font-semibold text-stone-800">きょうの更新</h3>
+        <button
+          onClick={() => setExpanded(false)}
+          className="p-1 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded transition-colors"
+        >
           <ChevronUp size={18} />
         </button>
       </div>
@@ -77,6 +95,7 @@ export default function PostComposer({ onPosted }: Props) {
           rows={2}
           placeholder="今日取り組んだことを書く"
           className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+          autoFocus={!!challengeTitle}
         />
         <p className="text-xs text-stone-400 text-right">{did.length}/140</p>
       </div>

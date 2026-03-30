@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import UserCard from "./UserCard";
 import { Search, Loader2 } from "lucide-react";
 
@@ -28,21 +29,25 @@ interface Profile {
 }
 
 export default function UserSearchResults() {
+  const searchParams = useSearchParams();
+  const initialTag = searchParams.get("tag") || "";
+
   const [query, setQuery] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(initialTag ? [initialTag] : []);
   const [phase, setPhase] = useState("");
   const [results, setResults] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async (tagsOverride?: string[]) => {
+    const tags = tagsOverride ?? selectedTags;
     setLoading(true);
     setSearched(true);
 
     try {
       const params = new URLSearchParams();
       if (query.trim()) params.set("q", query.trim());
-      if (selectedTags.length > 0) params.set("tags", selectedTags.join(","));
+      if (tags.length > 0) params.set("tags", tags.join(","));
       if (phase) params.set("phase", phase);
 
       const res = await fetch(`/api/sns/search?${params}`);
@@ -53,7 +58,16 @@ export default function UserSearchResults() {
     } finally {
       setLoading(false);
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, selectedTags, phase]);
+
+  // URLのタグパラメータで自動検索
+  useEffect(() => {
+    if (initialTag) {
+      handleSearch([initialTag]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialTag]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
@@ -77,9 +91,9 @@ export default function UserSearchResults() {
           />
         </div>
         <button
-          onClick={handleSearch}
+          onClick={() => handleSearch()}
           disabled={loading}
-          className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 disabled:opacity-50"
+          className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 disabled:opacity-50 transition-colors"
         >
           {loading ? <Loader2 size={16} className="animate-spin" /> : "検索"}
         </button>
@@ -99,7 +113,7 @@ export default function UserSearchResults() {
                   : "bg-stone-100 text-stone-500 hover:bg-stone-200"
               }`}
             >
-              {tag}
+              #{tag}
             </button>
           ))}
         </div>
@@ -130,6 +144,11 @@ export default function UserSearchResults() {
       ) : searched ? (
         results.length > 0 ? (
           <div className="space-y-3">
+            {selectedTags.length > 0 && (
+              <p className="text-xs text-stone-400 text-center">
+                #{selectedTags.join(" #")} で検索中 · {results.length}人
+              </p>
+            )}
             {results.map((profile) => (
               <UserCard key={profile.user_id} profile={profile} />
             ))}
@@ -140,7 +159,8 @@ export default function UserSearchResults() {
           </div>
         )
       ) : (
-        <div className="text-center py-10">
+        <div className="text-center py-10 space-y-1">
+          <p className="text-2xl">🔍</p>
           <p className="text-stone-400 text-sm">タグやキーワードで仲間を探しましょう</p>
         </div>
       )}

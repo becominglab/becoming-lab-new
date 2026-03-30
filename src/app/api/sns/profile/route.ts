@@ -1,20 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// GET /api/sns/profile — 自分のプロフィール取得
-export async function GET() {
+// GET /api/sns/profile?user_id=xxx — プロフィール取得（自分 or 他ユーザー）
+export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "not_authenticated" }, { status: 401 });
 
+  const targetUserId = request.nextUrl.searchParams.get("user_id") || user.id;
+
   const { data, error } = await supabase
     .from("public_profiles")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", targetUserId)
     .maybeSingle();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ profile: data });
+
+  // フォロワー数・フォロー数を取得
+  const [{ count: followerCount }, { count: followingCount }] = await Promise.all([
+    supabase
+      .from("follows")
+      .select("*", { count: "exact", head: true })
+      .eq("following_id", targetUserId),
+    supabase
+      .from("follows")
+      .select("*", { count: "exact", head: true })
+      .eq("follower_id", targetUserId),
+  ]);
+
+  // 自分がフォロー中か
+  let isFollowing = false;
+  if (targetUserId !== user.id) {
+    const { data: followData } = await supabase
+      .from("follows")
+      .select("id")
+      .eq("follower_id", user.id)
+      .eq("following_id", targetUserId)
+      .maybeSingle();
+    isFollowing = !!followData;
+  }
+
+  return NextResponse.json({
+    profile: data,
+    follower_count: followerCount || 0,
+    following_count: followingCount || 0,
+    is_following: isFollowing,
+  });
 }
 
 // POST /api/sns/profile — プロフィール作成

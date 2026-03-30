@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import FollowButton from "./FollowButton";
 import BadgeGrid from "./BadgeGrid";
 import UpdateCalendar from "./UpdateCalendar";
@@ -42,6 +43,8 @@ export default function ProfileView({ userId, currentUserId }: Props) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
   const [mentorStatus, setMentorStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const isOwn = userId === currentUserId;
@@ -49,23 +52,13 @@ export default function ProfileView({ userId, currentUserId }: Props) {
   useEffect(() => {
     const load = async () => {
       try {
-        // プロフィール取得
-        const profileRes = isOwn
-          ? await fetch("/api/sns/profile")
-          : await fetch(`/api/sns/search?q=&tags=&phase=`).then(async (r) => {
-              const data = await r.json();
-              const found = (data.profiles || []).find((p: any) => p.user_id === userId);
-              return { json: async () => ({ profile: found || null, is_following: found?.is_following }) };
-            });
-
-        if (isOwn) {
-          const pData = await profileRes.json();
-          setProfile(pData.profile);
-        } else {
-          const pData = await profileRes.json();
-          setProfile(pData.profile);
-          setIsFollowing(pData.is_following || false);
-        }
+        // プロフィール取得（新APIで自分も他人も統一）
+        const profileRes = await fetch(`/api/sns/profile?user_id=${userId}`);
+        const pData = await profileRes.json();
+        setProfile(pData.profile);
+        setIsFollowing(pData.is_following || false);
+        setFollowerCount(pData.follower_count || 0);
+        setFollowingCount(pData.following_count || 0);
 
         // 投稿取得
         const postsRes = await fetch(`/api/sns/posts?user_id=${userId}&limit=10`);
@@ -113,14 +106,28 @@ export default function ProfileView({ userId, currentUserId }: Props) {
       {/* プロフィールヘッダー */}
       <div className="bg-white rounded-xl border border-stone-200 p-5">
         <div className="flex items-start gap-4">
-          <div className="w-14 h-14 rounded-full bg-teal-100 flex items-center justify-center text-xl font-bold text-teal-700 shrink-0">
-            {initial}
+          {/* アバター */}
+          <div className="shrink-0">
+            {profile.avatar_url ? (
+              <Image
+                src={profile.avatar_url}
+                alt={profile.nickname}
+                width={56}
+                height={56}
+                className="w-14 h-14 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-14 h-14 rounded-full bg-teal-100 flex items-center justify-center text-xl font-bold text-teal-700">
+                {initial}
+              </div>
+            )}
           </div>
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-stone-900">{profile.nickname}</h2>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-lg font-bold text-stone-900 truncate">{profile.nickname}</h2>
               {!isOwn && (
-                <div className="flex flex-col items-end gap-1.5">
+                <div className="flex flex-col items-end gap-1.5 shrink-0">
                   <FollowButton userId={userId} isFollowing={isFollowing} />
                   {profile.is_mentor && (
                     <MentorRequestButton
@@ -131,24 +138,38 @@ export default function ProfileView({ userId, currentUserId }: Props) {
                 </div>
               )}
             </div>
-            <p className="text-xs text-stone-400 mt-0.5">
+
+            {/* フォロワー・フォロー数 */}
+            <div className="flex items-center gap-4 mt-1.5">
+              <span className="text-xs text-stone-500">
+                <span className="font-semibold text-stone-800">{followerCount}</span>
+                <span className="ml-1">フォロワー</span>
+              </span>
+              <span className="text-xs text-stone-500">
+                <span className="font-semibold text-stone-800">{followingCount}</span>
+                <span className="ml-1">フォロー中</span>
+              </span>
+            </div>
+
+            <p className="text-xs text-stone-400 mt-1.5">
               {PHASE_LABELS[profile.update_phase]}
               {profile.seeking && ` · ${SEEKING_LABELS[profile.seeking]}`}
             </p>
             {profile.bio && (
-              <p className="text-sm text-stone-600 mt-2">{profile.bio}</p>
+              <p className="text-sm text-stone-600 mt-2 leading-relaxed">{profile.bio}</p>
             )}
 
             {/* 挑戦タグ */}
             {profile.challenge_tags?.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {profile.challenge_tags.map((tag) => (
-                  <span
+                  <a
                     key={tag}
-                    className="px-2.5 py-0.5 bg-teal-50 text-teal-700 rounded-full text-xs"
+                    href={`/sns/search?tab=search&tag=${encodeURIComponent(tag)}`}
+                    className="px-2.5 py-0.5 bg-teal-50 text-teal-700 rounded-full text-xs hover:bg-teal-100 transition-colors"
                   >
-                    {tag}
-                  </span>
+                    #{tag}
+                  </a>
                 ))}
               </div>
             )}
