@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ReactionBar from "./ReactionBar";
-import { Flame, MessageSquare, Trophy, FileText, Trash2, MoreHorizontal } from "lucide-react";
+import BookmarkButton from "./BookmarkButton";
+import { Flame, MessageSquare, Trophy, FileText, Trash2, MoreHorizontal, Pencil, Hash } from "lucide-react";
 
 interface PostContent {
   did?: string;
@@ -26,8 +27,10 @@ interface Post {
   user_id: string;
   post_type: string;
   content: PostContent;
+  tags?: string[];
   created_at: string;
   comment_count?: number;
+  is_bookmarked?: boolean;
   public_profiles: {
     nickname: string;
     avatar_url: string | null;
@@ -44,9 +47,12 @@ interface Props {
   currentUserId: string;
   onDeleted?: (postId: string) => void;
   onCommentClick?: (postId: string) => void;
+  onUpdated?: (post: Post) => void;
 }
 
 const SCORE_LABELS: Record<number, string> = { 1: "○", 2: "◎", 3: "◉" };
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+void SCORE_LABELS;
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -179,12 +185,86 @@ function AutoLogContent({ content }: { content: PostContent }) {
   );
 }
 
-export default function PostCard({ post, currentUserId, onDeleted, onCommentClick }: Props) {
+// インライン編集フォーム
+function EditForm({ post, onSave, onCancel }: { post: Post; onSave: (updated: Post) => void; onCancel: () => void }) {
+  const [did, setDid] = useState(post.content.did || "");
+  const [learned, setLearned] = useState(post.content.learned || "");
+  const [tomorrow, setTomorrow] = useState(post.content.tomorrow || "");
+  const [tagInput, setTagInput] = useState((post.tags || []).join(" "));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSave = async () => {
+    if (!did.trim()) { setError("「やったこと」を入力してください"); return; }
+    setSaving(true);
+    setError("");
+    try {
+      const tags = tagInput.split(/[\s,　]+/).map((t) => t.replace(/^#/, "").trim()).filter(Boolean).slice(0, 5);
+      const res = await fetch("/api/sns/posts", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: post.id,
+          content: { did: did.trim(), learned: learned.trim() || null, tomorrow: tomorrow.trim() || null },
+          tags,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "保存に失敗しました"); return; }
+      onSave({ ...post, content: data.post.content, tags: data.post.tags });
+    } catch {
+      setError("保存に失敗しました");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <div>
+        <p className="text-[10px] font-medium text-teal-600 mb-1">やったこと *</p>
+        <textarea value={did} onChange={(e) => setDid(e.target.value)} maxLength={140} rows={2}
+          className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-400" />
+        <p className="text-[10px] text-stone-400 text-right">{did.length}/140</p>
+      </div>
+      <div>
+        <p className="text-[10px] font-medium text-teal-600 mb-1">気づき</p>
+        <textarea value={learned} onChange={(e) => setLearned(e.target.value)} maxLength={140} rows={2}
+          className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-400" />
+      </div>
+      <div>
+        <p className="text-[10px] font-medium text-stone-400 mb-1">明日やること</p>
+        <textarea value={tomorrow} onChange={(e) => setTomorrow(e.target.value)} maxLength={140} rows={2}
+          className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-400" />
+      </div>
+      <div>
+        <p className="text-[10px] font-medium text-stone-400 mb-1">タグ（スペース区切り、最大5個）</p>
+        <input value={tagInput} onChange={(e) => setTagInput(e.target.value)} placeholder="運動 英語 読書"
+          className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" />
+      </div>
+      {error && <p className="text-xs text-red-500">{error}</p>}
+      <div className="flex gap-2">
+        <button onClick={handleSave} disabled={saving}
+          className="flex-1 py-1.5 bg-teal-600 text-white text-xs font-medium rounded-lg hover:bg-teal-700 disabled:opacity-50 transition-colors">
+          {saving ? "保存中..." : "保存する"}
+        </button>
+        <button onClick={onCancel}
+          className="flex-1 py-1.5 bg-stone-100 text-stone-600 text-xs font-medium rounded-lg hover:bg-stone-200 transition-colors">
+          キャンセル
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function PostCard({ post: initialPost, currentUserId, onDeleted, onCommentClick, onUpdated }: Props) {
+  const [post, setPost] = useState(initialPost);
   const { public_profiles: profile } = post;
   const isOwn = post.user_id === currentUserId;
   const initial = profile.nickname?.[0] || "?";
   const [showMenu, setShowMenu] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const handleDelete = async () => {
     if (!confirm("この投稿を削除しますか？")) return;
@@ -196,6 +276,12 @@ export default function PostCard({ post, currentUserId, onDeleted, onCommentClic
       setDeleting(false);
       setShowMenu(false);
     }
+  };
+
+  const handleSaved = (updated: Post) => {
+    setPost(updated);
+    setEditing(false);
+    onUpdated?.(updated);
   };
 
   return (
@@ -235,6 +321,9 @@ export default function PostCard({ post, currentUserId, onDeleted, onCommentClic
           </div>
         </div>
 
+        {/* ブックマークボタン（全投稿） */}
+        <BookmarkButton postId={post.id} isBookmarked={post.is_bookmarked || false} />
+
         {/* メニューボタン（自分の投稿のみ） */}
         {isOwn && (
           <div className="relative">
@@ -248,6 +337,15 @@ export default function PostCard({ post, currentUserId, onDeleted, onCommentClic
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
                 <div className="absolute right-0 top-8 z-20 bg-white border border-stone-200 rounded-lg shadow-lg min-w-[120px] overflow-hidden">
+                  {post.post_type === "update" && (
+                    <button
+                      onClick={() => { setEditing(true); setShowMenu(false); }}
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-stone-600 hover:bg-stone-50 transition-colors"
+                    >
+                      <Pencil size={14} />
+                      編集する
+                    </button>
+                  )}
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
@@ -263,44 +361,62 @@ export default function PostCard({ post, currentUserId, onDeleted, onCommentClic
         )}
       </div>
 
-      {/* コンテンツ */}
-      <div>
-        {post.post_type === "update" && <UpdateContent content={post.content} />}
-        {post.post_type === "auto_log" && <AutoLogContent content={post.content} />}
-        {post.post_type === "declaration" && (
-          <p className="text-sm text-stone-800 border-l-2 border-blue-300 pl-3 italic leading-relaxed">
-            {post.content.content}
-          </p>
-        )}
-        {post.post_type === "milestone" && (
-          <div className="flex items-center gap-2 text-sm bg-amber-50 rounded-lg px-3 py-2">
-            <Trophy size={18} className="text-amber-500 shrink-0" />
-            <span className="font-medium text-stone-800">{post.content.label}</span>
-          </div>
-        )}
-      </div>
+      {/* コンテンツ（編集中 or 表示） */}
+      {editing && post.post_type === "update" ? (
+        <EditForm post={post} onSave={handleSaved} onCancel={() => setEditing(false)} />
+      ) : (
+        <div>
+          {post.post_type === "update" && <UpdateContent content={post.content} />}
+          {post.post_type === "auto_log" && <AutoLogContent content={post.content} />}
+          {post.post_type === "declaration" && (
+            <p className="text-sm text-stone-800 border-l-2 border-blue-300 pl-3 italic leading-relaxed">
+              {post.content.content}
+            </p>
+          )}
+          {post.post_type === "milestone" && (
+            <div className="flex items-center gap-2 text-sm bg-amber-50 rounded-lg px-3 py-2">
+              <Trophy size={18} className="text-amber-500 shrink-0" />
+              <span className="font-medium text-stone-800">{post.content.label}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* タグ */}
+      {!editing && post.tags && post.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {post.tags.map((tag) => (
+            <span key={tag} className="flex items-center gap-0.5 text-[11px] px-2 py-0.5 bg-stone-50 text-stone-500 rounded-full border border-stone-200">
+              <Hash size={9} />
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* フッター: リアクション + コメント */}
-      <div className="flex items-center justify-between">
-        <ReactionBar
-          postId={post.id}
-          myReactions={post.reactions.myReactions}
-          types={post.reactions.types}
-          counts={post.reactions.counts}
-          isOwn={isOwn}
-        />
-        <button
-          onClick={() => onCommentClick?.(post.id)}
-          className="flex items-center gap-1 text-xs text-stone-400 hover:text-stone-600 transition-colors ml-2"
-        >
-          <MessageSquare size={13} />
-          {post.comment_count ? (
-            <span>{post.comment_count}</span>
-          ) : (
-            <span className="hidden sm:inline">コメント</span>
-          )}
-        </button>
-      </div>
+      {!editing && (
+        <div className="flex items-center justify-between">
+          <ReactionBar
+            postId={post.id}
+            myReactions={post.reactions.myReactions}
+            types={post.reactions.types}
+            counts={post.reactions.counts}
+            isOwn={isOwn}
+          />
+          <button
+            onClick={() => onCommentClick?.(post.id)}
+            className="flex items-center gap-1 text-xs text-stone-400 hover:text-stone-600 transition-colors ml-2"
+          >
+            <MessageSquare size={13} />
+            {post.comment_count ? (
+              <span>{post.comment_count}</span>
+            ) : (
+              <span className="hidden sm:inline">コメント</span>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

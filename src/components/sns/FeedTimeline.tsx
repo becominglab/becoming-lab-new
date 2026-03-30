@@ -7,6 +7,7 @@ import CommentSection from "./CommentSection";
 import DailyCheckin from "./DailyCheckin";
 import OnboardingGuide from "./OnboardingGuide";
 import RecommendedUsers from "./RecommendedUsers";
+import SkeletonCard from "./SkeletonCard";
 import { Loader2 } from "lucide-react";
 
 interface Props {
@@ -80,18 +81,14 @@ export default function FeedTimeline({ currentUserId }: Props) {
     setPosts((prev) => prev.filter((p) => p.id !== postId));
   };
 
+  const handleUpdated = (updated: any) => {
+    setPosts((prev) => prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p)));
+  };
+
   const handleCommentClose = () => {
     setCommentPostId(null);
     fetchPosts();
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 size={24} className="animate-spin text-stone-400" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -106,7 +103,11 @@ export default function FeedTimeline({ currentUserId }: Props) {
       {/* 投稿フォーム（チェックイン時にプロンプトを渡す） */}
       <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
 
-      {posts.length === 0 ? (
+      {loading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => <SkeletonCard key={i} />)}
+        </div>
+      ) : posts.length === 0 ? (
         <div className="text-center py-12 space-y-3">
           <p className="text-3xl">🌱</p>
           <p className="text-stone-500 text-sm font-medium">まだ投稿がありません</p>
@@ -119,17 +120,17 @@ export default function FeedTimeline({ currentUserId }: Props) {
       ) : (
         <>
           {posts.map((post, i) => (
-            <>
+            <div key={post.id}>
               <PostCard
-                key={post.id}
                 post={post}
                 currentUserId={currentUserId}
                 onDeleted={handleDeleted}
+                onUpdated={handleUpdated}
                 onCommentClick={(id) => setCommentPostId(id)}
               />
               {/* 5投稿目の後におすすめユーザーを差し込む */}
-              {i === 4 && <RecommendedUsers key="recommended" />}
-            </>
+              {i === 4 && <div className="mt-4"><RecommendedUsers /></div>}
+            </div>
           ))}
         </>
       )}

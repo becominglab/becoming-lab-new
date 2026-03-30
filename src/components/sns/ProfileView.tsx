@@ -7,6 +7,7 @@ import BadgeGrid from "./BadgeGrid";
 import UpdateCalendar from "./UpdateCalendar";
 import PostCard from "./PostCard";
 import MentorRequestButton from "./MentorRequestButton";
+import FollowListModal from "./FollowListModal";
 import { Loader2 } from "lucide-react";
 
 const PHASE_LABELS: Record<string, string> = {
@@ -47,6 +48,7 @@ export default function ProfileView({ userId, currentUserId }: Props) {
   const [followingCount, setFollowingCount] = useState(0);
   const [mentorStatus, setMentorStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [followModal, setFollowModal] = useState<"followers" | "following" | null>(null);
   const isOwn = userId === currentUserId;
 
   useEffect(() => {
@@ -139,16 +141,22 @@ export default function ProfileView({ userId, currentUserId }: Props) {
               )}
             </div>
 
-            {/* フォロワー・フォロー数 */}
+            {/* フォロワー・フォロー数（クリックでモーダル） */}
             <div className="flex items-center gap-4 mt-1.5">
-              <span className="text-xs text-stone-500">
+              <button
+                onClick={() => setFollowModal("followers")}
+                className="text-xs text-stone-500 hover:text-teal-600 transition-colors"
+              >
                 <span className="font-semibold text-stone-800">{followerCount}</span>
                 <span className="ml-1">フォロワー</span>
-              </span>
-              <span className="text-xs text-stone-500">
+              </button>
+              <button
+                onClick={() => setFollowModal("following")}
+                className="text-xs text-stone-500 hover:text-teal-600 transition-colors"
+              >
                 <span className="font-semibold text-stone-800">{followingCount}</span>
                 <span className="ml-1">フォロー中</span>
-              </span>
+              </button>
             </div>
 
             <p className="text-xs text-stone-400 mt-1.5">
@@ -200,6 +208,16 @@ export default function ProfileView({ userId, currentUserId }: Props) {
             <PostCard key={post.id} post={post} currentUserId={currentUserId} />
           ))}
         </div>
+      )}
+
+      {/* フォロワー/フォロー中モーダル */}
+      {followModal && (
+        <FollowListModal
+          userId={userId}
+          currentUserId={currentUserId}
+          type={followModal}
+          onClose={() => setFollowModal(null)}
+        />
       )}
     </div>
   );
