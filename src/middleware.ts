@@ -26,5 +26,7 @@ export const config = {
     "/api/auth/:path*",
     "/body/:path*",
     "/api/body/:path*",
+    "/sns/:path*",
+    "/api/sns/:path*",
   ],
 };

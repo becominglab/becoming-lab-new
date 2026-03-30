@@ -64,6 +64,33 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // SNS: 公開プロフィールがあれば milestone ポストを自動作成 (ストーリー交換)
+  try {
+    const { data: publicProfile } = await supabase
+      .from("public_profiles")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (publicProfile) {
+      await supabase.from("posts").insert({
+        user_id: user.id,
+        post_type: "milestone",
+        content: {
+          title: chapter.trim(),
+          excerpt: content.trim().slice(0, 80) + (content.trim().length > 80 ? "…" : ""),
+        },
+        source_id: data.id,
+      });
+
+      const { checkAndAwardBadges } = await import("@/lib/sns/badges");
+      checkAndAwardBadges(supabase, user.id, ["story"]).catch(() => {});
+    }
+  } catch {
+    // SNS統合エラーはストーリー保存に影響させない
+  }
+
   return NextResponse.json({ story: data }, { status: 201 });
 }
 
