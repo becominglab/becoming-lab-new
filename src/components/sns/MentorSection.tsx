@@ -76,7 +76,7 @@ export default function MentorSection({ isMentor, onToggleMentor }: Props) {
   return (
     <div className="bg-white rounded-2xl p-4 border border-stone-100">
       {/* ヘッダー + メンタートグル */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <GraduationCap size={18} className="text-teal-600" />
           <h3 className="font-semibold text-stone-800 text-sm">メンター制度</h3>
@@ -85,18 +85,22 @@ export default function MentorSection({ isMentor, onToggleMentor }: Props) {
           <span className="text-xs text-stone-400">メンターになる</span>
           <button
             onClick={() => onToggleMentor(!isMentor)}
-            className={`relative w-9 h-5 rounded-full transition-colors ${
+            className={`relative w-11 h-6 rounded-full transition-colors ${
               isMentor ? "bg-teal-500" : "bg-stone-200"
             }`}
           >
             <span
-              className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                isMentor ? "translate-x-4" : "translate-x-0.5"
+              className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                isMentor ? "translate-x-5" : "translate-x-0.5"
               }`}
             />
           </button>
         </label>
       </div>
+
+      <p className="text-xs text-stone-400 mb-3">
+        挑戦の経験者がサポート役に。「さがす」タブからメンターを探せます
+      </p>
 
       {isMentor && (
         <p className="text-xs text-teal-600 bg-teal-50 rounded-lg px-3 py-2 mb-4">
@@ -164,27 +168,29 @@ export default function MentorSection({ isMentor, onToggleMentor }: Props) {
                   )}
                 </div>
                 {tab === "requests" ? (
-                  <div className="flex gap-1">
+                  <div className="flex gap-1.5">
                     <button
                       onClick={() => respondToRequest(c.id, "accepted")}
                       disabled={isLoading}
-                      className="w-7 h-7 bg-teal-500 text-white rounded-full flex items-center justify-center"
+                      title="承認する"
+                      className="w-9 h-9 bg-teal-500 hover:bg-teal-600 text-white rounded-full flex items-center justify-center transition-colors"
                     >
-                      <Check size={12} />
+                      <Check size={16} />
                     </button>
                     <button
                       onClick={() => respondToRequest(c.id, "declined")}
                       disabled={isLoading}
-                      className="w-7 h-7 bg-stone-200 text-stone-500 rounded-full flex items-center justify-center"
+                      title="断る"
+                      className="w-9 h-9 bg-stone-200 hover:bg-stone-300 text-stone-500 rounded-full flex items-center justify-center transition-colors"
                     >
-                      <X size={12} />
+                      <X size={16} />
                     </button>
                   </div>
                 ) : (
                   <button
                     onClick={() => disconnect(c.id)}
                     disabled={isLoading}
-                    className="text-xs text-stone-300 hover:text-red-400 transition-colors"
+                    className="px-2.5 py-1 text-xs text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-stone-200"
                   >
                     解除
                   </button>

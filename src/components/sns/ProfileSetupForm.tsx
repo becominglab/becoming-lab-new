@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Save, Loader2 } from "lucide-react";
+import { useState, useRef } from "react";
+import Image from "next/image";
+import { Save, Loader2, Camera } from "lucide-react";
 
 const CHALLENGE_TAG_OPTIONS = [
   "ダイエット", "筋トレ", "ランニング", "読書", "瞑想",
@@ -29,6 +30,7 @@ interface Profile {
   update_phase: string;
   seeking: string | null;
   is_public: boolean;
+  avatar_url?: string | null;
 }
 
 interface Props {
@@ -43,13 +45,44 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
   const [phase, setPhase] = useState(initialProfile?.update_phase || "exploring");
   const [seeking, setSeeking] = useState(initialProfile?.seeking || "");
   const [isPublic, setIsPublic] = useState(initialProfile?.is_public !== false);
+  const [avatarUrl, setAvatarUrl] = useState(initialProfile?.avatar_url || "");
+  const [avatarPreview, setAvatarPreview] = useState(initialProfile?.avatar_url || "");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const toggleTag = (tag: string) => {
     setTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // プレビュー
+    const reader = new FileReader();
+    reader.onload = (ev) => setAvatarPreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+
+    // アップロード
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/sns/avatar", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok) {
+        setAvatarUrl(data.avatar_url);
+      } else {
+        setError(data.error || "画像のアップロードに失敗しました");
+        setAvatarPreview(initialProfile?.avatar_url || "");
+      }
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,6 +105,7 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
           update_phase: phase,
           seeking: seeking || null,
           is_public: isPublic,
+          avatar_url: avatarUrl || null,
         }),
       });
 
@@ -89,8 +123,47 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
     }
   };
 
+  const initial = nickname?.[0] || "?";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* アバター */}
+      <div className="flex flex-col items-center gap-3">
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="relative w-20 h-20 rounded-full overflow-hidden bg-teal-100 flex items-center justify-center hover:opacity-80 transition-opacity"
+          >
+            {avatarPreview ? (
+              <Image src={avatarPreview} alt="アバター" fill className="object-cover" />
+            ) : (
+              <span className="text-2xl font-bold text-teal-700">{initial}</span>
+            )}
+            {uploadingAvatar && (
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full">
+                <Loader2 size={20} className="animate-spin text-white" />
+              </div>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute -bottom-1 -right-1 w-7 h-7 bg-teal-600 text-white rounded-full flex items-center justify-center shadow hover:bg-teal-700 transition-colors"
+          >
+            <Camera size={13} />
+          </button>
+        </div>
+        <p className="text-xs text-stone-400">タップして写真を変更（5MB以内）</p>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          onChange={handleAvatarChange}
+          className="hidden"
+        />
+      </div>
+
       {/* ニックネーム */}
       <div>
         <label className="block text-sm font-medium text-stone-700 mb-1">
@@ -228,7 +301,7 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
 
       <button
         type="submit"
-        disabled={saving}
+        disabled={saving || uploadingAvatar}
         className="w-full flex items-center justify-center gap-2 py-3 bg-stone-900 text-white rounded-lg text-sm font-medium hover:bg-stone-800 disabled:opacity-50 transition-colors"
       >
         {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}

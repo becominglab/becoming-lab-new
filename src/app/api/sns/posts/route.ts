@@ -68,15 +68,14 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // レスポンス構築（リアクション数は投稿者本人のみ表示）
+  // レスポンス構築（リアクション数は全投稿で表示）
   const enrichedPosts = postsList.map((post) => {
     const rData = reactionsMap[post.id] || { counts: {}, myReactions: [] };
-    const isOwn = post.user_id === user.id;
 
     return {
       ...post,
       reactions: {
-        counts: isOwn ? rData.counts : undefined,
+        counts: rData.counts,
         types: Object.keys(rData.counts),
         myReactions: rData.myReactions,
       },

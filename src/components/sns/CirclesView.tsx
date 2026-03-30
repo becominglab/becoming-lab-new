@@ -44,16 +44,21 @@ export default function CirclesView() {
   return (
     <div>
       {/* ヘッダー */}
-      <div className="px-4 flex items-center justify-between mb-4">
+      <div className="px-4 flex items-center justify-between mb-2">
         <h1 className="text-lg font-bold text-stone-900">挑戦サークル</h1>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-1 px-3 py-1.5 bg-teal-600 text-white rounded-lg text-sm font-medium"
+          className="flex items-center gap-1.5 px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors"
         >
-          <Plus size={14} />
+          <Plus size={15} />
           作成
         </button>
       </div>
+
+      {/* 説明 */}
+      <p className="px-4 text-xs text-stone-400 mb-4">
+        同じ挑戦に取り組む仲間と少人数グループを作り、進捗を共有し励まし合いましょう
+      </p>
 
       {/* タブ */}
       <div className="flex gap-1 px-4 mb-4">
@@ -171,14 +176,20 @@ function CreateCircleModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-end">
-      <div className="w-full max-w-md mx-auto bg-white rounded-t-2xl p-6">
-        <div className="flex items-center justify-between mb-4">
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center sm:p-4">
+      <div className="w-full max-w-md mx-auto bg-white rounded-t-2xl sm:rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-1">
           <h2 className="font-bold text-stone-900">サークルを作成</h2>
-          <button onClick={onClose}>
+          <button
+            onClick={onClose}
+            className="p-1.5 hover:bg-stone-100 rounded-lg transition-colors"
+          >
             <X size={20} className="text-stone-400" />
           </button>
         </div>
+        <p className="text-xs text-stone-400 mb-4">
+          サークル名とテーマを決めて、仲間を募集しましょう
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

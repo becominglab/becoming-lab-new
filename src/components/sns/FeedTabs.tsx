@@ -33,7 +33,12 @@ export default function FeedTabs({ currentUserId }: { currentUserId: string }) {
         {tab === "feed" ? (
           <FeedTimeline currentUserId={currentUserId} />
         ) : (
-          <ChallengeBoardView />
+          <>
+            <p className="text-xs text-stone-400 bg-stone-50 rounded-lg px-3 py-2 mb-4 text-center">
+              🎯 仲間が取り組み中の挑戦を一覧できます。フォローして応援しましょう
+            </p>
+            <ChallengeBoardView />
+          </>
         )}
       </div>
     </div>

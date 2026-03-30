@@ -34,10 +34,23 @@ export default async function SnsProfilePage() {
         </>
       ) : (
         <>
-          <h1 className="text-lg font-bold text-stone-900 mb-2">プロフィール設定</h1>
-          <p className="text-sm text-stone-500 mb-6">
-            SNSを始めるためにプロフィールを作成しましょう
-          </p>
+          {/* オンボーディングヘッダー */}
+          <div className="text-center mb-8">
+            <div className="text-4xl mb-3">🌱</div>
+            <h1 className="text-xl font-bold text-stone-900 mb-2">はじめまして！</h1>
+            <p className="text-sm text-stone-500 leading-relaxed">
+              挑戦を続ける仲間とつながるために<br />
+              まずプロフィールを設定しましょう
+            </p>
+          </div>
+
+          {/* ステップ表示 */}
+          <div className="flex items-center gap-2 mb-6">
+            <div className="flex-1 h-1 bg-teal-500 rounded-full" />
+            <span className="text-xs text-stone-400 shrink-0">STEP 1 / 1</span>
+            <div className="flex-1 h-1 bg-stone-100 rounded-full" />
+          </div>
+
           <ProfileSetupForm />
         </>
       )}

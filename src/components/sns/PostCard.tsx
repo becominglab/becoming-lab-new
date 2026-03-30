@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import ReactionBar from "./ReactionBar";
-import { Flame, MessageSquare, Trophy, FileText } from "lucide-react";
+import { Flame, MessageSquare, Trophy, FileText, Trash2, MoreHorizontal } from "lucide-react";
 
 interface PostContent {
   did?: string;
@@ -25,6 +27,7 @@ interface Post {
   post_type: string;
   content: PostContent;
   created_at: string;
+  comment_count?: number;
   public_profiles: {
     nickname: string;
     avatar_url: string | null;
@@ -39,9 +42,11 @@ interface Post {
 interface Props {
   post: Post;
   currentUserId: string;
+  onDeleted?: (postId: string) => void;
+  onCommentClick?: (postId: string) => void;
 }
 
-const SCORE_LABELS: Record<number, string> = { 1: "\u25CB", 2: "\u25CE", 3: "\u25C9" };
+const SCORE_LABELS: Record<number, string> = { 1: "○", 2: "◎", 3: "◉" };
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -53,6 +58,15 @@ function timeAgo(dateStr: string): string {
   const days = Math.floor(hours / 24);
   if (days < 7) return `${days}日前`;
   return new Date(dateStr).toLocaleDateString("ja-JP", { month: "short", day: "numeric" });
+}
+
+function postTypeBorder(type: string): string {
+  switch (type) {
+    case "auto_log": return "border-l-orange-400";
+    case "declaration": return "border-l-blue-400";
+    case "milestone": return "border-l-amber-400";
+    default: return "border-l-teal-400";
+  }
 }
 
 function PostTypeIcon({ type }: { type: string }) {
@@ -79,19 +93,19 @@ function UpdateContent({ content }: { content: PostContent }) {
       {content.did && (
         <div>
           <p className="text-[10px] font-medium text-teal-600 mb-0.5">やったこと</p>
-          <p className="text-sm text-stone-800">{content.did}</p>
+          <p className="text-sm text-stone-800 leading-relaxed">{content.did}</p>
         </div>
       )}
       {content.learned && (
         <div>
           <p className="text-[10px] font-medium text-teal-600 mb-0.5">気づき</p>
-          <p className="text-sm text-stone-800">{content.learned}</p>
+          <p className="text-sm text-stone-600 leading-relaxed">{content.learned}</p>
         </div>
       )}
       {content.tomorrow && (
         <div>
-          <p className="text-[10px] font-medium text-teal-600 mb-0.5">明日やること</p>
-          <p className="text-sm text-stone-800">{content.tomorrow}</p>
+          <p className="text-[10px] font-medium text-stone-400 mb-0.5">明日やること</p>
+          <p className="text-sm text-stone-500 leading-relaxed">{content.tomorrow}</p>
         </div>
       )}
     </div>
@@ -102,41 +116,67 @@ function AutoLogContent({ content }: { content: PostContent }) {
   return (
     <div className="flex items-center gap-4 text-sm">
       <div className="flex items-center gap-1">
-        <span className="text-stone-500">食事</span>
-        <span className="font-medium">{SCORE_LABELS[content.meal_score || 1]}</span>
+        <span className="text-stone-500 text-xs">食事</span>
+        <span className="font-medium text-stone-700">{SCORE_LABELS[content.meal_score || 1]}</span>
       </div>
       <div className="flex items-center gap-1">
-        <span className="text-stone-500">運動</span>
-        <span className="font-medium">{SCORE_LABELS[content.workout_score || 1]}</span>
+        <span className="text-stone-500 text-xs">運動</span>
+        <span className="font-medium text-stone-700">{SCORE_LABELS[content.workout_score || 1]}</span>
       </div>
       <div className="flex items-center gap-1">
-        <span className="text-stone-500">気分</span>
-        <span className="font-medium">{SCORE_LABELS[content.mood || 1]}</span>
+        <span className="text-stone-500 text-xs">気分</span>
+        <span className="font-medium text-stone-700">{SCORE_LABELS[content.mood || 1]}</span>
       </div>
       {(content.streak || 0) > 0 && (
-        <div className="flex items-center gap-1 text-orange-600">
-          <Flame size={14} />
-          <span className="font-medium">{content.streak}日連続</span>
+        <div className="flex items-center gap-1 text-orange-600 ml-auto">
+          <Flame size={13} />
+          <span className="font-medium text-sm">{content.streak}日連続</span>
         </div>
       )}
     </div>
   );
 }
 
-export default function PostCard({ post, currentUserId }: Props) {
+export default function PostCard({ post, currentUserId, onDeleted, onCommentClick }: Props) {
   const { public_profiles: profile } = post;
   const isOwn = post.user_id === currentUserId;
   const initial = profile.nickname?.[0] || "?";
+  const [showMenu, setShowMenu] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!confirm("この投稿を削除しますか？")) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/sns/posts?id=${post.id}`, { method: "DELETE" });
+      if (res.ok) onDeleted?.(post.id);
+    } finally {
+      setDeleting(false);
+      setShowMenu(false);
+    }
+  };
 
   return (
-    <div className="bg-white rounded-xl border border-stone-200 p-4 space-y-3">
+    <div className={`bg-white rounded-xl border border-stone-200 border-l-4 ${postTypeBorder(post.post_type)} p-4 space-y-3 relative`}>
       {/* ヘッダー */}
       <div className="flex items-center gap-3">
         <Link
           href={isOwn ? "/sns/profile" : `/sns/profile/${post.user_id}`}
-          className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center text-sm font-bold text-teal-700 shrink-0"
+          className="shrink-0"
         >
-          {initial}
+          {profile.avatar_url ? (
+            <Image
+              src={profile.avatar_url}
+              alt={profile.nickname}
+              width={36}
+              height={36}
+              className="rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center text-sm font-bold text-teal-700">
+              {initial}
+            </div>
+          )}
         </Link>
         <div className="flex-1 min-w-0">
           <Link
@@ -152,6 +192,33 @@ export default function PostCard({ post, currentUserId }: Props) {
             <span>{timeAgo(post.created_at)}</span>
           </div>
         </div>
+
+        {/* メニューボタン（自分の投稿のみ） */}
+        {isOwn && (
+          <div className="relative">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="p-1.5 hover:bg-stone-100 rounded-lg transition-colors text-stone-400"
+            >
+              <MoreHorizontal size={16} />
+            </button>
+            {showMenu && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
+                <div className="absolute right-0 top-8 z-20 bg-white border border-stone-200 rounded-lg shadow-lg min-w-[120px] overflow-hidden">
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 size={14} />
+                    {deleting ? "削除中..." : "削除する"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* コンテンツ */}
@@ -159,26 +226,39 @@ export default function PostCard({ post, currentUserId }: Props) {
         {post.post_type === "update" && <UpdateContent content={post.content} />}
         {post.post_type === "auto_log" && <AutoLogContent content={post.content} />}
         {post.post_type === "declaration" && (
-          <p className="text-sm text-stone-800 border-l-2 border-blue-400 pl-3 italic">
+          <p className="text-sm text-stone-800 border-l-2 border-blue-300 pl-3 italic leading-relaxed">
             {post.content.content}
           </p>
         )}
         {post.post_type === "milestone" && (
-          <div className="flex items-center gap-2 text-sm">
-            <Trophy size={18} className="text-amber-500" />
+          <div className="flex items-center gap-2 text-sm bg-amber-50 rounded-lg px-3 py-2">
+            <Trophy size={18} className="text-amber-500 shrink-0" />
             <span className="font-medium text-stone-800">{post.content.label}</span>
           </div>
         )}
       </div>
 
-      {/* リアクション */}
-      <ReactionBar
-        postId={post.id}
-        myReactions={post.reactions.myReactions}
-        types={post.reactions.types}
-        counts={post.reactions.counts}
-        isOwn={isOwn}
-      />
+      {/* フッター: リアクション + コメント */}
+      <div className="flex items-center justify-between">
+        <ReactionBar
+          postId={post.id}
+          myReactions={post.reactions.myReactions}
+          types={post.reactions.types}
+          counts={post.reactions.counts}
+          isOwn={isOwn}
+        />
+        <button
+          onClick={() => onCommentClick?.(post.id)}
+          className="flex items-center gap-1 text-xs text-stone-400 hover:text-stone-600 transition-colors ml-2"
+        >
+          <MessageSquare size={13} />
+          {post.comment_count ? (
+            <span>{post.comment_count}</span>
+          ) : (
+            <span className="hidden sm:inline">コメント</span>
+          )}
+        </button>
+      </div>
     </div>
   );
 }

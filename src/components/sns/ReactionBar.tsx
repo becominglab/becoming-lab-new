@@ -3,10 +3,10 @@
 import { useState } from "react";
 
 const REACTIONS = [
-  { type: "nice_update", emoji: "\uD83D\uDD25", label: "ナイス更新" },
-  { type: "together", emoji: "\uD83D\uDCAA", label: "一緒に" },
-  { type: "helpful", emoji: "\uD83D\uDC40", label: "参考に" },
-  { type: "keep_going", emoji: "\uD83C\uDFAF", label: "その調子" },
+  { type: "nice_update", emoji: "🔥", label: "ナイス更新" },
+  { type: "together", emoji: "💪", label: "一緒に" },
+  { type: "helpful", emoji: "👀", label: "参考に" },
+  { type: "keep_going", emoji: "🎯", label: "その調子" },
 ];
 
 interface Props {
@@ -23,28 +23,25 @@ export default function ReactionBar({ postId, myReactions: initialMy, types: ini
   const [counts, setCounts] = useState<Record<string, number>>(initialCounts || {});
 
   const toggle = async (reactionType: string) => {
+    if (isOwn) return; // 自分の投稿にはリアクション不可
     const isActive = myReactions.includes(reactionType);
 
     // 楽観的更新
     if (isActive) {
       setMyReactions((prev) => prev.filter((t) => t !== reactionType));
-      if (isOwn) {
-        setCounts((prev) => ({
-          ...prev,
-          [reactionType]: Math.max((prev[reactionType] || 1) - 1, 0),
-        }));
-      }
+      setCounts((prev) => ({
+        ...prev,
+        [reactionType]: Math.max((prev[reactionType] || 1) - 1, 0),
+      }));
     } else {
       setMyReactions((prev) => [...prev, reactionType]);
       if (!types.includes(reactionType)) {
         setTypes((prev) => [...prev, reactionType]);
       }
-      if (isOwn) {
-        setCounts((prev) => ({
-          ...prev,
-          [reactionType]: (prev[reactionType] || 0) + 1,
-        }));
-      }
+      setCounts((prev) => ({
+        ...prev,
+        [reactionType]: (prev[reactionType] || 0) + 1,
+      }));
     }
 
     try {
@@ -63,34 +60,39 @@ export default function ReactionBar({ postId, myReactions: initialMy, types: ini
       // revert on error
       if (isActive) {
         setMyReactions((prev) => [...prev, reactionType]);
+        setCounts((prev) => ({ ...prev, [reactionType]: (prev[reactionType] || 0) + 1 }));
       } else {
         setMyReactions((prev) => prev.filter((t) => t !== reactionType));
+        setCounts((prev) => ({ ...prev, [reactionType]: Math.max((prev[reactionType] || 1) - 1, 0) }));
       }
     }
   };
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 flex-wrap">
       {REACTIONS.map(({ type, emoji, label }) => {
         const isActive = myReactions.includes(type);
-        const hasAny = types.includes(type);
         const count = counts[type] || 0;
+        if (isOwn && count === 0) return null; // 自分投稿はカウントあるもののみ表示
 
         return (
           <button
             key={type}
             onClick={() => toggle(type)}
+            disabled={isOwn}
             className={`flex items-center gap-0.5 px-2 py-1 rounded-full text-xs transition-all ${
-              isActive
-                ? "bg-teal-50 border border-teal-300 text-teal-700"
-                : hasAny
-                ? "bg-stone-50 border border-stone-200 text-stone-500"
-                : "bg-white border border-stone-100 text-stone-400 hover:border-stone-200"
+              isOwn
+                ? "bg-stone-50 border border-stone-100 text-stone-400 cursor-default"
+                : isActive
+                ? "bg-teal-50 border border-teal-300 text-teal-700 hover:bg-teal-100"
+                : count > 0
+                ? "bg-stone-50 border border-stone-200 text-stone-500 hover:border-stone-300"
+                : "bg-white border border-stone-100 text-stone-300 hover:border-stone-200 hover:text-stone-400"
             }`}
-            title={label}
+            title={isOwn ? label : isActive ? `${label}を取り消す` : label}
           >
             <span className="text-sm">{emoji}</span>
-            {isOwn && count > 0 && (
+            {count > 0 && (
               <span className="text-[10px] font-medium">{count}</span>
             )}
           </button>
