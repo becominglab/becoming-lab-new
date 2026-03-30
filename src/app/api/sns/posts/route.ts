@@ -11,11 +11,12 @@ export async function GET(request: NextRequest) {
   const cursor = request.nextUrl.searchParams.get("cursor");
   const limit = Math.min(parseInt(request.nextUrl.searchParams.get("limit") || "20"), 50);
   const userId = request.nextUrl.searchParams.get("user_id");
-  const feed = request.nextUrl.searchParams.get("feed"); // "discover" for discover feed
+  const feed = request.nextUrl.searchParams.get("feed"); // "discover" | "trending"
   const tag = request.nextUrl.searchParams.get("tag"); // filter by tag
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query: any;
+  let isTrending = false;
 
   if (userId) {
     // 特定ユーザーの投稿（プロフィール画面用）
@@ -25,9 +26,19 @@ export async function GET(request: NextRequest) {
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(limit);
+  } else if (feed === "trending") {
+    // トレンド: 過去7日間で最もリアクションを受けた公開投稿
+    isTrending = true;
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    query = supabase
+      .from("posts")
+      .select("*, public_profiles!inner(nickname, avatar_url, is_public)")
+      .eq("public_profiles.is_public", true)
+      .gte("created_at", sevenDaysAgo)
+      .order("created_at", { ascending: false })
+      .limit(50); // より多く取得してリアクション数で並び替える
   } else if (feed === "discover") {
     // 発見フィード: 公開ユーザーの全投稿（フォロー状態不問）
-    // 自分の投稿は除外しない（自分も公開ユーザーのため含まれる）
     query = supabase
       .from("posts")
       .select("*, public_profiles!inner(nickname, avatar_url, is_public)")
@@ -56,7 +67,7 @@ export async function GET(request: NextRequest) {
       .limit(limit);
   }
 
-  if (cursor) {
+  if (cursor && !isTrending) {
     query = query.lt("created_at", cursor);
   }
 
@@ -83,6 +94,16 @@ export async function GET(request: NextRequest) {
       .eq("user_id", user.id)
       .in("post_id", postIds);
 
+    // フォロー状態を取得（discover/trendingのみ）
+    let followingSet = new Set<string>();
+    if (feed === "discover" || feed === "trending") {
+      const { data: followData } = await supabase
+        .from("follows")
+        .select("following_id")
+        .eq("follower_id", user.id);
+      followingSet = new Set((followData || []).map((f: { following_id: string }) => f.following_id));
+    }
+
     const bookmarkedSet = new Set((bookmarks || []).map((b: { post_id: string }) => b.post_id));
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -97,9 +118,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // レスポンス構築（リアクション数は全投稿で表示）
-    const enrichedPosts = postsList.map((post) => {
+    // レスポンス構築
+    let enrichedPosts = postsList.map((post) => {
       const rData = reactionsMap[post.id] || { counts: {}, myReactions: [] };
+      const totalReactions = Object.values(rData.counts).reduce((s, v) => s + v, 0);
 
       return {
         ...post,
@@ -107,12 +129,21 @@ export async function GET(request: NextRequest) {
           counts: rData.counts,
           types: Object.keys(rData.counts),
           myReactions: rData.myReactions,
+          total: totalReactions,
         },
         is_bookmarked: bookmarkedSet.has(post.id),
+        is_following: post.user_id === user.id ? null : followingSet.has(post.user_id),
       };
     });
 
-    const nextCursor = postsList.length === limit
+    // トレンドはリアクション数でソートしてlimitに切る
+    if (isTrending) {
+      enrichedPosts = enrichedPosts
+        .sort((a, b) => (b.reactions.total || 0) - (a.reactions.total || 0))
+        .slice(0, limit);
+    }
+
+    const nextCursor = (!isTrending && postsList.length === limit)
       ? postsList[postsList.length - 1].created_at
       : null;
 
@@ -134,7 +165,7 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ error: "not_authenticated" }, { status: 401 });
 
   const body = await request.json();
-  const { post_type, content, source_id, tags } = body;
+  const { post_type, content, source_id, tags, image_url } = body;
 
   const validTypes = ["update", "auto_log", "declaration", "milestone"];
   if (!validTypes.includes(post_type)) {
@@ -158,6 +189,9 @@ export async function POST(request: NextRequest) {
   // タグバリデーション (最大5個、各20文字以内)
   const validTags = Array.isArray(tags) ? tags.slice(0, 5).map((t: string) => t.slice(0, 20).trim()).filter(Boolean) : [];
 
+  // image_url バリデーション
+  const validImageUrl = typeof image_url === "string" && image_url.startsWith("https://") ? image_url : null;
+
   const { data, error } = await supabase
     .from("posts")
     .insert({
@@ -166,6 +200,7 @@ export async function POST(request: NextRequest) {
       content: content || {},
       source_id: source_id || null,
       tags: validTags,
+      image_url: validImageUrl,
     })
     .select()
     .single();

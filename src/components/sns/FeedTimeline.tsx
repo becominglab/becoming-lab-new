@@ -8,7 +8,8 @@ import DailyCheckin from "./DailyCheckin";
 import OnboardingGuide from "./OnboardingGuide";
 import RecommendedUsers from "./RecommendedUsers";
 import SkeletonCard from "./SkeletonCard";
-import { Loader2 } from "lucide-react";
+import WeeklySummaryCard from "./WeeklySummaryCard";
+import { Loader2, RefreshCw } from "lucide-react";
 
 interface Props {
   currentUserId: string;
@@ -18,11 +19,16 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [commentPostId, setCommentPostId] = useState<string | null>(null);
   const [composerPrompt, setComposerPrompt] = useState<string | undefined>();
   const observerRef = useRef<HTMLDivElement>(null);
+  // pull-to-refresh
+  const containerRef = useRef<HTMLDivElement>(null);
+  const touchStartY = useRef<number>(0);
+  const [pullDistance, setPullDistance] = useState(0);
 
   const fetchPosts = useCallback(async (cursorParam?: string | null) => {
     const isInitial = !cursorParam;
@@ -72,6 +78,44 @@ export default function FeedTimeline({ currentUserId }: Props) {
     return () => observer.disconnect();
   }, [cursor, hasMore, loadingMore, fetchPosts]);
 
+  // Pull-to-refresh
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      if (scrollTop > 0) return;
+      const dy = e.touches[0].clientY - touchStartY.current;
+      if (dy > 0) setPullDistance(Math.min(dy * 0.4, 70));
+    };
+
+    const handleTouchEnd = async () => {
+      if (pullDistance >= 60 && !refreshing) {
+        setRefreshing(true);
+        setPullDistance(0);
+        await fetchPosts();
+        setRefreshing(false);
+      } else {
+        setPullDistance(0);
+      }
+    };
+
+    el.addEventListener("touchstart", handleTouchStart, { passive: true });
+    el.addEventListener("touchmove", handleTouchMove, { passive: true });
+    el.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener("touchstart", handleTouchStart);
+      el.removeEventListener("touchmove", handleTouchMove);
+      el.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [pullDistance, refreshing, fetchPosts]);
+
   const handlePosted = () => {
     setComposerPrompt(undefined);
     fetchPosts();
@@ -91,9 +135,26 @@ export default function FeedTimeline({ currentUserId }: Props) {
   };
 
   return (
-    <div className="space-y-4">
+    <div ref={containerRef} className="space-y-4">
+      {/* Pull-to-refresh インジケーター */}
+      {(pullDistance > 0 || refreshing) && (
+        <div
+          className="flex items-center justify-center transition-all duration-200"
+          style={{ height: refreshing ? 40 : pullDistance }}
+        >
+          <RefreshCw
+            size={18}
+            className={`text-teal-500 transition-transform ${refreshing ? "animate-spin" : ""}`}
+            style={{ transform: `rotate(${pullDistance * 3}deg)` }}
+          />
+        </div>
+      )}
+
       {/* はじめてガイド（初回ユーザー向け） */}
       <OnboardingGuide />
+
+      {/* 週次サマリーカード（月曜日のみ） */}
+      <WeeklySummaryCard />
 
       {/* デイリーチェックイン */}
       <DailyCheckin
