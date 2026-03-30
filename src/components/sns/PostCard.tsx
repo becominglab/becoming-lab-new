@@ -286,7 +286,7 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
   };
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/sns?post=${post.id}`;
+    const url = `${window.location.origin}/sns/posts/${post.id}`;
     try {
       if (navigator.share) {
         await navigator.share({ title: `${profile.nickname}の更新`, url });

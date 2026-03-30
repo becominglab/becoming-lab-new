@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { UserPlus, UserMinus, Loader2 } from "lucide-react";
+import { useToast } from "@/contexts/ToastContext";
 
 interface Props {
   userId: string;
@@ -12,27 +13,35 @@ interface Props {
 }
 
 export default function FollowButton({ userId, isFollowing: initial, onToggle, compact }: Props) {
+  const { showToast } = useToast();
   const [following, setFollowing] = useState(initial);
   const [loading, setLoading] = useState(false);
 
   const toggle = async () => {
     setLoading(true);
+    const prevFollowing = following;
+    // 楽観的更新
+    setFollowing(!following);
+    onToggle?.(!following);
+
     try {
-      if (following) {
-        await fetch(`/api/sns/follows?following_id=${userId}`, { method: "DELETE" });
-        setFollowing(false);
-        onToggle?.(false);
+      if (prevFollowing) {
+        const res = await fetch(`/api/sns/follows?following_id=${userId}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("フォロー解除に失敗しました");
       } else {
-        await fetch("/api/sns/follows", {
+        const res = await fetch("/api/sns/follows", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ following_id: userId }),
         });
-        setFollowing(true);
-        onToggle?.(true);
+        if (!res.ok) throw new Error("フォローに失敗しました");
+        showToast("フォローしました！", "success");
       }
-    } catch {
-      // silently fail
+    } catch (err) {
+      // 楽観的更新を戻す
+      setFollowing(prevFollowing);
+      onToggle?.(prevFollowing);
+      showToast(err instanceof Error ? err.message : "操作に失敗しました", "error");
     } finally {
       setLoading(false);
     }

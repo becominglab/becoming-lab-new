@@ -7,6 +7,15 @@ import { ToastProvider } from "@/contexts/ToastContext";
 export const metadata: Metadata = {
   title: "Becoming SNS — 更新をつなぐ",
   description: "変わろうとしている仲間とつながる、更新のためのSNS",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Becoming",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export default async function SnsLayout({
