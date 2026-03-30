@@ -76,6 +76,55 @@ export async function POST(request: Request) {
   // Update streak
   const streak = await updateStreak(supabase, user.id, logDate);
 
+  // SNS: 公開プロフィールがあれば auto_log ポストを自動作成
+  try {
+    const { data: publicProfile } = await supabase
+      .from("public_profiles")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("is_public", true)
+      .maybeSingle();
+
+    if (publicProfile) {
+      await supabase.from("posts").upsert(
+        {
+          user_id: user.id,
+          post_type: "auto_log",
+          content: {
+            date: logDate,
+            meal_score,
+            workout_score,
+            mood,
+            streak: streak?.current_streak || 0,
+          },
+          source_id: log.id,
+        },
+        { onConflict: "user_id,source_id", ignoreDuplicates: true }
+      );
+
+      // マイルストーン自動投稿 (7, 30, 100日)
+      const milestones = [7, 30, 100];
+      const currentStreak = streak?.current_streak || 0;
+      if (milestones.includes(currentStreak)) {
+        await supabase.from("posts").insert({
+          user_id: user.id,
+          post_type: "milestone",
+          content: {
+            type: "streak",
+            label: `${currentStreak}日連続記録達成！`,
+            value: currentStreak,
+          },
+        });
+      }
+
+      // バッジチェック
+      const { checkAndAwardBadges } = await import("@/lib/sns/badges");
+      checkAndAwardBadges(supabase, user.id, ["streak", "body"]).catch(() => {});
+    }
+  } catch {
+    // SNS統合エラーはログ記録の成功に影響させない
+  }
+
   return NextResponse.json({ log, streak }, { status: 201 });
 }
 

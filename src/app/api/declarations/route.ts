@@ -42,6 +42,31 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // SNS: 公開プロフィールがあれば declaration ポストを自動作成
+  try {
+    const { data: publicProfile } = await supabase
+      .from("public_profiles")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("is_public", true)
+      .maybeSingle();
+
+    if (publicProfile) {
+      await supabase.from("posts").insert({
+        user_id: user.id,
+        post_type: "declaration",
+        content: { content: content.trim() },
+        source_id: data.id,
+      });
+
+      const { checkAndAwardBadges } = await import("@/lib/sns/badges");
+      checkAndAwardBadges(supabase, user.id, ["challenge"]).catch(() => {});
+    }
+  } catch {
+    // SNS統合エラーは宣言の保存に影響させない
+  }
+
   return NextResponse.json({ declaration: data }, { status: 201 });
 }
 

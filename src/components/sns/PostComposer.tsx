@@ -1,0 +1,122 @@
+"use client";
+
+import { useState } from "react";
+import { Send, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+
+interface Props {
+  onPosted?: () => void;
+}
+
+export default function PostComposer({ onPosted }: Props) {
+  const [expanded, setExpanded] = useState(false);
+  const [did, setDid] = useState("");
+  const [learned, setLearned] = useState("");
+  const [tomorrow, setTomorrow] = useState("");
+  const [posting, setPosting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!did.trim()) return;
+    setPosting(true);
+
+    try {
+      const res = await fetch("/api/sns/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          post_type: "update",
+          content: {
+            did: did.trim(),
+            learned: learned.trim() || null,
+            tomorrow: tomorrow.trim() || null,
+          },
+        }),
+      });
+
+      if (res.ok) {
+        setDid("");
+        setLearned("");
+        setTomorrow("");
+        setExpanded(false);
+        onPosted?.();
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setPosting(false);
+    }
+  };
+
+  if (!expanded) {
+    return (
+      <button
+        onClick={() => setExpanded(true)}
+        className="w-full p-4 bg-white rounded-xl border border-stone-200 text-left text-sm text-stone-400 hover:border-stone-300 transition-colors"
+      >
+        今日の更新を記録する...
+      </button>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-xl border border-stone-200 p-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium text-stone-800">きょうの更新</h3>
+        <button onClick={() => setExpanded(false)} className="text-stone-400 hover:text-stone-600">
+          <ChevronUp size={18} />
+        </button>
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-teal-700 mb-1">
+          やったこと <span className="text-red-400">*</span>
+        </label>
+        <textarea
+          value={did}
+          onChange={(e) => setDid(e.target.value)}
+          maxLength={140}
+          rows={2}
+          placeholder="今日取り組んだことを書く"
+          className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+        />
+        <p className="text-xs text-stone-400 text-right">{did.length}/140</p>
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-teal-700 mb-1">
+          気づいたこと
+        </label>
+        <textarea
+          value={learned}
+          onChange={(e) => setLearned(e.target.value)}
+          maxLength={140}
+          rows={2}
+          placeholder="気づきや学びがあれば"
+          className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-teal-700 mb-1">
+          明日やること
+        </label>
+        <textarea
+          value={tomorrow}
+          onChange={(e) => setTomorrow(e.target.value)}
+          maxLength={140}
+          rows={2}
+          placeholder="明日の一歩を宣言"
+          className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+        />
+      </div>
+
+      <button
+        onClick={handleSubmit}
+        disabled={!did.trim() || posting}
+        className="w-full flex items-center justify-center gap-2 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 disabled:opacity-50 transition-colors"
+      >
+        {posting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+        投稿する
+      </button>
+    </div>
+  );
+}

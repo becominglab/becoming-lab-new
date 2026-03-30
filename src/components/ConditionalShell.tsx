@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Footer from "./Footer";
 
-const STANDALONE_PREFIXES = ["/s/", "/mm", "/body"];
+const STANDALONE_PREFIXES = ["/s/", "/mm", "/body", "/sns"];
 
 export default function ConditionalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
