@@ -4,6 +4,10 @@
 
 -- moddatetime拡張は既に有効化済み
 
+-- SNS新機能: スキーマ不一致の既存テーブルをクリア (データなし)
+drop table if exists reactions cascade;
+drop table if exists follows cascade;
+
 -- ------------------------------------------------------------
 -- 1. public_profiles — 公開プロフィール (1 user = 1 row)
 -- ------------------------------------------------------------
