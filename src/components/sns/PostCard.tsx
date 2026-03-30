@@ -112,27 +112,69 @@ function UpdateContent({ content }: { content: PostContent }) {
   );
 }
 
-function AutoLogContent({ content }: { content: PostContent }) {
+const SCORE_COLORS: Record<number, string> = {
+  1: "bg-stone-100 text-stone-500",
+  2: "bg-teal-100 text-teal-700",
+  3: "bg-teal-500 text-white",
+};
+const SCORE_EMOJI: Record<number, string> = { 1: "△", 2: "○", 3: "◎" };
+
+function ScoreBadge({ label, score }: { label: string; score: number }) {
   return (
-    <div className="flex items-center gap-4 text-sm">
-      <div className="flex items-center gap-1">
-        <span className="text-stone-500 text-xs">食事</span>
-        <span className="font-medium text-stone-700">{SCORE_LABELS[content.meal_score || 1]}</span>
-      </div>
-      <div className="flex items-center gap-1">
-        <span className="text-stone-500 text-xs">運動</span>
-        <span className="font-medium text-stone-700">{SCORE_LABELS[content.workout_score || 1]}</span>
-      </div>
-      <div className="flex items-center gap-1">
-        <span className="text-stone-500 text-xs">気分</span>
-        <span className="font-medium text-stone-700">{SCORE_LABELS[content.mood || 1]}</span>
-      </div>
-      {(content.streak || 0) > 0 && (
-        <div className="flex items-center gap-1 text-orange-600 ml-auto">
-          <Flame size={13} />
-          <span className="font-medium text-sm">{content.streak}日連続</span>
+    <div className="flex flex-col items-center gap-1">
+      <span className="text-[10px] text-stone-400">{label}</span>
+      <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${SCORE_COLORS[score] || SCORE_COLORS[1]}`}>
+        {SCORE_EMOJI[score] || "△"}
+      </span>
+    </div>
+  );
+}
+
+function AutoLogContent({ content }: { content: PostContent }) {
+  // 体重・数値ログ対応
+  if (content.type && content.value !== undefined) {
+    const unit = content.type === "weight" ? "kg" : content.type === "steps" ? "歩" : "";
+    const label = content.type === "weight" ? "体重" : content.type === "steps" ? "歩数" : content.label || content.type;
+    return (
+      <div className="flex items-center gap-3 bg-orange-50 rounded-xl px-4 py-3">
+        <div className="flex-1">
+          <p className="text-[11px] text-orange-500 font-medium mb-0.5">{label}</p>
+          <p className="text-2xl font-bold text-stone-800">
+            {content.value.toLocaleString()}
+            <span className="text-sm font-normal text-stone-400 ml-1">{unit}</span>
+          </p>
         </div>
-      )}
+        {(content.streak || 0) > 0 && (
+          <div className="flex flex-col items-center gap-0.5 bg-orange-100 rounded-xl px-3 py-2">
+            <Flame size={16} className="text-orange-500" />
+            <span className="text-xs font-bold text-orange-600">{content.streak}日</span>
+            <span className="text-[10px] text-orange-400">連続</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // 食事・運動・気分スコア
+  return (
+    <div className="bg-orange-50 rounded-xl px-4 py-3">
+      <div className="flex items-center justify-around">
+        <ScoreBadge label="食事" score={content.meal_score || 1} />
+        <div className="w-px h-8 bg-orange-100" />
+        <ScoreBadge label="運動" score={content.workout_score || 1} />
+        <div className="w-px h-8 bg-orange-100" />
+        <ScoreBadge label="気分" score={content.mood || 1} />
+        {(content.streak || 0) > 0 && (
+          <>
+            <div className="w-px h-8 bg-orange-100" />
+            <div className="flex flex-col items-center gap-0.5">
+              <Flame size={16} className="text-orange-500" />
+              <span className="text-xs font-bold text-orange-600">{content.streak}日</span>
+              <span className="text-[10px] text-orange-400">連続</span>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

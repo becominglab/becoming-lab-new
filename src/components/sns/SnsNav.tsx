@@ -115,9 +115,9 @@ export default function SnsNav() {
     return () => clearInterval(interval);
   }, []);
 
-  // フィードページに来たら既読にする
+  // 通知ページに来たら既読にする
   useEffect(() => {
-    if (pathname === "/sns" && unreadCount > 0) {
+    if (pathname === "/sns/notifications" && unreadCount > 0) {
       fetch("/api/sns/notifications", { method: "PATCH" }).then(() => {
         setUnreadCount(0);
       });
@@ -131,18 +131,20 @@ export default function SnsNav() {
           const active =
             pathname === href || (href !== "/sns" && pathname.startsWith(href));
           const badgeCount = showBadge ? unreadCount : 0;
+          // 未読通知がある場合はフィードアイコンから通知ページへ飛ぶ
+          const targetHref = showBadge && badgeCount > 0 ? "/sns/notifications" : href;
           return (
             <Link
               key={href}
-              href={href}
+              href={targetHref}
               className={`relative flex flex-col items-center gap-0.5 px-3 py-2 transition-colors ${
-                active ? "text-teal-600" : "text-stone-400 hover:text-stone-600"
+                active || (showBadge && pathname === "/sns/notifications") ? "text-teal-600" : "text-stone-400 hover:text-stone-600"
               }`}
             >
               <div className="relative">
                 <Icon active={active} />
                 {badgeCount > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-0.5">
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-0.5 animate-pulse">
                     {badgeCount > 99 ? "99+" : badgeCount}
                   </span>
                 )}
