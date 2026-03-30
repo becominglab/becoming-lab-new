@@ -43,7 +43,7 @@ create policy "Users can delete own public profile"
 
 create trigger handle_public_profiles_updated_at
   before update on public_profiles
-  for each row execute procedure moddatetime(updated_at);
+  for each row execute function extensions.moddatetime(updated_at);
 
 -- ------------------------------------------------------------
 -- 2. follows — フォロー関係

@@ -39,7 +39,7 @@ create index on circle_posts(circle_id, created_at desc);
 -- updated_at trigger
 create trigger handle_circles_updated_at
   before update on circles
-  for each row execute procedure moddatetime(updated_at);
+  for each row execute function extensions.moddatetime(updated_at);
 
 -- RLS
 alter table circles enable row level security;

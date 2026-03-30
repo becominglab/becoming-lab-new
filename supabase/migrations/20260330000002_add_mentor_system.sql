@@ -20,7 +20,7 @@ create index on mentor_connections(mentee_id);
 
 create trigger handle_mentor_connections_updated_at
   before update on mentor_connections
-  for each row execute procedure moddatetime(updated_at);
+  for each row execute function extensions.moddatetime(updated_at);
 
 -- RLS
 alter table mentor_connections enable row level security;
