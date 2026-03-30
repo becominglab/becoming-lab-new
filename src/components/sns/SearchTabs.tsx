@@ -106,6 +106,11 @@ export default function SearchTabs() {
 
         {tab === "match" && (
           <div>
+            {!loading && !matchLoaded && (
+              <p className="text-xs text-stone-400 bg-teal-50 rounded-lg px-3 py-2 mb-4 text-center">
+                ✨ 挑戦タグや目的が近いメンバーをスコアで自動マッチングします
+              </p>
+            )}
             {loading ? (
               <div className="flex justify-center py-16">
                 <Loader2 size={24} className="animate-spin text-teal-500" />
@@ -134,6 +139,11 @@ export default function SearchTabs() {
 
         {tab === "mentor" && (
           <div>
+            {!loading && !mentorLoaded && (
+              <p className="text-xs text-stone-400 bg-amber-50 rounded-lg px-3 py-2 mb-4 text-center">
+                🎓 同じ挑戦を先に経験した仲間にアドバイスをもらえます
+              </p>
+            )}
             {loading ? (
               <div className="flex justify-center py-16">
                 <Loader2 size={24} className="animate-spin text-amber-400" />

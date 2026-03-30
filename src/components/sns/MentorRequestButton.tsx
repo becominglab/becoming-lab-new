@@ -60,14 +60,20 @@ export default function MentorRequestButton({ mentorUserId, initialStatus }: Pro
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-end">
-          <div className="w-full max-w-md mx-auto bg-white rounded-t-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center sm:p-4">
+          <div className="w-full max-w-md mx-auto bg-white rounded-t-2xl sm:rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-1">
               <h2 className="font-bold text-stone-900 text-sm">メンターに依頼する</h2>
-              <button onClick={() => setShowModal(false)}>
+              <button
+                onClick={() => setShowModal(false)}
+                className="p-1.5 hover:bg-stone-100 rounded-lg transition-colors"
+              >
                 <X size={18} className="text-stone-400" />
               </button>
             </div>
+            <p className="text-xs text-stone-400 mb-4">
+              相談したいことや背景を伝えると、メンターが受け入れやすくなります
+            </p>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -79,7 +85,7 @@ export default function MentorRequestButton({ mentorUserId, initialStatus }: Pro
             <button
               onClick={handleRequest}
               disabled={loading}
-              className="w-full py-3 bg-teal-600 disabled:bg-stone-200 text-white rounded-xl text-sm font-medium"
+              className="w-full py-3 bg-teal-600 disabled:bg-stone-200 text-white rounded-xl text-sm font-medium hover:bg-teal-700 transition-colors"
             >
               {loading ? <Loader2 size={16} className="animate-spin mx-auto" /> : "依頼を送る"}
             </button>

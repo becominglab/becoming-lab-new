@@ -160,10 +160,10 @@ export default function CircleDetailView({
           </div>
           <button
             onClick={() => setShowMembers(!showMembers)}
-            className="flex items-center gap-1 text-xs text-stone-400"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-stone-500 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors"
           >
             <Users size={14} />
-            {circle.member_count}/{circle.max_members}
+            {circle.member_count}/{circle.max_members}人
           </button>
         </div>
 
@@ -244,17 +244,17 @@ export default function CircleDetailView({
             {myRole === "owner" ? (
               <button
                 onClick={handleDelete}
-                className="flex items-center gap-1 text-xs text-red-400 ml-auto"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-red-200 ml-auto"
               >
-                <Trash2 size={12} />
+                <Trash2 size={13} />
                 サークルを削除
               </button>
             ) : (
               <button
                 onClick={handleLeave}
-                className="flex items-center gap-1 text-xs text-stone-400 ml-auto"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-stone-500 hover:bg-stone-100 rounded-lg transition-colors border border-stone-200 ml-auto"
               >
-                <LogOut size={12} />
+                <LogOut size={13} />
                 退出する
               </button>
             )}
