@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import Link from "next/link";
 import PostCard from "./PostCard";
 import PostComposer from "./PostComposer";
 import CommentSection from "./CommentSection";
@@ -9,7 +10,7 @@ import OnboardingGuide from "./OnboardingGuide";
 import RecommendedUsers from "./RecommendedUsers";
 import SkeletonCard from "./SkeletonCard";
 import WeeklySummaryCard from "./WeeklySummaryCard";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw, TrendingUp, Compass } from "lucide-react";
 
 interface Props {
   currentUserId: string;
@@ -17,6 +18,7 @@ interface Props {
 
 export default function FeedTimeline({ currentUserId }: Props) {
   const [posts, setPosts] = useState<any[]>([]);
+  const [trendingPosts, setTrendingPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -44,6 +46,10 @@ export default function FeedTimeline({ currentUserId }: Props) {
 
       if (isInitial) {
         setPosts(data.posts || []);
+        // フィードが空の場合はトレンド投稿を取得
+        if ((data.posts || []).length === 0) {
+          fetchTrending();
+        }
       } else {
         setPosts((prev) => [...prev, ...(data.posts || [])]);
       }
@@ -55,7 +61,17 @@ export default function FeedTimeline({ currentUserId }: Props) {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const fetchTrending = async () => {
+    try {
+      const res = await fetch("/api/sns/posts?feed=trending&limit=5");
+      const data = await res.json();
+      setTrendingPosts(data.posts || []);
+    } catch {
+      // silently fail
+    }
+  };
 
   useEffect(() => {
     fetchPosts();
@@ -169,14 +185,42 @@ export default function FeedTimeline({ currentUserId }: Props) {
           {[1, 2, 3].map((i) => <SkeletonCard key={i} />)}
         </div>
       ) : posts.length === 0 ? (
-        <div className="text-center py-12 space-y-3">
-          <p className="text-3xl">🌱</p>
-          <p className="text-stone-500 text-sm font-medium">まだ投稿がありません</p>
-          <p className="text-stone-400 text-xs">仲間をフォローするとここに投稿が流れてきます</p>
-          {/* フィードが空のときはおすすめを優先表示 */}
-          <div className="mt-4 text-left">
-            <RecommendedUsers />
+        <div className="space-y-4">
+          {/* 空フィード: おすすめユーザー */}
+          <div className="text-center py-6 space-y-2">
+            <p className="text-2xl">🌱</p>
+            <p className="text-stone-500 text-sm font-medium">まだ投稿がありません</p>
+            <p className="text-stone-400 text-xs">仲間をフォローするとここに投稿が流れてきます</p>
           </div>
+
+          <RecommendedUsers />
+
+          {/* 空フィード: 人気投稿をプレビュー */}
+          {trendingPosts.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-stone-500">
+                  <TrendingUp size={13} className="text-amber-500" />
+                  みんなの人気投稿
+                </div>
+                <Link
+                  href="/sns?tab=discover"
+                  className="flex items-center gap-1 text-xs text-teal-600 hover:underline"
+                >
+                  <Compass size={11} />
+                  もっと見る
+                </Link>
+              </div>
+              {trendingPosts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  currentUserId={currentUserId}
+                  onCommentClick={(id) => setCommentPostId(id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <>

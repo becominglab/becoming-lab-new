@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MessageSquare, UserPlus, Loader2, Bell } from "lucide-react";
+import { Heart, MessageSquare, UserPlus, Loader2, Bell, GraduationCap } from "lucide-react";
 
 interface Notification {
   id: string;
@@ -12,10 +12,10 @@ interface Notification {
   created_at: string;
   post_id?: string;
   body?: string;
+  actor_id?: string;
   public_profiles?: {
     nickname: string;
     avatar_url: string | null;
-    user_id?: string;
   };
 }
 
@@ -34,28 +34,52 @@ function timeAgo(dateStr: string): string {
 function NotifIcon({ type }: { type: string }) {
   switch (type) {
     case "reaction":
-      return <div className="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center"><Heart size={14} className="text-red-500 fill-red-500" /></div>;
+      return <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center"><Heart size={12} className="text-red-500 fill-red-500" /></div>;
     case "comment":
-      return <div className="w-7 h-7 rounded-full bg-teal-100 flex items-center justify-center"><MessageSquare size={14} className="text-teal-600" /></div>;
-    case "follow":
+      return <div className="w-6 h-6 rounded-full bg-teal-100 flex items-center justify-center"><MessageSquare size={12} className="text-teal-600" /></div>;
     case "mentor_request":
     case "mentor_accepted":
-      return <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center"><UserPlus size={14} className="text-blue-500" /></div>;
+      return <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center"><GraduationCap size={12} className="text-amber-600" /></div>;
+    case "follow":
     default:
-      return <div className="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center"><Bell size={14} className="text-stone-400" /></div>;
+      return <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center"><UserPlus size={12} className="text-blue-500" /></div>;
   }
 }
 
-function notifText(n: Notification): string {
+function notifText(n: Notification): { main: string; sub?: string } {
   const name = n.public_profiles?.nickname || "誰か";
   switch (n.type) {
-    case "reaction": return `${name}さんがリアクション${n.body ? `（${n.body}）` : ""}しました`;
-    case "comment": return `${name}さんがコメントしました`;
-    case "follow": return `${name}さんがフォローしました`;
-    case "mentor_request": return `${name}さんからメンター申請が届きました`;
-    case "mentor_accepted": return `${name}さんがメンター申請を承認しました`;
-    default: return "新しい通知があります";
+    case "reaction":
+      return {
+        main: `${name}さんがあなたの投稿にリアクションしました`,
+        sub: n.body ? `「${n.body}」` : undefined,
+      };
+    case "comment":
+      return {
+        main: `${name}さんがコメントしました`,
+        sub: n.body ? `「${n.body}」` : undefined,
+      };
+    case "follow":
+      return { main: `${name}さんがフォローしました` };
+    case "mentor_request":
+      return { main: `${name}さんからメンター申請が届きました` };
+    case "mentor_accepted":
+      return { main: `${name}さんがメンター申請を承認しました` };
+    default:
+      return { main: "新しい通知があります" };
   }
+}
+
+function notifHref(n: Notification): string {
+  // 投稿関連の通知は投稿詳細ページへ
+  if (n.post_id && (n.type === "reaction" || n.type === "comment")) {
+    return `/sns/posts/${n.post_id}`;
+  }
+  // フォロー / メンター関連はプロフィールへ
+  if (n.actor_id) {
+    return `/sns/profile/${n.actor_id}`;
+  }
+  return "/sns";
 }
 
 export default function NotificationList() {
@@ -94,11 +118,11 @@ export default function NotificationList() {
   return (
     <div className="divide-y divide-stone-100">
       {notifications.map((n) => {
-        const linkHref = n.post_id ? `/sns` : (n.public_profiles ? `/sns/profile/${(n as any).actor_id}` : "/sns");
+        const { main, sub } = notifText(n);
         return (
           <Link
             key={n.id}
-            href={linkHref}
+            href={notifHref(n)}
             className={`flex items-start gap-3 px-4 py-3.5 hover:bg-stone-50 transition-colors ${
               !n.is_read ? "bg-teal-50/60" : ""
             }`}
@@ -126,8 +150,11 @@ export default function NotificationList() {
             {/* テキスト */}
             <div className="flex-1 min-w-0">
               <p className={`text-sm leading-snug ${!n.is_read ? "font-medium text-stone-800" : "text-stone-600"}`}>
-                {notifText(n)}
+                {main}
               </p>
+              {sub && (
+                <p className="text-xs text-stone-400 mt-0.5 truncate">{sub}</p>
+              )}
               <p className="text-xs text-stone-400 mt-0.5">{timeAgo(n.created_at)}</p>
             </div>
 

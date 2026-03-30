@@ -6,6 +6,15 @@ import Image from "next/image";
 import { Send, ChevronUp, Loader2, Hash, X, Camera } from "lucide-react";
 import { useToast } from "@/contexts/ToastContext";
 
+const DRAFT_KEY = "sns_post_draft";
+
+interface DraftData {
+  did: string;
+  learned: string;
+  tomorrow: string;
+  tagInput: string;
+}
+
 interface Props {
   onPosted?: () => void;
   /** チェックインやチャレンジ連携時の初期プロンプト */
@@ -32,7 +41,48 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [posting, setPosting] = useState(false);
+  const [draftRestored, setDraftRestored] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 下書き復元（challengeTitle や initialPrompt がない場合のみ）
+  useEffect(() => {
+    if (challengeTitle || initialPrompt) return;
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        const draft: DraftData = JSON.parse(saved);
+        if (draft.did || draft.learned || draft.tomorrow || draft.tagInput) {
+          setDid(draft.did || "");
+          setLearned(draft.learned || "");
+          setTomorrow(draft.tomorrow || "");
+          setTagInput(draft.tagInput || "");
+          setDraftRestored(true);
+          setExpanded(true);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 下書き自動保存（500msデバウンス）
+  useEffect(() => {
+    if (!expanded || challengeTitle || initialPrompt) return;
+    const timer = setTimeout(() => {
+      try {
+        const draft: DraftData = { did, learned, tomorrow, tagInput };
+        if (did || learned || tomorrow || tagInput) {
+          localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        } else {
+          localStorage.removeItem(DRAFT_KEY);
+        }
+      } catch {
+        // ignore
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [did, learned, tomorrow, tagInput, expanded, challengeTitle, initialPrompt]);
 
   // initialPrompt が変わったら展開
   useEffect(() => {
@@ -94,6 +144,10 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const clearDraft = () => {
+    try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+  };
+
   const handleSubmit = async () => {
     if (!did.trim()) return;
     if (uploadingImage) {
@@ -125,6 +179,8 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
         setTagInput("");
         removeImage();
         setExpanded(false);
+        setDraftRestored(false);
+        clearDraft();
         showToast("投稿しました！", "success");
         onPosted?.();
       } else {
@@ -153,7 +209,14 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
   return (
     <div className="bg-white rounded-xl border border-teal-200 p-4 space-y-3 shadow-sm">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-stone-800">きょうの更新</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-stone-800">きょうの更新</h3>
+          {draftRestored && (
+            <span className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded-full border border-amber-200">
+              下書き復元
+            </span>
+          )}
+        </div>
         <button
           onClick={() => setExpanded(false)}
           className="p-1 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded transition-colors"
@@ -281,6 +344,23 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
         {posting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
         {uploadingImage ? "画像をアップロード中..." : "投稿する"}
       </button>
+
+      {/* 下書き破棄ボタン（下書き復元時のみ） */}
+      {draftRestored && (
+        <button
+          onClick={() => {
+            setDid("");
+            setLearned("");
+            setTomorrow("");
+            setTagInput("");
+            setDraftRestored(false);
+            clearDraft();
+          }}
+          className="w-full text-xs text-stone-400 hover:text-red-400 transition-colors py-1"
+        >
+          下書きを破棄する
+        </button>
+      )}
     </div>
   );
 }
