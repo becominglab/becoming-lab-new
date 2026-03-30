@@ -1,7 +1,19 @@
 -- ============================================================
--- comments: 投稿へのコメント
+-- comments テーブルを正しいスキーマに修正
+-- (既存テーブルを DROP して再作成)
 -- ============================================================
--- 既存のcomentsテーブルを安全に削除して再作成
+
+-- 既存のトリガーを削除
+drop trigger if exists after_comment_insert on comments;
+drop trigger if exists after_comment_delete on comments;
+drop trigger if exists after_comment_notify on comments;
+drop trigger if exists set_comments_updated_at on comments;
+
+-- 既存のインデックスを削除
+drop index if exists comments_post_id_idx;
+drop index if exists comments_user_id_idx;
+
+-- 既存の comments テーブルを削除して再作成
 drop table if exists comments cascade;
 
 create table comments (
@@ -20,10 +32,10 @@ create trigger set_comments_updated_at
   before update on comments
   for each row execute function extensions.moddatetime(updated_at);
 
--- コメント数を posts に追加
+-- コメント数カラムを posts に追加（なければ）
 alter table posts add column if not exists comment_count integer not null default 0;
 
--- コメント作成時に comment_count をインクリメントする関数
+-- コメントカウント関数
 create or replace function increment_comment_count()
 returns trigger language plpgsql as $$
 begin
@@ -32,7 +44,6 @@ begin
 end;
 $$;
 
--- コメント削除時にデクリメントする関数
 create or replace function decrement_comment_count()
 returns trigger language plpgsql as $$
 begin
@@ -68,13 +79,13 @@ create policy "comments_delete" on comments
   for delete using (auth.uid() = user_id);
 
 -- ============================================================
--- notifications: 通知テーブル
+-- notifications テーブル（なければ作成）
 -- ============================================================
 create table if not exists notifications (
   id          uuid primary key default gen_random_uuid(),
   user_id     uuid not null references auth.users(id) on delete cascade,
   actor_id    uuid references auth.users(id) on delete set null,
-  type        text not null, -- 'reaction' | 'comment' | 'follow' | 'mentor_request' | 'mentor_accepted'
+  type        text not null,
   post_id     uuid references posts(id) on delete cascade,
   body        text,
   is_read     boolean not null default false,
@@ -83,26 +94,35 @@ create table if not exists notifications (
 
 create index if not exists notifications_user_id_idx on notifications(user_id, is_read, created_at desc);
 
--- RLS
 alter table notifications enable row level security;
 
-create policy "notifications_select" on notifications
-  for select using (auth.uid() = user_id);
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies where tablename = 'notifications' and policyname = 'notifications_select'
+  ) then
+    create policy "notifications_select" on notifications
+      for select using (auth.uid() = user_id);
+  end if;
 
-create policy "notifications_update" on notifications
-  for update using (auth.uid() = user_id);
+  if not exists (
+    select 1 from pg_policies where tablename = 'notifications' and policyname = 'notifications_update'
+  ) then
+    create policy "notifications_update" on notifications
+      for update using (auth.uid() = user_id);
+  end if;
+end;
+$$;
 
 -- ============================================================
--- コメント時に通知を自動作成するトリガー
+-- コメント通知トリガー
 -- ============================================================
 create or replace function create_comment_notification()
 returns trigger language plpgsql as $$
 declare
   v_post_user_id uuid;
 begin
-  -- 投稿者を取得
   select user_id into v_post_user_id from posts where id = new.post_id;
-  -- 自分の投稿へのコメントは通知しない
   if v_post_user_id is null or v_post_user_id = new.user_id then
     return new;
   end if;
@@ -112,12 +132,13 @@ begin
 end;
 $$;
 
+drop trigger if exists after_comment_notify on comments;
 create trigger after_comment_notify
   after insert on comments
   for each row execute function create_comment_notification();
 
 -- ============================================================
--- リアクション時に通知を自動作成するトリガー
+-- リアクション通知トリガー
 -- ============================================================
 create or replace function create_reaction_notification()
 returns trigger language plpgsql as $$
@@ -134,12 +155,13 @@ begin
 end;
 $$;
 
+drop trigger if exists after_reaction_notify on reactions;
 create trigger after_reaction_notify
   after insert on reactions
   for each row execute function create_reaction_notification();
 
 -- ============================================================
--- フォロー時に通知を自動作成するトリガー
+-- フォロー通知トリガー
 -- ============================================================
 create or replace function create_follow_notification()
 returns trigger language plpgsql as $$
@@ -150,6 +172,7 @@ begin
 end;
 $$;
 
+drop trigger if exists after_follow_notify on follows;
 create trigger after_follow_notify
   after insert on follows
   for each row execute function create_follow_notification();
