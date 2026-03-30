@@ -5,7 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import ReactionBar from "./ReactionBar";
 import BookmarkButton from "./BookmarkButton";
-import { Flame, MessageSquare, Trophy, FileText, Trash2, MoreHorizontal, Pencil, Hash } from "lucide-react";
+import FollowButton from "./FollowButton";
+import { useToast } from "@/contexts/ToastContext";
+import { Flame, MessageSquare, Trophy, FileText, Trash2, MoreHorizontal, Pencil, Hash, Share2 } from "lucide-react";
 
 interface PostContent {
   did?: string;
@@ -28,9 +30,11 @@ interface Post {
   post_type: string;
   content: PostContent;
   tags?: string[];
+  image_url?: string | null;
   created_at: string;
   comment_count?: number;
   is_bookmarked?: boolean;
+  is_following?: boolean | null; // null = own post, true/false = others
   public_profiles: {
     nickname: string;
     avatar_url: string | null;
@@ -39,6 +43,7 @@ interface Post {
     counts?: Record<string, number>;
     types: string[];
     myReactions: string[];
+    total?: number;
   };
 }
 
@@ -49,10 +54,6 @@ interface Props {
   onCommentClick?: (postId: string) => void;
   onUpdated?: (post: Post) => void;
 }
-
-const SCORE_LABELS: Record<number, string> = { 1: "○", 2: "◎", 3: "◉" };
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-void SCORE_LABELS;
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -137,7 +138,6 @@ function ScoreBadge({ label, score }: { label: string; score: number }) {
 }
 
 function AutoLogContent({ content }: { content: PostContent }) {
-  // 体重・数値ログ対応
   if (content.type && content.value !== undefined) {
     const unit = content.type === "weight" ? "kg" : content.type === "steps" ? "歩" : "";
     const label = content.type === "weight" ? "体重" : content.type === "steps" ? "歩数" : content.label || content.type;
@@ -161,7 +161,6 @@ function AutoLogContent({ content }: { content: PostContent }) {
     );
   }
 
-  // 食事・運動・気分スコア
   return (
     <div className="bg-orange-50 rounded-xl px-4 py-3">
       <div className="flex items-center justify-around">
@@ -187,17 +186,16 @@ function AutoLogContent({ content }: { content: PostContent }) {
 
 // インライン編集フォーム
 function EditForm({ post, onSave, onCancel }: { post: Post; onSave: (updated: Post) => void; onCancel: () => void }) {
+  const { showToast } = useToast();
   const [did, setDid] = useState(post.content.did || "");
   const [learned, setLearned] = useState(post.content.learned || "");
   const [tomorrow, setTomorrow] = useState(post.content.tomorrow || "");
   const [tagInput, setTagInput] = useState((post.tags || []).join(" "));
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
 
   const handleSave = async () => {
-    if (!did.trim()) { setError("「やったこと」を入力してください"); return; }
+    if (!did.trim()) { showToast("「やったこと」を入力してください", "error"); return; }
     setSaving(true);
-    setError("");
     try {
       const tags = tagInput.split(/[\s,　]+/).map((t) => t.replace(/^#/, "").trim()).filter(Boolean).slice(0, 5);
       const res = await fetch("/api/sns/posts", {
@@ -210,10 +208,11 @@ function EditForm({ post, onSave, onCancel }: { post: Post; onSave: (updated: Po
         }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "保存に失敗しました"); return; }
+      if (!res.ok) { showToast(data.error || "保存に失敗しました", "error"); return; }
+      showToast("更新しました", "success");
       onSave({ ...post, content: data.post.content, tags: data.post.tags });
     } catch {
-      setError("保存に失敗しました");
+      showToast("保存に失敗しました", "error");
     } finally {
       setSaving(false);
     }
@@ -242,7 +241,6 @@ function EditForm({ post, onSave, onCancel }: { post: Post; onSave: (updated: Po
         <input value={tagInput} onChange={(e) => setTagInput(e.target.value)} placeholder="運動 英語 読書"
           className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" />
       </div>
-      {error && <p className="text-xs text-red-500">{error}</p>}
       <div className="flex gap-2">
         <button onClick={handleSave} disabled={saving}
           className="flex-1 py-1.5 bg-teal-600 text-white text-xs font-medium rounded-lg hover:bg-teal-700 disabled:opacity-50 transition-colors">
@@ -258,6 +256,7 @@ function EditForm({ post, onSave, onCancel }: { post: Post; onSave: (updated: Po
 }
 
 export default function PostCard({ post: initialPost, currentUserId, onDeleted, onCommentClick, onUpdated }: Props) {
+  const { showToast } = useToast();
   const [post, setPost] = useState(initialPost);
   const { public_profiles: profile } = post;
   const isOwn = post.user_id === currentUserId;
@@ -271,10 +270,32 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
     setDeleting(true);
     try {
       const res = await fetch(`/api/sns/posts?id=${post.id}`, { method: "DELETE" });
-      if (res.ok) onDeleted?.(post.id);
+      if (res.ok) {
+        showToast("削除しました", "success");
+        onDeleted?.(post.id);
+      } else {
+        const data = await res.json();
+        showToast(data.error || "削除に失敗しました", "error");
+      }
+    } catch {
+      showToast("削除に失敗しました", "error");
     } finally {
       setDeleting(false);
       setShowMenu(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/sns?post=${post.id}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `${profile.nickname}の更新`, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        showToast("リンクをコピーしました", "success");
+      }
+    } catch {
+      // user cancelled share
     }
   };
 
@@ -288,18 +309,9 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
     <div className={`bg-white rounded-xl border border-stone-200 border-l-4 ${postTypeBorder(post.post_type)} p-4 space-y-3 relative`}>
       {/* ヘッダー */}
       <div className="flex items-center gap-3">
-        <Link
-          href={isOwn ? "/sns/profile" : `/sns/profile/${post.user_id}`}
-          className="shrink-0"
-        >
+        <Link href={isOwn ? "/sns/profile" : `/sns/profile/${post.user_id}`} className="shrink-0">
           {profile.avatar_url ? (
-            <Image
-              src={profile.avatar_url}
-              alt={profile.nickname}
-              width={36}
-              height={36}
-              className="rounded-full object-cover"
-            />
+            <Image src={profile.avatar_url} alt={profile.nickname} width={36} height={36} className="rounded-full object-cover" />
           ) : (
             <div className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center text-sm font-bold text-teal-700">
               {initial}
@@ -307,12 +319,18 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
           )}
         </Link>
         <div className="flex-1 min-w-0">
-          <Link
-            href={isOwn ? "/sns/profile" : `/sns/profile/${post.user_id}`}
-            className="text-sm font-medium text-stone-800 hover:underline truncate block"
-          >
-            {profile.nickname}
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href={isOwn ? "/sns/profile" : `/sns/profile/${post.user_id}`}
+              className="text-sm font-medium text-stone-800 hover:underline truncate"
+            >
+              {profile.nickname}
+            </Link>
+            {/* フォローCTA — discover/trending feedで未フォローの他ユーザー */}
+            {!isOwn && post.is_following === false && (
+              <FollowButton userId={post.user_id} isFollowing={false} compact />
+            )}
+          </div>
           <div className="flex items-center gap-1.5 text-[10px] text-stone-400">
             <PostTypeIcon type={post.post_type} />
             <span><PostTypeLabel type={post.post_type} /></span>
@@ -321,44 +339,56 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
           </div>
         </div>
 
-        {/* ブックマークボタン（全投稿） */}
-        <BookmarkButton postId={post.id} isBookmarked={post.is_bookmarked || false} />
+        {/* アクションボタン */}
+        <div className="flex items-center gap-1">
+          {/* シェアボタン */}
+          <button
+            onClick={handleShare}
+            className="p-1.5 text-stone-300 hover:text-stone-500 hover:bg-stone-100 rounded-lg transition-colors"
+            title="シェア"
+          >
+            <Share2 size={14} />
+          </button>
 
-        {/* メニューボタン（自分の投稿のみ） */}
-        {isOwn && (
-          <div className="relative">
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-1.5 hover:bg-stone-100 rounded-lg transition-colors text-stone-400"
-            >
-              <MoreHorizontal size={16} />
-            </button>
-            {showMenu && (
-              <>
-                <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-8 z-20 bg-white border border-stone-200 rounded-lg shadow-lg min-w-[120px] overflow-hidden">
-                  {post.post_type === "update" && (
+          {/* ブックマークボタン */}
+          <BookmarkButton postId={post.id} isBookmarked={post.is_bookmarked || false} />
+
+          {/* メニューボタン（自分の投稿のみ） */}
+          {isOwn && (
+            <div className="relative">
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="p-1.5 hover:bg-stone-100 rounded-lg transition-colors text-stone-400"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+              {showMenu && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
+                  <div className="absolute right-0 top-8 z-20 bg-white border border-stone-200 rounded-lg shadow-lg min-w-[120px] overflow-hidden">
+                    {post.post_type === "update" && (
+                      <button
+                        onClick={() => { setEditing(true); setShowMenu(false); }}
+                        className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-stone-600 hover:bg-stone-50 transition-colors"
+                      >
+                        <Pencil size={14} />
+                        編集する
+                      </button>
+                    )}
                     <button
-                      onClick={() => { setEditing(true); setShowMenu(false); }}
-                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-stone-600 hover:bg-stone-50 transition-colors"
+                      onClick={handleDelete}
+                      disabled={deleting}
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
                     >
-                      <Pencil size={14} />
-                      編集する
+                      <Trash2 size={14} />
+                      {deleting ? "削除中..." : "削除する"}
                     </button>
-                  )}
-                  <button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
-                  >
-                    <Trash2 size={14} />
-                    {deleting ? "削除中..." : "削除する"}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        )}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* コンテンツ（編集中 or 表示） */}
@@ -382,14 +412,31 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
         </div>
       )}
 
+      {/* 投稿画像 */}
+      {!editing && post.image_url && (
+        <div className="rounded-xl overflow-hidden">
+          <Image
+            src={post.image_url}
+            alt="投稿画像"
+            width={600}
+            height={400}
+            className="w-full h-auto max-h-80 object-cover"
+          />
+        </div>
+      )}
+
       {/* タグ */}
       {!editing && post.tags && post.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {post.tags.map((tag) => (
-            <span key={tag} className="flex items-center gap-0.5 text-[11px] px-2 py-0.5 bg-stone-50 text-stone-500 rounded-full border border-stone-200">
+            <Link
+              key={tag}
+              href={`/sns?tab=discover&tag=${encodeURIComponent(tag)}`}
+              className="flex items-center gap-0.5 text-[11px] px-2 py-0.5 bg-stone-50 text-stone-500 rounded-full border border-stone-200 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 transition-colors"
+            >
               <Hash size={9} />
               {tag}
-            </span>
+            </Link>
           ))}
         </div>
       )}

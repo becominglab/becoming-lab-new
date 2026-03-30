@@ -3,6 +3,11 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+
+interface Props {
+  currentUserId?: string;
+}
 
 function IconFeed({ active }: { active: boolean }) {
   return (
@@ -94,12 +99,12 @@ const NAV_ITEMS = [
   { href: "/sns/profile", label: "プロフィール", Icon: IconProfile, showBadge: false },
 ];
 
-export default function SnsNav() {
+export default function SnsNav({ currentUserId }: Props) {
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // 未読通知数をポーリング（30秒ごと）
   useEffect(() => {
+    // 初回の未読カウント取得
     const fetchUnread = async () => {
       try {
         const res = await fetch("/api/sns/notifications?unread_only=true");
@@ -111,9 +116,35 @@ export default function SnsNav() {
       }
     };
     fetchUnread();
-    const interval = setInterval(fetchUnread, 30000);
-    return () => clearInterval(interval);
-  }, []);
+
+    // Supabase Realtime で通知をリアルタイム受信
+    if (!currentUserId) return;
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`notifications:${currentUserId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${currentUserId}`,
+        },
+        () => {
+          setUnreadCount((prev) => prev + 1);
+        }
+      )
+      .subscribe();
+
+    // フォールバック: 60秒ポーリング（Realtime 補完）
+    const interval = setInterval(fetchUnread, 60000);
+
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(interval);
+    };
+  }, [currentUserId]);
 
   // 通知ページに来たら既読にする
   useEffect(() => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@/contexts/ToastContext";
 
 const REACTIONS = [
   { type: "nice_update", emoji: "🔥", label: "ナイス更新" },
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export default function ReactionBar({ postId, myReactions: initialMy, types: initialTypes, counts: initialCounts, isOwn }: Props) {
+  const { showToast } = useToast();
   const [myReactions, setMyReactions] = useState<string[]>(initialMy);
   const [types, setTypes] = useState<string[]>(initialTypes);
   const [counts, setCounts] = useState<Record<string, number>>(initialCounts || {});
@@ -58,6 +60,7 @@ export default function ReactionBar({ postId, myReactions: initialMy, types: ini
       }
     } catch {
       // revert on error
+      showToast("リアクションに失敗しました", "error");
       if (isActive) {
         setMyReactions((prev) => [...prev, reactionType]);
         setCounts((prev) => ({ ...prev, [reactionType]: (prev[reactionType] || 0) + 1 }));
