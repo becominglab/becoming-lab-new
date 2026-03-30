@@ -6,23 +6,29 @@ import { Send, ChevronUp, Loader2 } from "lucide-react";
 
 interface Props {
   onPosted?: () => void;
+  /** チェックインやチャレンジ連携時の初期プロンプト */
+  initialPrompt?: string;
 }
 
-export default function PostComposer({ onPosted }: Props) {
+export default function PostComposer({ onPosted, initialPrompt }: Props) {
   const searchParams = useSearchParams();
   const challengeTitle = searchParams.get("challenge");
   const challengeProgress = searchParams.get("progress");
 
-  // 挑戦からの遷移時は自動展開・初期テキスト設定
-  const [expanded, setExpanded] = useState(!!challengeTitle);
-  const [did, setDid] = useState(
-    challengeTitle
-      ? `「${challengeTitle}」進捗${challengeProgress ? ` ${challengeProgress}%` : ""}`
-      : ""
-  );
+  const defaultDid = challengeTitle
+    ? `「${challengeTitle}」進捗${challengeProgress ? ` ${challengeProgress}%` : ""}`
+    : "";
+
+  const [expanded, setExpanded] = useState(!!(challengeTitle || initialPrompt));
+  const [did, setDid] = useState(defaultDid);
   const [learned, setLearned] = useState("");
   const [tomorrow, setTomorrow] = useState("");
   const [posting, setPosting] = useState(false);
+
+  // initialPrompt が変わったら展開＋placeholder更新
+  useEffect(() => {
+    if (initialPrompt) setExpanded(true);
+  }, [initialPrompt]);
 
   useEffect(() => {
     if (challengeTitle) setExpanded(true);
@@ -93,7 +99,7 @@ export default function PostComposer({ onPosted }: Props) {
           onChange={(e) => setDid(e.target.value)}
           maxLength={140}
           rows={2}
-          placeholder="今日取り組んだことを書く"
+          placeholder={initialPrompt || "今日取り組んだことを書く"}
           className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
           autoFocus={!!challengeTitle}
         />

@@ -4,6 +4,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import PostCard from "./PostCard";
 import PostComposer from "./PostComposer";
 import CommentSection from "./CommentSection";
+import DailyCheckin from "./DailyCheckin";
+import OnboardingGuide from "./OnboardingGuide";
+import RecommendedUsers from "./RecommendedUsers";
 import { Loader2 } from "lucide-react";
 
 interface Props {
@@ -17,6 +20,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [commentPostId, setCommentPostId] = useState<string | null>(null);
+  const [composerPrompt, setComposerPrompt] = useState<string | undefined>();
   const observerRef = useRef<HTMLDivElement>(null);
 
   const fetchPosts = useCallback(async (cursorParam?: string | null) => {
@@ -68,6 +72,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
   }, [cursor, hasMore, loadingMore, fetchPosts]);
 
   const handlePosted = () => {
+    setComposerPrompt(undefined);
     fetchPosts();
   };
 
@@ -77,7 +82,6 @@ export default function FeedTimeline({ currentUserId }: Props) {
 
   const handleCommentClose = () => {
     setCommentPostId(null);
-    // コメント数の更新のため再取得
     fetchPosts();
   };
 
@@ -91,24 +95,43 @@ export default function FeedTimeline({ currentUserId }: Props) {
 
   return (
     <div className="space-y-4">
-      <PostComposer onPosted={handlePosted} />
+      {/* はじめてガイド（初回ユーザー向け） */}
+      <OnboardingGuide />
+
+      {/* デイリーチェックイン */}
+      <DailyCheckin
+        onCheckinAndPost={(prompt) => setComposerPrompt(prompt)}
+      />
+
+      {/* 投稿フォーム（チェックイン時にプロンプトを渡す） */}
+      <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
 
       {posts.length === 0 ? (
-        <div className="text-center py-12 space-y-2">
+        <div className="text-center py-12 space-y-3">
           <p className="text-3xl">🌱</p>
           <p className="text-stone-500 text-sm font-medium">まだ投稿がありません</p>
-          <p className="text-stone-400 text-xs">「さがす」タブから仲間を見つけてフォローしましょう</p>
+          <p className="text-stone-400 text-xs">仲間をフォローするとここに投稿が流れてきます</p>
+          {/* フィードが空のときはおすすめを優先表示 */}
+          <div className="mt-4 text-left">
+            <RecommendedUsers />
+          </div>
         </div>
       ) : (
-        posts.map((post) => (
-          <PostCard
-            key={post.id}
-            post={post}
-            currentUserId={currentUserId}
-            onDeleted={handleDeleted}
-            onCommentClick={(id) => setCommentPostId(id)}
-          />
-        ))
+        <>
+          {posts.map((post, i) => (
+            <>
+              <PostCard
+                key={post.id}
+                post={post}
+                currentUserId={currentUserId}
+                onDeleted={handleDeleted}
+                onCommentClick={(id) => setCommentPostId(id)}
+              />
+              {/* 5投稿目の後におすすめユーザーを差し込む */}
+              {i === 4 && <RecommendedUsers key="recommended" />}
+            </>
+          ))}
+        </>
       )}
 
       {/* 無限スクロールトリガー */}

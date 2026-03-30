@@ -7,9 +7,11 @@ interface Props {
   userId: string;
   isFollowing: boolean;
   onToggle?: (isFollowing: boolean) => void;
+  /** コンパクト表示（アイコンのみ） */
+  compact?: boolean;
 }
 
-export default function FollowButton({ userId, isFollowing: initial, onToggle }: Props) {
+export default function FollowButton({ userId, isFollowing: initial, onToggle, compact }: Props) {
   const [following, setFollowing] = useState(initial);
   const [loading, setLoading] = useState(false);
 
@@ -35,6 +37,22 @@ export default function FollowButton({ userId, isFollowing: initial, onToggle }:
       setLoading(false);
     }
   };
+
+  if (compact) {
+    return (
+      <button
+        onClick={toggle}
+        disabled={loading}
+        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+          following
+            ? "bg-stone-100 text-stone-500 hover:bg-red-50 hover:text-red-500"
+            : "bg-teal-600 text-white hover:bg-teal-700"
+        }`}
+      >
+        {loading ? <Loader2 size={13} className="animate-spin" /> : following ? <UserMinus size={13} /> : <UserPlus size={13} />}
+      </button>
+    );
+  }
 
   return (
     <button
