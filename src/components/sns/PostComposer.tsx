@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Send, ChevronUp, Loader2 } from "lucide-react";
+import { Send, ChevronUp, Loader2, Hash, X } from "lucide-react";
 
 interface Props {
   onPosted?: () => void;
@@ -23,6 +23,7 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
   const [did, setDid] = useState(defaultDid);
   const [learned, setLearned] = useState("");
   const [tomorrow, setTomorrow] = useState("");
+  const [tagInput, setTagInput] = useState("");
   const [posting, setPosting] = useState(false);
 
   // initialPrompt が変わったら展開＋placeholder更新
@@ -33,6 +34,17 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
   useEffect(() => {
     if (challengeTitle) setExpanded(true);
   }, [challengeTitle]);
+
+  const parsedTags = tagInput
+    .split(/[\s,　]+/)
+    .map((t) => t.replace(/^#/, "").trim())
+    .filter(Boolean)
+    .slice(0, 5);
+
+  const removeTag = (tag: string) => {
+    const remaining = parsedTags.filter((t) => t !== tag);
+    setTagInput(remaining.join(" "));
+  };
 
   const handleSubmit = async () => {
     if (!did.trim()) return;
@@ -49,6 +61,7 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
             learned: learned.trim() || null,
             tomorrow: tomorrow.trim() || null,
           },
+          tags: parsedTags,
         }),
       });
 
@@ -56,6 +69,7 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
         setDid("");
         setLearned("");
         setTomorrow("");
+        setTagInput("");
         setExpanded(false);
         onPosted?.();
       }
@@ -132,6 +146,32 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
           placeholder="明日の一歩を宣言"
           className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
+      </div>
+
+      {/* タグ入力 */}
+      <div>
+        <label className="text-xs font-medium text-stone-500 mb-1 flex items-center gap-1">
+          <Hash size={11} />
+          タグ（スペース区切り、最大5個）
+        </label>
+        <input
+          value={tagInput}
+          onChange={(e) => setTagInput(e.target.value)}
+          placeholder="運動 英語 読書"
+          className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+        />
+        {parsedTags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {parsedTags.map((tag) => (
+              <span key={tag} className="flex items-center gap-1 text-xs px-2 py-0.5 bg-teal-50 text-teal-600 rounded-full border border-teal-200">
+                #{tag}
+                <button onClick={() => removeTag(tag)} className="text-teal-400 hover:text-teal-700">
+                  <X size={11} />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <button
