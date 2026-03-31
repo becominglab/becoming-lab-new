@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import SnsNav from "@/components/sns/SnsNav";
 import SnsSidebar from "@/components/sns/SnsSidebar";
+import SnsHeader from "@/components/sns/SnsHeader";
 import { ToastProvider } from "@/contexts/ToastContext";
 
 export const metadata: Metadata = {
@@ -35,6 +36,7 @@ export default async function SnsLayout({
           <div className="lg:grid lg:grid-cols-[1fr_300px] lg:gap-6 lg:pt-6">
             {/* メインコンテンツ */}
             <main className="min-w-0">
+              <SnsHeader />
               {children}
             </main>
 

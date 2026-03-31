@@ -36,6 +36,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const touchStartY = useRef<number>(0);
   const [pullDistance, setPullDistance] = useState(0);
   const [newPostCount, setNewPostCount] = useState(0);
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
 
   const fetchPosts = useCallback(async (cursorParam?: string | null) => {
     const isInitial = !cursorParam;
@@ -218,6 +219,30 @@ export default function FeedTimeline({ currentUserId }: Props) {
         onCheckinAndPost={(prompt) => setComposerPrompt(prompt)}
       />
 
+      {/* 投稿タイプフィルター */}
+      {posts.length > 0 && (
+        <div className="flex gap-1.5 overflow-x-auto pb-0.5 -mx-0 px-0">
+          {[
+            { type: null, label: "すべて" },
+            { type: "update", label: "📝 更新" },
+            { type: "declaration", label: "💪 宣言" },
+            { type: "milestone", label: "🏆 達成" },
+          ].map(({ type, label }) => (
+            <button
+              key={String(type)}
+              onClick={() => setTypeFilter(type)}
+              className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                typeFilter === type
+                  ? "bg-stone-900 text-white"
+                  : "bg-white border border-stone-200 text-stone-500 hover:border-stone-300"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => <SkeletonCard key={i} />)}
@@ -267,7 +292,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
           {/* はじめてガイド（初回ユーザー向け） */}
           <OnboardingGuide />
 
-          {posts.map((post, i) => (
+          {posts.filter((p) => !typeFilter || p.post_type === typeFilter).map((post, i) => (
             <div key={post.id}>
               <PostCard
                 post={post}

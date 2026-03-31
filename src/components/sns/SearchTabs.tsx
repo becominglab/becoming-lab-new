@@ -73,12 +73,29 @@ function PostSearchTab() {
   const [results, setResults] = useState<PostResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [recentTags, setRecentTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("sns_recent_tag_searches");
+      if (saved) setRecentTags(JSON.parse(saved));
+    } catch { /* ignore */ }
+  }, []);
+
+  const saveRecentTag = (tag: string) => {
+    const cleaned = tag.replace(/^#/, "").trim();
+    if (!cleaned) return;
+    const updated = [cleaned, ...recentTags.filter((t) => t !== cleaned)].slice(0, 5);
+    setRecentTags(updated);
+    try { localStorage.setItem("sns_recent_tag_searches", JSON.stringify(updated)); } catch { /* ignore */ }
+  };
 
   const handleSearch = async () => {
     const tag = tagQuery.replace(/^#/, "").trim();
     if (!tag) return;
     setLoading(true);
     setSearched(true);
+    saveRecentTag(tagQuery);
     try {
       const res = await fetch(`/api/sns/posts?tag=${encodeURIComponent(tag)}&feed=discover&limit=20`);
       const data = await res.json();
@@ -178,11 +195,32 @@ function PostSearchTab() {
           </div>
         )
       ) : (
-        <div className="text-center py-10 space-y-1">
-          <p className="text-2xl">#</p>
-          <p className="text-stone-400 text-sm">ハッシュタグで投稿を検索できます</p>
-          <p className="text-stone-300 text-xs">例: #英語 #筋トレ #早起き</p>
-        </div>
+        <>
+          {!searched && recentTags.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs text-stone-400 font-medium">最近検索したタグ</p>
+              <div className="flex flex-wrap gap-1.5">
+                {recentTags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => { setTagQuery(tag); }}
+                    className="flex items-center gap-1 text-xs px-2.5 py-1 bg-stone-100 text-stone-600 rounded-full hover:bg-teal-50 hover:text-teal-600 transition-colors"
+                  >
+                    <Hash size={10} />
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {!searched && (
+            <div className="text-center py-10 space-y-1">
+              <p className="text-2xl">#</p>
+              <p className="text-stone-400 text-sm">ハッシュタグで投稿を検索できます</p>
+              <p className="text-stone-300 text-xs">例: #英語 #筋トレ #早起き</p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
