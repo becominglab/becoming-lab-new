@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Loader2, Send, X, Trash2 } from "lucide-react";
+import { Send, X, Trash2, Loader2 } from "lucide-react";
 import { useToast } from "@/contexts/ToastContext";
 
 interface Comment {
@@ -27,7 +27,7 @@ interface Props {
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "今";
+  if (mins < 1) return "たった今";
   if (mins < 60) return `${mins}分前`;
   const hours = Math.floor(mins / 60);
   if (hours < 24) return `${hours}時間前`;
@@ -64,8 +64,16 @@ function CommentContent({
       {/* コメント一覧 */}
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
         {loading ? (
-          <div className="flex justify-center py-8">
-            <Loader2 size={20} className="animate-spin text-stone-300" />
+          <div className="space-y-3 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex gap-3">
+                <div className="w-8 h-8 rounded-full bg-stone-200 shrink-0 mt-0.5" />
+                <div className="flex-1 space-y-1.5 pt-1">
+                  <div className="h-3 bg-stone-200 rounded w-16" />
+                  <div className="h-3 bg-stone-100 rounded w-4/5" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : comments.length === 0 ? (
           <div className="text-center py-8">
@@ -127,7 +135,7 @@ function CommentContent({
       </div>
 
       {/* 入力エリア */}
-      <div className="shrink-0 px-4 py-3 border-t border-stone-100">
+      <div className="shrink-0 px-4 py-3 border-t border-stone-200">
         <div className="flex gap-2 items-end">
           <div className="flex-1 flex flex-col">
             <textarea
@@ -258,7 +266,7 @@ export default function CommentSection({ postId, onClose, inline }: Props) {
   if (inline) {
     return (
       <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
-        <div className="px-4 py-3 border-b border-stone-100">
+        <div className="px-4 py-3 border-b border-stone-200">
           <h3 className="font-semibold text-stone-800 text-sm">
             コメント {comments.length > 0 && <span className="text-stone-400">({comments.length})</span>}
           </h3>
@@ -290,7 +298,7 @@ export default function CommentSection({ postId, onClose, inline }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* ヘッダー */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100 shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 shrink-0">
           <h3 className="font-semibold text-stone-800 text-sm">
             コメント {comments.length > 0 && <span className="text-stone-400">({comments.length})</span>}
           </h3>

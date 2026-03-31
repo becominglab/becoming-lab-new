@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "今";
+  if (mins < 1) return "たった今";
   if (mins < 60) return `${mins}分前`;
   const hours = Math.floor(mins / 60);
   if (hours < 24) return `${hours}時間前`;
@@ -169,7 +169,7 @@ export default function CircleDetailView({
   return (
     <div className="flex flex-col h-screen">
       {/* ヘッダー */}
-      <div className="shrink-0 bg-white border-b border-stone-100 px-4 pt-safe pt-4 pb-3">
+      <div className="shrink-0 bg-white border-b border-stone-200 px-4 pt-safe pt-4 pb-3">
         <div className="flex items-center gap-3 mb-2">
           <button onClick={() => router.push("/sns/circles")}>
             <ArrowLeft size={20} className="text-stone-500" />
@@ -194,7 +194,7 @@ export default function CircleDetailView({
 
       {/* メンバー一覧（折りたたみ） */}
       {showMembers && (
-        <div className="shrink-0 bg-stone-50 border-b border-stone-100 px-4 py-3">
+        <div className="shrink-0 bg-stone-50 border-b border-stone-200 px-4 py-3">
           <div className="flex gap-3 overflow-x-auto">
             {members.map((m) => (
               <div key={m.user_id} className="flex flex-col items-center gap-1 shrink-0">
@@ -269,7 +269,7 @@ export default function CircleDetailView({
           </div>
 
           {/* 退出/削除ボタン */}
-          <div className="shrink-0 px-4 pb-4 flex gap-2 bg-white border-t border-stone-50 pt-2">
+          <div className="shrink-0 px-4 pb-4 flex gap-2 bg-white border-t border-stone-200 pt-2">
             {myRole === "owner" ? (
               <button
                 onClick={handleDelete}

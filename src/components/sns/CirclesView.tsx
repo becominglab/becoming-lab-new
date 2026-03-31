@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import CircleCard from "./CircleCard";
-import { Plus, Loader2, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 
 interface Circle {
   id: string;
@@ -78,8 +78,17 @@ export default function CirclesView() {
       {/* サークル一覧 */}
       <div className="px-4">
         {loading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 size={24} className="animate-spin text-stone-300" />
+          <div className="space-y-3 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-2xl border border-stone-200 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="h-4 bg-stone-200 rounded w-32" />
+                  <div className="h-5 bg-stone-100 rounded-full w-16" />
+                </div>
+                <div className="h-3 bg-stone-100 rounded w-3/4" />
+                <div className="h-2 bg-stone-100 rounded-full w-full" />
+              </div>
+            ))}
           </div>
         ) : circles.length === 0 ? (
           <div className="text-center py-16 space-y-2">
