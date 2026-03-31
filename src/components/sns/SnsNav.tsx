@@ -102,6 +102,7 @@ const NAV_ITEMS = [
 export default function SnsNav({ currentUserId }: Props) {
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [streak, setStreak] = useState(0);
 
   useEffect(() => {
     // 初回の未読カウント取得
@@ -116,6 +117,19 @@ export default function SnsNav({ currentUserId }: Props) {
       }
     };
     fetchUnread();
+
+    // ストリーク取得
+    const fetchStreak = async () => {
+      try {
+        const checkinRes = await fetch("/api/sns/checkin");
+        if (!checkinRes.ok) return;
+        const checkinData = await checkinRes.json();
+        setStreak(checkinData.streak || 0);
+      } catch {
+        // silently fail
+      }
+    };
+    fetchStreak();
 
     // Supabase Realtime で通知をリアルタイム受信
     if (!currentUserId) return;
@@ -177,6 +191,11 @@ export default function SnsNav({ currentUserId }: Props) {
                 {badgeCount > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-0.5 animate-pulse">
                     {badgeCount > 99 ? "99+" : badgeCount}
+                  </span>
+                )}
+                {label === "プロフィール" && streak >= 3 && (
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-orange-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-0.5">
+                    🔥{streak}
                   </span>
                 )}
               </div>

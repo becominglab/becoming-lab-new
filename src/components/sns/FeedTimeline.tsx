@@ -166,19 +166,10 @@ export default function FeedTimeline({ currentUserId }: Props) {
         </div>
       )}
 
-      {/* はじめてガイド（初回ユーザー向け） */}
-      <OnboardingGuide />
-
-      {/* 週次サマリーカード（月曜日のみ） */}
-      <WeeklySummaryCard />
-
-      {/* デイリーチェックイン */}
+      {/* デイリーチェックイン（最上部に配置） */}
       <DailyCheckin
         onCheckinAndPost={(prompt) => setComposerPrompt(prompt)}
       />
-
-      {/* 投稿フォーム（チェックイン時にプロンプトを渡す） */}
-      <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
 
       {loading ? (
         <div className="space-y-4">
@@ -224,6 +215,12 @@ export default function FeedTimeline({ currentUserId }: Props) {
         </div>
       ) : (
         <>
+          {/* 月曜日のみ週次サマリーカードを表示 */}
+          {new Date().getDay() === 1 && <WeeklySummaryCard />}
+
+          {/* はじめてガイド（初回ユーザー向け） */}
+          <OnboardingGuide />
+
           {posts.map((post, i) => (
             <div key={post.id}>
               <PostCard
@@ -233,10 +230,20 @@ export default function FeedTimeline({ currentUserId }: Props) {
                 onUpdated={handleUpdated}
                 onCommentClick={(id) => setCommentPostId(id)}
               />
+              {/* 2投稿目の後にPostComposerを差し込む */}
+              {i === 1 && (
+                <div className="mt-4">
+                  <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
+                </div>
+              )}
               {/* 5投稿目の後におすすめユーザーを差し込む */}
               {i === 4 && <div className="mt-4"><RecommendedUsers /></div>}
             </div>
           ))}
+          {/* 2投稿未満の場合は最後にPostComposerを表示 */}
+          {posts.length <= 1 && (
+            <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
+          )}
         </>
       )}
 
