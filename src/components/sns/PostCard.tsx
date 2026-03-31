@@ -273,6 +273,7 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
 
   const lastTapRef = useRef<number>(0);
   const [tapEffect, setTapEffect] = useState(false);
+  const [reactionKey, setReactionKey] = useState(0);
 
   const handleDoubleTap = async () => {
     if (isOwn) return; // can't react to own post
@@ -280,7 +281,24 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
     const timeSinceLastTap = now - lastTapRef.current;
     lastTapRef.current = now;
     if (timeSinceLastTap < 300 && timeSinceLastTap > 0) {
-      // Double tap detected — add 🔥 reaction
+      // Double tap detected — add 🔥 reaction (only if not already reacted)
+      if (post.reactions.myReactions.includes("nice_update")) return;
+      // Optimistic update to post state so ReactionBar remounts with correct values
+      setPost((prev) => ({
+        ...prev,
+        reactions: {
+          ...prev.reactions,
+          myReactions: [...prev.reactions.myReactions, "nice_update"],
+          types: prev.reactions.types.includes("nice_update")
+            ? prev.reactions.types
+            : [...prev.reactions.types, "nice_update"],
+          counts: {
+            ...prev.reactions.counts,
+            nice_update: ((prev.reactions.counts?.["nice_update"]) || 0) + 1,
+          },
+        },
+      }));
+      setReactionKey((k) => k + 1);
       setTapEffect(true);
       setTimeout(() => setTapEffect(false), 800);
       try {
@@ -575,6 +593,7 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
       {!editing && (
         <div className="flex items-center justify-between">
           <ReactionBar
+            key={reactionKey}
             postId={post.id}
             myReactions={post.reactions.myReactions}
             types={post.reactions.types}

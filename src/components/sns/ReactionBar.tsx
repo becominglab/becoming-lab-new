@@ -95,6 +95,9 @@ export default function ReactionBar({ postId, myReactions: initialMy, types: ini
             title={isOwn ? label : isActive ? `${label}を取り消す` : label}
           >
             <span className="text-sm">{emoji}</span>
+            {isActive && !isOwn && (
+              <span className="text-[9px] font-medium leading-none">{label}</span>
+            )}
             {count > 0 && (
               <span className="text-[10px] font-medium">{count}</span>
             )}
