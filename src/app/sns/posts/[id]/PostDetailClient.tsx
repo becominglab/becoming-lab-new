@@ -20,6 +20,7 @@ export default function PostDetailClient({ postId, currentUserId }: Props) {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -28,6 +29,18 @@ export default function PostDetailClient({ postId, currentUserId }: Props) {
         if (res.status === 404) { setNotFound(true); return; }
         const data = await res.json();
         setPost(data.post);
+        // 同じユーザーの他の投稿を取得
+        if (data.post?.user_id) {
+          try {
+            const relatedRes = await fetch(`/api/sns/posts?user_id=${data.post.user_id}&limit=3`);
+            const relatedData = await relatedRes.json();
+            // 現在の投稿を除く
+            const others = (relatedData.posts || []).filter((p: any) => p.id !== postId).slice(0, 3);
+            setRelatedPosts(others);
+          } catch {
+            // silently fail
+          }
+        }
         // 投稿詳細ページではコメントを自動表示
         setTimeout(() => setShowComments(true), 300);
       } catch {
@@ -90,6 +103,19 @@ export default function PostDetailClient({ postId, currentUserId }: Props) {
               onClose={() => setShowComments(false)}
               inline
             />
+          )}
+          {relatedPosts.length > 0 && (
+            <div className="space-y-3 pt-2">
+              <p className="text-sm font-medium text-stone-600">この人の他の投稿</p>
+              {relatedPosts.map((rp) => (
+                <PostCard
+                  key={rp.id}
+                  post={rp}
+                  currentUserId={currentUserId}
+                  onCommentClick={() => {}}
+                />
+              ))}
+            </div>
           )}
         </>
       ) : null}
