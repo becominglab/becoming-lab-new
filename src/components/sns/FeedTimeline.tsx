@@ -91,6 +91,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const [newPostCount, setNewPostCount] = useState(0);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [welcomeBack, setWelcomeBack] = useState(false);
+  const [showFirstPostCelebration, setShowFirstPostCelebration] = useState(false);
   const filterInitialized = useRef(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -268,6 +269,12 @@ export default function FeedTimeline({ currentUserId }: Props) {
 
   const handlePosted = () => {
     setComposerPrompt(undefined);
+    // 初回投稿の場合は祝福バナーを表示
+    if (posts.length === 0 && !localStorage.getItem("sns_first_posted")) {
+      try { localStorage.setItem("sns_first_posted", "1"); } catch { /* ignore */ }
+      setShowFirstPostCelebration(true);
+      setTimeout(() => setShowFirstPostCelebration(false), 12000);
+    }
     fetchPosts();
   };
 
@@ -326,6 +333,30 @@ export default function FeedTimeline({ currentUserId }: Props) {
           <button onClick={() => setWelcomeBack(false)} className="text-amber-400 hover:text-amber-600 p-1">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
           </button>
+        </div>
+      )}
+
+      {/* 初回投稿祝福バナー */}
+      {showFirstPostCelebration && (
+        <div className="bg-gradient-to-r from-teal-500 to-emerald-500 rounded-2xl p-4 text-white animate-fade-in-up">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1 flex-1">
+              <p className="text-base font-bold">🎉 はじめての投稿おめでとう！</p>
+              <p className="text-xs opacity-90">続けることで仲間に刺激を与えられます。次は仲間を見つけてみましょう！</p>
+              <Link
+                href="/sns/search"
+                className="inline-flex items-center gap-1 mt-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-full text-xs font-medium transition-colors"
+              >
+                仲間を探す →
+              </Link>
+            </div>
+            <button
+              onClick={() => setShowFirstPostCelebration(false)}
+              className="ml-2 p-1 opacity-70 hover:opacity-100 transition-opacity"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            </button>
+          </div>
         </div>
       )}
 

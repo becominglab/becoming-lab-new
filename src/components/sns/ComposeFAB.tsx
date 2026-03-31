@@ -40,6 +40,13 @@ export default function ComposeFAB() {
     return () => window.removeEventListener("keydown", handler);
   }, [open]);
 
+  // SnsHeader の「今日の更新」ボタンからもシートを開けるようにする
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("sns:open-compose", handler);
+    return () => window.removeEventListener("sns:open-compose", handler);
+  }, []);
+
   return (
     <>
       {/* FAB ボタン — SnsNav (z-50, h-16) の上に配置 */}
