@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import PostCard from "./PostCard";
 import CommentSection from "./CommentSection";
 import SkeletonCard from "./SkeletonCard";
-import { Loader2, Hash, X, TrendingUp, Clock } from "lucide-react";
+import { Loader2, Hash, X, TrendingUp, Clock, ChevronUp } from "lucide-react";
 
 interface Props {
   currentUserId: string;
@@ -23,6 +23,7 @@ export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
   const [mode, setMode] = useState<DiscoverMode>("latest");
   const [commentPostId, setCommentPostId] = useState<string | null>(null);
   const [popularTags, setPopularTags] = useState<string[]>([]);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const observerRef = useRef<HTMLDivElement>(null);
 
   const fetchPosts = useCallback(async (cursorParam?: string | null, tag?: string | null, currentMode?: DiscoverMode) => {
@@ -82,6 +83,12 @@ export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
     observer.observe(observerRef.current);
     return () => observer.disconnect();
   }, [cursor, hasMore, loadingMore, fetchPosts, selectedTag, mode]);
+
+  useEffect(() => {
+    const handleScroll = () => setShowScrollTop(window.scrollY > 500);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleTagSelect = (tag: string | null) => {
     setSelectedTag(tag);
@@ -219,6 +226,17 @@ export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
       {/* コメントセクション */}
       {commentPostId && (
         <CommentSection postId={commentPostId} onClose={handleCommentClose} />
+      )}
+
+      {/* スクロールトップボタン */}
+      {showScrollTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-24 right-4 w-10 h-10 bg-white border border-stone-200 rounded-full shadow-md flex items-center justify-center text-stone-500 hover:text-teal-600 hover:border-teal-200 transition-all z-40"
+          aria-label="トップに戻る"
+        >
+          <ChevronUp size={18} />
+        </button>
       )}
     </div>
   );

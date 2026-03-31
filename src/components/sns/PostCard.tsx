@@ -58,7 +58,7 @@ interface Props {
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "今";
+  if (mins < 1) return "たった今";
   if (mins < 60) return `${mins}分前`;
   const hours = Math.floor(mins / 60);
   if (hours < 24) return `${hours}時間前`;
@@ -230,11 +230,17 @@ function EditForm({ post, onSave, onCancel }: { post: Post; onSave: (updated: Po
         <p className="text-[10px] font-medium text-teal-600 mb-1">気づき</p>
         <textarea value={learned} onChange={(e) => setLearned(e.target.value)} maxLength={140} rows={2}
           className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-400" />
+        {learned.length > 0 && (
+          <p className="text-[10px] text-stone-400 text-right">{learned.length}/140</p>
+        )}
       </div>
       <div>
         <p className="text-[10px] font-medium text-stone-400 mb-1">明日やること</p>
         <textarea value={tomorrow} onChange={(e) => setTomorrow(e.target.value)} maxLength={140} rows={2}
           className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-400" />
+        {tomorrow.length > 0 && (
+          <p className="text-[10px] text-stone-400 text-right">{tomorrow.length}/140</p>
+        )}
       </div>
       <div>
         <p className="text-[10px] font-medium text-stone-400 mb-1">タグ（スペース区切り、最大5個）</p>
