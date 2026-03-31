@@ -54,8 +54,13 @@ export default function ProfileView({ userId, currentUserId }: Props) {
   useEffect(() => {
     const load = async () => {
       try {
+        const [profileRes, postsRes, mentorsRes] = await Promise.all([
+          fetch(`/api/sns/profile?user_id=${userId}`),
+          fetch(`/api/sns/posts?user_id=${userId}&limit=10`),
+          !isOwn ? fetch("/api/sns/mentors?tab=mentors") : Promise.resolve(null),
+        ]);
+
         // プロフィール取得（新APIで自分も他人も統一）
-        const profileRes = await fetch(`/api/sns/profile?user_id=${userId}`);
         const pData = await profileRes.json();
         setProfile(pData.profile);
         setIsFollowing(pData.is_following || false);
@@ -63,13 +68,11 @@ export default function ProfileView({ userId, currentUserId }: Props) {
         setFollowingCount(pData.following_count || 0);
 
         // 投稿取得
-        const postsRes = await fetch(`/api/sns/posts?user_id=${userId}&limit=10`);
         const postsData = await postsRes.json();
         setPosts(postsData.posts || []);
 
         // メンター接続状態取得 (他ユーザーのみ)
-        if (!isOwn) {
-          const mentorsRes = await fetch("/api/sns/mentors?tab=mentors");
+        if (!isOwn && mentorsRes) {
           const mentorsData = await mentorsRes.json();
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const existing = (mentorsData.connections || []).find((c: any) => c.mentor_id === userId);

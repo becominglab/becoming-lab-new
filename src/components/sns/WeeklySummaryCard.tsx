@@ -30,33 +30,20 @@ export default function WeeklySummaryCard() {
   const getWeekKey = () => {
     const d = new Date();
     const year = d.getFullYear();
-    const week = Math.ceil(d.getDate() / 7);
-    return `${year}_${d.getMonth()}_${week}`;
+    const week = Math.ceil((d.getTime() - new Date(d.getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
+    return `${year}_${week}`;
   };
 
   const fetchStats = async () => {
     try {
-      // 先週のチェックイン数
-      const checkinRes = await fetch("/api/sns/checkin");
-      const checkinData = await checkinRes.json();
-
-      // 先週の投稿数
-      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const postsRes = await fetch(`/api/sns/posts?limit=50&cursor=${new Date().toISOString()}`);
-      const postsData = await postsRes.json();
-      const recentPosts = (postsData.posts || []).filter(
-        (p: { created_at: string }) => p.created_at >= sevenDaysAgo
-      );
-
-      const totalReactions = recentPosts.reduce((sum: number, p: { reactions: { counts?: Record<string, number> } }) => {
-        return sum + Object.values(p.reactions?.counts || {}).reduce((s: number, v) => s + (v as number), 0);
-      }, 0);
+      const res = await fetch("/api/sns/weekly-summary");
+      const data = await res.json();
 
       setStats({
-        post_count: recentPosts.length,
-        reaction_count: totalReactions,
-        streak: checkinData.streak || 0,
-        checkin_count: Math.min(checkinData.streak || 0, 7),
+        post_count: data.post_count || 0,
+        reaction_count: data.reaction_count || 0,
+        streak: data.streak || 0,
+        checkin_count: Math.min(data.streak || 0, 7),
       });
     } catch {
       // silently fail

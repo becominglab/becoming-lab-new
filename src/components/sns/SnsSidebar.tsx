@@ -18,21 +18,33 @@ interface RecommendedUser {
   challenge_tags: string[];
 }
 
+const FALLBACK_TAGS: TrendTag[] = [
+  { tag: "運動", count: 0 },
+  { tag: "英語", count: 0 },
+  { tag: "読書", count: 0 },
+  { tag: "睡眠改善", count: 0 },
+  { tag: "ダイエット", count: 0 },
+];
+
 export default function SnsSidebar() {
   const [recommended, setRecommended] = useState<RecommendedUser[]>([]);
-  const [trendTags] = useState<TrendTag[]>([
-    { tag: "運動", count: 42 },
-    { tag: "英語", count: 38 },
-    { tag: "読書", count: 31 },
-    { tag: "睡眠改善", count: 27 },
-    { tag: "ダイエット", count: 24 },
-  ]);
+  const [trendTags, setTrendTags] = useState<TrendTag[]>([]);
+  const [tagsLoading, setTagsLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/sns/recommendations")
       .then((r) => r.json())
       .then((d) => setRecommended((d.users || []).slice(0, 3)))
       .catch(() => {});
+
+    fetch("/api/sns/trending-tags")
+      .then((r) => r.json())
+      .then((d) => {
+        const tags: TrendTag[] = d.tags || [];
+        setTrendTags(tags.length > 0 ? tags : FALLBACK_TAGS);
+      })
+      .catch(() => setTrendTags(FALLBACK_TAGS))
+      .finally(() => setTagsLoading(false));
   }, []);
 
   return (
@@ -44,18 +56,28 @@ export default function SnsSidebar() {
           <p className="text-xs font-semibold text-stone-700">トレンドタグ</p>
         </div>
         <div className="space-y-1.5">
-          {trendTags.map((t, i) => (
-            <Link
-              key={t.tag}
-              href={`/sns?tab=discover&tag=${encodeURIComponent(t.tag)}`}
-              className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-stone-50 transition-colors group"
-            >
-              <span className="text-xs text-stone-400 w-4">{i + 1}</span>
-              <Hash size={11} className="text-teal-500" />
-              <span className="text-sm text-stone-700 group-hover:text-teal-600 transition-colors">{t.tag}</span>
-              <span className="text-xs text-stone-400 ml-auto">{t.count}</span>
-            </Link>
-          ))}
+          {tagsLoading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-2 px-2 py-1.5">
+                <div className="w-4 h-3 bg-stone-100 rounded animate-pulse" />
+                <div className="flex-1 h-3 bg-stone-100 rounded animate-pulse" />
+                <div className="w-6 h-3 bg-stone-100 rounded animate-pulse" />
+              </div>
+            ))
+          ) : (
+            trendTags.map((t, i) => (
+              <Link
+                key={t.tag}
+                href={`/sns?tab=discover&tag=${encodeURIComponent(t.tag)}`}
+                className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-stone-50 transition-colors group"
+              >
+                <span className="text-xs text-stone-400 w-4">{i + 1}</span>
+                <Hash size={11} className="text-teal-500" />
+                <span className="text-sm text-stone-700 group-hover:text-teal-600 transition-colors">{t.tag}</span>
+                <span className="text-xs text-stone-400 ml-auto">{t.count > 0 ? t.count : ""}</span>
+              </Link>
+            ))
+          )}
         </div>
       </div>
 
