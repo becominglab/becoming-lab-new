@@ -515,9 +515,12 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
             {post.post_type === "update" && <UpdateContent content={post.content} />}
             {post.post_type === "auto_log" && <AutoLogContent content={post.content} />}
             {post.post_type === "declaration" && (
-              <p className="text-sm text-stone-800 border-l-2 border-blue-300 pl-3 italic leading-relaxed">
-                {post.content.content}
-              </p>
+              <div className="flex items-start gap-2 border-l-2 border-blue-300 pl-3">
+                <span className="text-base leading-tight mt-0.5">💪</span>
+                <p className="text-sm text-stone-800 italic leading-relaxed">
+                  {post.content.content}
+                </p>
+              </div>
             )}
             {post.post_type === "milestone" && (
               <div className="flex items-center gap-2 text-sm bg-amber-50 rounded-lg px-3 py-2">

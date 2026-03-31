@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Users, Check, Loader2 } from "lucide-react";
 
 interface Circle {
@@ -24,7 +24,6 @@ interface Props {
 }
 
 export default function CircleCard({ circle, showJoinButton, onJoined }: Props) {
-  const router = useRouter();
   const fillRate = circle.member_count / circle.max_members;
   const [joining, setJoining] = useState(false);
   const [joined, setJoined] = useState(false);
@@ -52,10 +51,10 @@ export default function CircleCard({ circle, showJoinButton, onJoined }: Props) 
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
-      <button
-        onClick={() => router.push(`/sns/circles/${circle.id}`)}
-        className="w-full text-left p-4 active:bg-stone-50 transition-colors"
+    <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+      <Link
+        href={`/sns/circles/${circle.id}`}
+        className="block text-left p-4 active:bg-stone-50 transition-colors"
       >
         {/* ヘッダー */}
         <div className="flex items-start justify-between mb-2">
@@ -97,7 +96,7 @@ export default function CircleCard({ circle, showJoinButton, onJoined }: Props) 
             <span className="shrink-0 text-xs text-red-500">満員</span>
           )}
         </div>
-      </button>
+      </Link>
 
       {/* discoverモードのインライン参加ボタン */}
       {showJoinButton && (

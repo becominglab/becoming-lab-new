@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { Target } from "lucide-react";
 import Link from "next/link";
 import FollowButton from "./FollowButton";
@@ -41,7 +40,6 @@ interface Challenge {
 }
 
 export default function ChallengeBoardView() {
-  const router = useRouter();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTag, setSelectedTag] = useState("");
@@ -90,7 +88,7 @@ export default function ChallengeBoardView() {
             key={tag}
             onClick={() => setSelectedTag(selectedTag === tag ? "" : tag)}
             className={`shrink-0 px-3 py-1 rounded-full text-xs transition-colors ${
-              selectedTag === tag ? "bg-teal-600 text-white" : "bg-stone-100 text-stone-500"
+              selectedTag === tag ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-500"
             }`}
           >
             #{tag}
@@ -106,7 +104,7 @@ export default function ChallengeBoardView() {
             onClick={() => setPhase(opt.value)}
             className={`shrink-0 px-2.5 py-1 rounded-full text-xs transition-colors ${
               phase === opt.value
-                ? "bg-stone-700 text-white"
+                ? "bg-stone-900 text-white"
                 : "bg-stone-100 text-stone-400"
             }`}
           >
@@ -139,10 +137,10 @@ export default function ChallengeBoardView() {
           {challenges.map((c) => {
             const remaining = daysRemaining(c.target_date);
             return (
-              <div key={c.id} className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100">
+              <div key={c.id} className="bg-white rounded-2xl p-4 border border-stone-200">
                 {/* ユーザー情報 */}
                 <div className="flex items-center gap-2 mb-3">
-                  <button onClick={() => router.push(`/sns/profile/${c.user_id}`)}>
+                  <Link href={`/sns/profile/${c.user_id}`} className="shrink-0">
                     {c.profile?.avatar_url ? (
                       <Image
                         src={c.profile.avatar_url}
@@ -156,14 +154,14 @@ export default function ChallengeBoardView() {
                         {c.profile?.nickname?.[0] || "?"}
                       </div>
                     )}
-                  </button>
+                  </Link>
                   <div className="flex-1 min-w-0">
-                    <button
-                      onClick={() => router.push(`/sns/profile/${c.user_id}`)}
-                      className="text-xs font-medium text-stone-700 truncate"
+                    <Link
+                      href={`/sns/profile/${c.user_id}`}
+                      className="text-xs font-medium text-stone-700 truncate block hover:underline"
                     >
                       {c.profile?.nickname}
-                    </button>
+                    </Link>
                   </div>
                   {!c.is_own && (
                     <FollowButton userId={c.user_id} isFollowing={c.is_following} />

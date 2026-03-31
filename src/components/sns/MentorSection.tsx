@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { GraduationCap, Users, Loader2, Check, X } from "lucide-react";
+import { GraduationCap, Users, Check, X } from "lucide-react";
 
 interface Connection {
   id: string;
@@ -125,8 +125,17 @@ export default function MentorSection({ isMentor, onToggleMentor }: Props) {
 
       {/* コンテンツ */}
       {loading ? (
-        <div className="flex justify-center py-6">
-          <Loader2 size={18} className="animate-spin text-stone-300" />
+        <div className="space-y-3 animate-pulse">
+          {[1, 2].map((i) => (
+            <div key={i} className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-stone-200 shrink-0" />
+              <div className="flex-1 space-y-1.5">
+                <div className="h-3 bg-stone-200 rounded w-24" />
+                <div className="h-2.5 bg-stone-100 rounded w-32" />
+              </div>
+              <div className="h-7 w-12 bg-stone-100 rounded-lg" />
+            </div>
+          ))}
         </div>
       ) : displayList.length === 0 ? (
         <div className="text-center py-6">
