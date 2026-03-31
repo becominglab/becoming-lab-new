@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Sparkles, TrendingUp, Bookmark, Hash } from "lucide-react";
+import { Sparkles, TrendingUp, Bookmark, Hash, Compass, Users } from "lucide-react";
 import FollowButton from "./FollowButton";
 
 interface TrendTag {
@@ -122,10 +122,23 @@ export default function SnsSidebar() {
 
       {/* クイックリンク */}
       <div className="bg-white rounded-2xl border border-stone-200 p-4">
+        <p className="text-xs font-semibold text-stone-700 mb-2">クイックリンク</p>
         <div className="space-y-1">
+          <Link href="/sns?tab=discover" className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-stone-50 text-sm text-stone-600 hover:text-teal-600 transition-colors">
+            <Compass size={14} />
+            発見する
+          </Link>
+          <Link href="/sns/search?tab=match" className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-stone-50 text-sm text-stone-600 hover:text-teal-600 transition-colors">
+            <Sparkles size={14} />
+            マッチング
+          </Link>
           <Link href="/sns/bookmarks" className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-stone-50 text-sm text-stone-600 hover:text-teal-600 transition-colors">
             <Bookmark size={14} />
             ブックマーク
+          </Link>
+          <Link href="/sns/circles" className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-stone-50 text-sm text-stone-600 hover:text-teal-600 transition-colors">
+            <Users size={14} />
+            サークル
           </Link>
         </div>
       </div>
