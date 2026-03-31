@@ -94,6 +94,24 @@ export default function WeeklySummaryCard() {
           <p className="text-[10px] opacity-80">日ストリーク</p>
         </div>
       </div>
+
+      {/* 7日間アクティビティ */}
+      <div className="mt-3 pt-3 border-t border-white/20">
+        <p className="text-[10px] opacity-70 mb-1.5">今週のアクティビティ</p>
+        <div className="flex gap-1.5 items-end">
+          {Array.from({ length: 7 }).map((_, i) => {
+            const isActive = i < (stats.checkin_count || 0);
+            return (
+              <div
+                key={i}
+                className={`flex-1 rounded-sm transition-all ${
+                  isActive ? "bg-white h-4" : "bg-white/30 h-2"
+                }`}
+              />
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
