@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import PostCard from "./PostCard";
 import PostComposer from "./PostComposer";
 import CommentSection from "./CommentSection";
@@ -18,6 +19,8 @@ interface Props {
 }
 
 export default function FeedTimeline({ currentUserId }: Props) {
+  const searchParams = useSearchParams();
+  const autoCompose = searchParams.get("compose") === "1";
   const [posts, setPosts] = useState<any[]>([]);
   const [trendingPosts, setTrendingPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +29,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [commentPostId, setCommentPostId] = useState<string | null>(null);
-  const [composerPrompt, setComposerPrompt] = useState<string | undefined>();
+  const [composerPrompt, setComposerPrompt] = useState<string | undefined>(autoCompose ? " " : undefined);
   const observerRef = useRef<HTMLDivElement>(null);
   // pull-to-refresh
   const containerRef = useRef<HTMLDivElement>(null);

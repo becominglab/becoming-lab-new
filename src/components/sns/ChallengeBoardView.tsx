@@ -128,10 +128,10 @@ export default function ChallengeBoardView() {
             <p className="text-stone-400 text-xs mt-1">仲間をフォローするか、自分でチャレンジを始めよう</p>
           </div>
           <Link
-            href="/body/challenges"
+            href="/sns/profile"
             className="inline-block text-sm text-teal-600 border border-teal-200 rounded-xl px-4 py-2 hover:bg-teal-50 transition-colors"
           >
-            チャレンジを始める →
+            プロフィールで挑戦タグを設定する →
           </Link>
         </div>
       ) : (

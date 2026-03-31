@@ -23,5 +23,28 @@
   "categories": ["social", "health", "lifestyle"],
   "lang": "ja",
   "dir": "ltr",
-  "orientation": "portrait-primary"
+  "orientation": "portrait-primary",
+  "shortcuts": [
+    {
+      "name": "今日の更新を投稿",
+      "short_name": "投稿",
+      "description": "今日の活動を記録する",
+      "url": "/sns?compose=1",
+      "icons": [{ "src": "/body-icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "通知を確認",
+      "short_name": "通知",
+      "description": "新しい通知を見る",
+      "url": "/sns/notifications",
+      "icons": [{ "src": "/body-icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "仲間を探す",
+      "short_name": "さがす",
+      "description": "新しい仲間を見つける",
+      "url": "/sns/search",
+      "icons": [{ "src": "/body-icon-192.svg", "sizes": "192x192" }]
+    }
+  ]
 }

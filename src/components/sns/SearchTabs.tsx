@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import UserSearchResults from "./UserSearchResults";
 import MatchCard from "./MatchCard";
 import MentorRequestButton from "./MentorRequestButton";
@@ -190,7 +190,9 @@ function PostSearchTab() {
 
 export default function SearchTabs() {
   const router = useRouter();
-  const [tab, setTab] = useState<"search" | "posts" | "match" | "mentor">("search");
+  const searchParams = useSearchParams();
+  const initialTab = (searchParams.get("tab") as "search" | "posts" | "match" | "mentor") || "search";
+  const [tab, setTab] = useState<"search" | "posts" | "match" | "mentor">(initialTab);
   const [matches, setMatches] = useState<MatchUser[]>([]);
   const [mentors, setMentors] = useState<MentorUser[]>([]);
   const [loading, setLoading] = useState(false);
