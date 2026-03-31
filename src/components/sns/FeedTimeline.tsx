@@ -330,10 +330,14 @@ export default function FeedTimeline({ currentUserId }: Props) {
         </div>
       ) : (
         <>
-          <WeeklySummaryCard />
+          {/* タイプフィルター無効時のみサマリーとガイドを表示 */}
+          {!typeFilter && <WeeklySummaryCard />}
+          {!typeFilter && <OnboardingGuide />}
 
-          {/* はじめてガイド（初回ユーザー向け） */}
-          <OnboardingGuide />
+          {/* フィルター中は投稿フォームを先頭に固定表示 */}
+          {typeFilter && (
+            <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
+          )}
 
           {(() => {
             let lastDate = "";

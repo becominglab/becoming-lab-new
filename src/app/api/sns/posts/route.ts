@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
   const userId = request.nextUrl.searchParams.get("user_id");
   const feed = request.nextUrl.searchParams.get("feed"); // "discover" | "trending"
   const tag = request.nextUrl.searchParams.get("tag"); // filter by tag
+  const postType = request.nextUrl.searchParams.get("post_type"); // filter by post type
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query: any;
@@ -69,6 +70,10 @@ export async function GET(request: NextRequest) {
 
   if (cursor && !isTrending) {
     query = query.lt("created_at", cursor);
+  }
+
+  if (postType && !isTrending) {
+    query = query.eq("post_type", postType);
   }
 
   const { data: posts, error } = await query;
