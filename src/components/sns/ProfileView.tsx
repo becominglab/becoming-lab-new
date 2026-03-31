@@ -49,6 +49,8 @@ export default function ProfileView({ userId, currentUserId }: Props) {
   const [mentorStatus, setMentorStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [followModal, setFollowModal] = useState<"followers" | "following" | null>(null);
+  const [postCount, setPostCount] = useState(0);
+  const [totalReactions, setTotalReactions] = useState(0);
   const isOwn = userId === currentUserId;
 
   useEffect(() => {
@@ -70,6 +72,10 @@ export default function ProfileView({ userId, currentUserId }: Props) {
         // 投稿取得
         const postsData = await postsRes.json();
         setPosts(postsData.posts || []);
+        const count = (postsData.posts || []).length;
+        setPostCount(count);
+        const reactions = (postsData.posts || []).reduce((sum: number, p: any) => sum + (p.reactions?.total || 0), 0);
+        setTotalReactions(reactions);
 
         // メンター接続状態取得 (他ユーザーのみ)
         if (!isOwn && mentorsRes) {
@@ -145,7 +151,7 @@ export default function ProfileView({ userId, currentUserId }: Props) {
             </div>
 
             {/* フォロワー・フォロー数（クリックでモーダル） */}
-            <div className="flex items-center gap-4 mt-1.5">
+            <div className="flex items-center gap-4 mt-1.5 flex-wrap">
               <button
                 onClick={() => setFollowModal("followers")}
                 className="text-xs text-stone-500 hover:text-teal-600 transition-colors"
@@ -160,6 +166,16 @@ export default function ProfileView({ userId, currentUserId }: Props) {
                 <span className="font-semibold text-stone-800">{followingCount}</span>
                 <span className="ml-1">フォロー中</span>
               </button>
+              <button className="text-xs text-stone-500">
+                <span className="font-semibold text-stone-800">{postCount}</span>
+                <span className="ml-1">投稿</span>
+              </button>
+              {totalReactions > 0 && (
+                <span className="text-xs text-stone-500">
+                  <span className="font-semibold text-stone-800">{totalReactions}</span>
+                  <span className="ml-1">❤️もらった</span>
+                </span>
+              )}
             </div>
 
             <p className="text-xs text-stone-400 mt-1.5">

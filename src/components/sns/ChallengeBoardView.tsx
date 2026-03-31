@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Loader2, Target } from "lucide-react";
 import FollowButton from "./FollowButton";
+import { PHASE_LABELS } from "@/lib/sns/phases";
 
 const TAG_OPTIONS = [
   "ダイエット", "筋トレ", "ランニング", "読書", "瞑想",
@@ -13,10 +14,10 @@ const TAG_OPTIONS = [
 
 const PHASE_OPTIONS = [
   { value: "", label: "すべて" },
-  { value: "exploring", label: "模索中" },
-  { value: "starting", label: "始動中" },
-  { value: "building", label: "構築中" },
-  { value: "maintaining", label: "維持中" },
+  { value: "exploring", label: PHASE_LABELS.exploring },
+  { value: "starting", label: PHASE_LABELS.starting },
+  { value: "building", label: PHASE_LABELS.building },
+  { value: "maintaining", label: PHASE_LABELS.maintaining },
 ];
 
 interface Challenge {

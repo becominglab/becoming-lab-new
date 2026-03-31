@@ -34,7 +34,27 @@ export default function RecommendedUsers() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading || users.length === 0) return null;
+  if (loading) return null;
+
+  if (users.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl border border-stone-200 p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Sparkles size={14} className="text-amber-500" />
+          <p className="text-xs font-semibold text-stone-700">仲間を見つけよう</p>
+        </div>
+        <p className="text-xs text-stone-400 mb-3">
+          プロフィールに挑戦タグを設定すると、<br />同じ目標の仲間が見つかります
+        </p>
+        <Link
+          href="/sns/profile"
+          className="block text-center text-xs bg-teal-600 text-white px-3 py-2 rounded-xl hover:bg-teal-700 transition-colors"
+        >
+          挑戦タグを設定する →
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl border border-stone-200 p-4">

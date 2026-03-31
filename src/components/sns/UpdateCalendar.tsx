@@ -25,6 +25,8 @@ const INTENSITY_COLORS = [
 
 const MONTH_LABELS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
+const JP_WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+
 function getColor(count: number): string {
   return INTENSITY_COLORS[Math.min(count, 4)];
 }
@@ -57,6 +59,14 @@ function getDatesForYear(year: number): string[][] {
   return weeks;
 }
 
+function formatJpDate(dateStr: string): string {
+  const d = new Date(dateStr + "T00:00:00");
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  const weekday = JP_WEEKDAYS[d.getDay()];
+  return `${month}月${day}日（${weekday}）`;
+}
+
 export default function UpdateCalendar({ userId, year: initialYear }: Props) {
   const year = initialYear || new Date().getFullYear();
   const [days, setDays] = useState<Record<string, DayData>>({});
@@ -86,7 +96,7 @@ export default function UpdateCalendar({ userId, year: initialYear }: Props) {
               <span
                 key={i}
                 className="text-[8px] text-stone-400"
-                style={{ width: `${(weeks.length / 12) * 11}px`, textAlign: "left" }}
+                style={{ width: `${(weeks.length / 12) * 13}px`, textAlign: "left" }}
               >
                 {m}月
               </span>
@@ -98,7 +108,7 @@ export default function UpdateCalendar({ userId, year: initialYear }: Props) {
             {/* 曜日ラベル */}
             <div className="flex flex-col gap-0.5 pr-1">
               {["日", "月", "火", "水", "木", "金", "土"].map((d, i) => (
-                <span key={i} className="text-[8px] text-stone-400 h-[11px] flex items-center justify-end w-3">
+                <span key={i} className="text-[8px] text-stone-400 h-[13px] flex items-center justify-end w-3">
                   {i % 2 === 1 ? d : ""}
                 </span>
               ))}
@@ -109,7 +119,7 @@ export default function UpdateCalendar({ userId, year: initialYear }: Props) {
               <div key={wi} className="flex flex-col gap-0.5">
                 {week.map((date, di) => {
                   if (!date) {
-                    return <div key={di} className="w-[11px] h-[11px]" />;
+                    return <div key={di} className="w-[13px] h-[13px]" />;
                   }
                   const dayData = days[date];
                   const count = dayData?.count || 0;
@@ -117,9 +127,17 @@ export default function UpdateCalendar({ userId, year: initialYear }: Props) {
                   return (
                     <div
                       key={di}
-                      className={`w-[11px] h-[11px] rounded-sm ${getColor(count)} cursor-pointer transition-colors hover:ring-1 hover:ring-stone-400`}
-                      onMouseEnter={() => dayData && setTooltip({ date, data: dayData })}
+                      className={`w-[13px] h-[13px] rounded-sm ${getColor(count)} cursor-pointer transition-colors hover:ring-1 hover:ring-stone-400`}
+                      onMouseEnter={() => setTooltip({ date, data: dayData || { body_log: false, reflection: false, story: false, post: false, count: 0 } })}
                       onMouseLeave={() => setTooltip(null)}
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        setTooltip((prev) =>
+                          prev?.date === date
+                            ? null
+                            : { date, data: dayData || { body_log: false, reflection: false, story: false, post: false, count: 0 } }
+                        );
+                      }}
                     />
                   );
                 })}
@@ -129,24 +147,27 @@ export default function UpdateCalendar({ userId, year: initialYear }: Props) {
         </div>
       </div>
 
-      {/* ツールチップ */}
-      {tooltip && (
-        <div className="text-xs text-stone-600 bg-white border border-stone-200 rounded p-2 inline-block">
-          <span className="font-medium">{tooltip.date}</span>
-          <span className="text-stone-400 ml-2">
-            {tooltip.data.body_log && "Body "}
-            {tooltip.data.reflection && "振り返り "}
-            {tooltip.data.story && "ストーリー "}
-            {tooltip.data.post && "投稿 "}
-          </span>
-        </div>
-      )}
+      {/* ツールチップ（カレンダー下部に固定表示） */}
+      <div className="min-h-[32px]">
+        {tooltip && (
+          <div className="text-xs text-stone-600 bg-white border border-stone-200 rounded p-2 inline-block">
+            <span className="font-medium">{formatJpDate(tooltip.date)}</span>
+            <span className="text-stone-400 ml-2">
+              {tooltip.data.body_log && "Body "}
+              {tooltip.data.reflection && "振り返り "}
+              {tooltip.data.story && "ストーリー "}
+              {tooltip.data.post && "投稿 "}
+              {!tooltip.data.body_log && !tooltip.data.reflection && !tooltip.data.story && !tooltip.data.post && "記録なし"}
+            </span>
+          </div>
+        )}
+      </div>
 
       {/* 凡例 */}
       <div className="flex items-center gap-1 text-[9px] text-stone-400">
         <span>少</span>
         {INTENSITY_COLORS.map((color, i) => (
-          <div key={i} className={`w-[10px] h-[10px] rounded-sm ${color}`} />
+          <div key={i} className={`w-[13px] h-[13px] rounded-sm ${color}`} />
         ))}
         <span>多</span>
       </div>
