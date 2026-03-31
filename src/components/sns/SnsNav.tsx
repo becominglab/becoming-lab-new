@@ -158,6 +158,15 @@ export default function SnsNav({ currentUserId }: Props) {
     };
   }, [currentUserId]);
 
+  // ブラウザタブタイトルに未読カウントを反映
+  useEffect(() => {
+    if (unreadCount > 0) {
+      document.title = `(${unreadCount}) Becoming SNS`;
+    } else {
+      document.title = "Becoming SNS — 更新をつなぐ";
+    }
+  }, [unreadCount]);
+
   // 通知ページに来たら既読にする
   useEffect(() => {
     if (pathname === "/sns/notifications" && unreadCount > 0) {

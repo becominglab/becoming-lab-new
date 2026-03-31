@@ -448,6 +448,7 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
               alt="投稿画像"
               width={600}
               height={400}
+              loading="lazy"
               className="w-full h-auto max-h-80 object-cover hover:opacity-95 transition-opacity"
             />
           </button>

@@ -269,6 +269,13 @@ export default function ProfileView({ userId, currentUserId }: Props) {
       {posts.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-stone-700">最近の更新</h3>
+                {isOwn && postCount === 1 && posts.length === 1 && (
+                  <div className="bg-gradient-to-r from-teal-500 to-cyan-500 rounded-2xl p-4 text-white text-center space-y-1.5">
+                    <p className="text-2xl">🎉</p>
+                    <p className="text-sm font-bold">最初の投稿！おめでとうございます</p>
+                    <p className="text-xs opacity-80">これが習慣化への第一歩です。毎日続けてみましょう</p>
+                  </div>
+                )}
           {posts.map((post) => (
             <PostCard key={post.id} post={post} currentUserId={currentUserId} />
           ))}
