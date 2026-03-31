@@ -123,7 +123,7 @@ export default function UserSearchResults() {
               onClick={() => toggleTag(tag)}
               className={`px-2.5 py-1 rounded-full text-xs transition-colors ${
                 selectedTags.includes(tag)
-                  ? "bg-teal-600 text-white"
+                  ? "bg-stone-900 text-white"
                   : "bg-stone-100 text-stone-500 hover:bg-stone-200"
               }`}
             >
