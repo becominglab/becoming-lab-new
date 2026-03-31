@@ -14,7 +14,7 @@ export default async function BookmarksPage() {
   return (
     <div className="min-h-screen bg-stone-50">
       {/* ヘッダー */}
-      <div className="sticky top-0 bg-white border-b border-stone-100 z-10">
+      <div className="sticky top-0 bg-white border-b border-stone-200 z-10">
         <div className="flex items-center gap-3 px-4 h-14">
           <Link href="/sns" className="p-1.5 hover:bg-stone-100 rounded-lg transition-colors">
             <ArrowLeft size={20} className="text-stone-600" />

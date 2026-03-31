@@ -176,7 +176,14 @@ export default function ProfileView({ userId, currentUserId }: Props) {
               <h2 className="text-lg font-bold text-stone-900 truncate">{profile.nickname}</h2>
               {!isOwn && (
                 <div className="flex flex-col items-end gap-1.5 shrink-0">
-                  <FollowButton userId={userId} isFollowing={isFollowing} />
+                  <FollowButton
+                    userId={userId}
+                    isFollowing={isFollowing}
+                    onToggle={(nowFollowing) => {
+                      setIsFollowing(nowFollowing);
+                      setFollowerCount((c) => nowFollowing ? c + 1 : Math.max(0, c - 1));
+                    }}
+                  />
                   {profile.is_mentor && (
                     <MentorRequestButton
                       mentorUserId={userId}

@@ -41,7 +41,7 @@ export default function CirclePostComposer({ circleId, onPosted }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white border-t border-gray-100 p-3">
+    <form onSubmit={handleSubmit} className="bg-white border-t border-stone-100 p-3">
       <div className="flex items-end gap-2">
         <textarea
           value={content}
@@ -49,7 +49,7 @@ export default function CirclePostComposer({ circleId, onPosted }: Props) {
           placeholder="サークルに投稿する..."
           maxLength={500}
           rows={1}
-          className="flex-1 resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 min-h-[40px] max-h-32"
+          className="flex-1 resize-none rounded-xl border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 min-h-[40px] max-h-32"
           onInput={(e) => {
             const el = e.currentTarget;
             el.style.height = "auto";
@@ -59,14 +59,14 @@ export default function CirclePostComposer({ circleId, onPosted }: Props) {
         <button
           type="submit"
           disabled={!content.trim() || loading}
-          className="shrink-0 w-10 h-10 bg-teal-500 disabled:bg-gray-200 text-white rounded-full flex items-center justify-center transition-colors"
+          className="shrink-0 w-10 h-10 bg-teal-500 disabled:bg-stone-200 text-white rounded-full flex items-center justify-center transition-colors"
         >
           <Send size={16} />
         </button>
       </div>
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
       {content.length > 400 && (
-        <p className="text-right text-xs text-gray-400 mt-1">{content.length}/500</p>
+        <p className="text-right text-xs text-stone-400 mt-1">{content.length}/500</p>
       )}
     </form>
   );
