@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import FollowButton from "./FollowButton";
 
 interface MatchUser {
@@ -24,21 +24,17 @@ const phaseLabel: Record<string, string> = {
 };
 
 export default function MatchCard({ user }: { user: MatchUser }) {
-  const router = useRouter();
-
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+    <div className="bg-white rounded-2xl p-4 border border-stone-200">
       {/* マッチ理由バナー */}
-      <div className="mb-3 px-2 py-1 bg-teal-50 rounded-lg text-xs text-teal-700 font-medium">
-        ✨ {user.match_reason}
+      <div className="mb-3 px-2 py-1.5 bg-teal-50 rounded-lg text-xs text-teal-700 font-medium flex items-center gap-1.5">
+        <span>✨</span>
+        {user.match_reason}
       </div>
 
       <div className="flex items-start gap-3">
         {/* アバター */}
-        <button
-          onClick={() => router.push(`/sns/profile/${user.user_id}`)}
-          className="shrink-0"
-        >
+        <Link href={`/sns/profile/${user.user_id}`} className="shrink-0">
           {user.avatar_url ? (
             <Image
               src={user.avatar_url}
@@ -52,26 +48,26 @@ export default function MatchCard({ user }: { user: MatchUser }) {
               {user.nickname[0]}
             </div>
           )}
-        </button>
+        </Link>
 
         {/* プロフィール情報 */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <button
-              onClick={() => router.push(`/sns/profile/${user.user_id}`)}
-              className="font-semibold text-gray-900 text-sm truncate"
+            <Link
+              href={`/sns/profile/${user.user_id}`}
+              className="font-semibold text-stone-900 text-sm truncate hover:underline"
             >
               {user.nickname}
-            </button>
+            </Link>
             {user.update_phase && (
-              <span className="shrink-0 text-xs px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded-full">
+              <span className="shrink-0 text-xs px-1.5 py-0.5 bg-stone-100 text-stone-500 rounded-full">
                 {phaseLabel[user.update_phase] || user.update_phase}
               </span>
             )}
           </div>
 
           {user.bio && (
-            <p className="text-gray-500 text-xs line-clamp-2 mb-2">{user.bio}</p>
+            <p className="text-stone-500 text-xs line-clamp-2 mb-2">{user.bio}</p>
           )}
 
           {/* タグ */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import PostCard from "./PostCard";
@@ -11,7 +11,7 @@ import OnboardingGuide from "./OnboardingGuide";
 import RecommendedUsers from "./RecommendedUsers";
 import SkeletonCard from "./SkeletonCard";
 import WeeklySummaryCard from "./WeeklySummaryCard";
-import { Loader2, RefreshCw, TrendingUp, Compass } from "lucide-react";
+import { Loader2, RefreshCw, TrendingUp, Compass, ChevronUp } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 function getDateLabel(dateStr: string): string {
@@ -26,6 +26,60 @@ function getDateLabel(dateStr: string): string {
 
 interface Props {
   currentUserId: string;
+}
+
+// 日付区切り付きで投稿リストをレンダリング
+function renderPostItems(
+  posts: any[],
+  currentUserId: string,
+  composerPrompt: string | undefined,
+  typeFilter: string | null,
+  onPosted: () => void,
+  onDeleted: (id: string) => void,
+  onUpdated: (post: any) => void,
+  onCommentClick: (id: string) => void,
+) {
+  let lastDate = "";
+  const items: React.ReactNode[] = [];
+  for (let i = 0; i < posts.length; i++) {
+    const post = posts[i];
+    const dateLabel = getDateLabel(post.created_at);
+    if (dateLabel !== lastDate) {
+      lastDate = dateLabel;
+      items.push(
+        <div key={`date-${dateLabel}`} className="flex items-center gap-2 py-1">
+          <div className="flex-1 h-px bg-stone-100" />
+          <span className="text-[10px] text-stone-400 font-medium px-2">{dateLabel}</span>
+          <div className="flex-1 h-px bg-stone-100" />
+        </div>
+      );
+    }
+    items.push(
+      <div key={post.id}>
+        <PostCard
+          post={post}
+          currentUserId={currentUserId}
+          onDeleted={onDeleted}
+          onUpdated={onUpdated}
+          onCommentClick={onCommentClick}
+        />
+        {/* 2投稿目の後にPostComposerを差し込む（フィルター無効時のみ） */}
+        {i === 1 && !typeFilter && (
+          <div className="mt-4">
+            <PostComposer onPosted={onPosted} initialPrompt={composerPrompt} />
+          </div>
+        )}
+        {/* 5投稿目の後におすすめユーザーを差し込む */}
+        {i === 4 && <div className="mt-4"><RecommendedUsers /></div>}
+      </div>
+    );
+  }
+  if (posts.length <= 1 && !typeFilter) {
+    items.push(
+      <PostComposer key="bottom-composer" onPosted={onPosted} initialPrompt={composerPrompt} />
+    );
+  }
+  return items;
 }
 
 export default function FeedTimeline({ currentUserId }: Props) {
@@ -49,6 +103,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [welcomeBack, setWelcomeBack] = useState(false);
   const filterInitialized = useRef(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const fetchPosts = useCallback(async (cursorParam?: string | null, filterOverride?: string | null) => {
     const isInitial = !cursorParam;
@@ -195,6 +250,13 @@ export default function FeedTimeline({ currentUserId }: Props) {
       supabase.removeChannel(channel);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // スクロールトップボタンの表示制御
+  useEffect(() => {
+    const handleScroll = () => setShowScrollTop(window.scrollY > 500);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleShowNewPosts = async () => {
     setNewPostCount(0);
@@ -365,49 +427,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
             <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
           )}
 
-          {(() => {
-            let lastDate = "";
-            const items = [];
-            for (let i = 0; i < posts.length; i++) {
-              const post = posts[i];
-              const dateLabel = getDateLabel(post.created_at);
-              if (dateLabel !== lastDate) {
-                lastDate = dateLabel;
-                items.push(
-                  <div key={`date-${dateLabel}`} className="flex items-center gap-2 py-1">
-                    <div className="flex-1 h-px bg-stone-100" />
-                    <span className="text-[10px] text-stone-400 font-medium px-2">{dateLabel}</span>
-                    <div className="flex-1 h-px bg-stone-100" />
-                  </div>
-                );
-              }
-              items.push(
-                <div key={post.id}>
-                  <PostCard
-                    post={post}
-                    currentUserId={currentUserId}
-                    onDeleted={handleDeleted}
-                    onUpdated={handleUpdated}
-                    onCommentClick={(id) => setCommentPostId(id)}
-                  />
-                  {/* 2投稿目の後にPostComposerを差し込む（フィルター無効時のみ） */}
-                  {i === 1 && !typeFilter && (
-                    <div className="mt-4">
-                      <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
-                    </div>
-                  )}
-                  {/* 5投稿目の後におすすめユーザーを差し込む */}
-                  {i === 4 && <div className="mt-4"><RecommendedUsers /></div>}
-                </div>
-              );
-            }
-            if (posts.length <= 1 && !typeFilter) {
-              items.push(
-                <PostComposer key="bottom-composer" onPosted={handlePosted} initialPrompt={composerPrompt} />
-              );
-            }
-            return items;
-          })()}
+          {renderPostItems(posts, currentUserId, composerPrompt, typeFilter, handlePosted, handleDeleted, handleUpdated, setCommentPostId)}
         </>
       )}
 
@@ -426,6 +446,17 @@ export default function FeedTimeline({ currentUserId }: Props) {
       {/* コメントセクション */}
       {commentPostId && (
         <CommentSection postId={commentPostId} onClose={handleCommentClose} />
+      )}
+
+      {/* スクロールトップボタン */}
+      {showScrollTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-24 right-4 w-10 h-10 bg-white border border-stone-200 rounded-full shadow-md flex items-center justify-center text-stone-500 hover:text-teal-600 hover:border-teal-200 transition-all z-40"
+          aria-label="トップに戻る"
+        >
+          <ChevronUp size={18} />
+        </button>
       )}
     </div>
   );

@@ -53,12 +53,13 @@ interface Props {
   onDeleted?: (postId: string) => void;
   onCommentClick?: (postId: string) => void;
   onUpdated?: (post: Post) => void;
+  onUnbookmarked?: (postId: string) => void;
 }
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "今";
+  if (mins < 1) return "たった今";
   if (mins < 60) return `${mins}分前`;
   const hours = Math.floor(mins / 60);
   if (hours < 24) return `${hours}時間前`;
@@ -230,11 +231,17 @@ function EditForm({ post, onSave, onCancel }: { post: Post; onSave: (updated: Po
         <p className="text-[10px] font-medium text-teal-600 mb-1">気づき</p>
         <textarea value={learned} onChange={(e) => setLearned(e.target.value)} maxLength={140} rows={2}
           className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-400" />
+        {learned.length > 0 && (
+          <p className="text-[10px] text-stone-400 text-right">{learned.length}/140</p>
+        )}
       </div>
       <div>
         <p className="text-[10px] font-medium text-stone-400 mb-1">明日やること</p>
         <textarea value={tomorrow} onChange={(e) => setTomorrow(e.target.value)} maxLength={140} rows={2}
           className="w-full px-3 py-1.5 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-400" />
+        {tomorrow.length > 0 && (
+          <p className="text-[10px] text-stone-400 text-right">{tomorrow.length}/140</p>
+        )}
       </div>
       <div>
         <p className="text-[10px] font-medium text-stone-400 mb-1">タグ（スペース区切り、最大5個）</p>
@@ -255,7 +262,7 @@ function EditForm({ post, onSave, onCancel }: { post: Post; onSave: (updated: Po
   );
 }
 
-export default function PostCard({ post: initialPost, currentUserId, onDeleted, onCommentClick, onUpdated }: Props) {
+export default function PostCard({ post: initialPost, currentUserId, onDeleted, onCommentClick, onUpdated, onUnbookmarked }: Props) {
   const { showToast } = useToast();
   const [post, setPost] = useState(initialPost);
   const { public_profiles: profile } = post;
@@ -273,6 +280,7 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
 
   const lastTapRef = useRef<number>(0);
   const [tapEffect, setTapEffect] = useState(false);
+  const [reactionKey, setReactionKey] = useState(0);
 
   const handleDoubleTap = async () => {
     if (isOwn) return; // can't react to own post
@@ -280,7 +288,24 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
     const timeSinceLastTap = now - lastTapRef.current;
     lastTapRef.current = now;
     if (timeSinceLastTap < 300 && timeSinceLastTap > 0) {
-      // Double tap detected — add 🔥 reaction
+      // Double tap detected — add 🔥 reaction (only if not already reacted)
+      if (post.reactions.myReactions.includes("nice_update")) return;
+      // Optimistic update to post state so ReactionBar remounts with correct values
+      setPost((prev) => ({
+        ...prev,
+        reactions: {
+          ...prev.reactions,
+          myReactions: [...prev.reactions.myReactions, "nice_update"],
+          types: prev.reactions.types.includes("nice_update")
+            ? prev.reactions.types
+            : [...prev.reactions.types, "nice_update"],
+          counts: {
+            ...prev.reactions.counts,
+            nice_update: ((prev.reactions.counts?.["nice_update"]) || 0) + 1,
+          },
+        },
+      }));
+      setReactionKey((k) => k + 1);
       setTapEffect(true);
       setTimeout(() => setTapEffect(false), 800);
       try {
@@ -389,7 +414,11 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
           </button>
 
           {/* ブックマークボタン */}
-          <BookmarkButton postId={post.id} isBookmarked={post.is_bookmarked || false} />
+          <BookmarkButton
+            postId={post.id}
+            isBookmarked={post.is_bookmarked || false}
+            onChanged={(bm) => { if (!bm) onUnbookmarked?.(post.id); }}
+          />
 
           {/* メニューボタン（自分の投稿） */}
           {isOwn && (
@@ -575,6 +604,7 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
       {!editing && (
         <div className="flex items-center justify-between">
           <ReactionBar
+            key={reactionKey}
             postId={post.id}
             myReactions={post.reactions.myReactions}
             types={post.reactions.types}

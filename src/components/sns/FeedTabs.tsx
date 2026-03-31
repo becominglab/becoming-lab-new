@@ -69,7 +69,7 @@ export default function FeedTabs({ currentUserId }: { currentUserId: string }) {
         <button
           onClick={() => handleTabChange("discover")}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition-colors ${
-            tab === "discover" ? "bg-teal-600 text-white" : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+            tab === "discover" ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-500 hover:bg-stone-200"
           }`}
         >
           <Compass size={14} />
@@ -78,7 +78,7 @@ export default function FeedTabs({ currentUserId }: { currentUserId: string }) {
         <button
           onClick={() => handleTabChange("board")}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-medium transition-colors ${
-            tab === "board" ? "bg-amber-500 text-white" : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+            tab === "board" ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-500 hover:bg-stone-200"
           }`}
         >
           <Target size={14} />

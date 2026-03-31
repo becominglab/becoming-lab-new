@@ -75,6 +75,14 @@ export default function UserSearchResults() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialTag]);
 
+  // タグ・フェーズ変更で500msデバウンス自動検索
+  useEffect(() => {
+    if (!searched && selectedTags.length === 0 && !phase) return; // 初回は手動検索待ち
+    const timer = setTimeout(() => handleSearch(), 500);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTags, phase]);
+
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
@@ -144,8 +152,19 @@ export default function UserSearchResults() {
 
       {/* 結果 */}
       {loading ? (
-        <div className="flex justify-center py-10">
-          <Loader2 size={20} className="animate-spin text-stone-400" />
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white rounded-xl border border-stone-200 p-3 animate-pulse">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-stone-200 shrink-0" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-3.5 bg-stone-200 rounded w-24" />
+                  <div className="h-3 bg-stone-100 rounded w-40" />
+                </div>
+                <div className="h-7 w-20 bg-stone-100 rounded-full" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : searched ? (
         results.length > 0 ? (
