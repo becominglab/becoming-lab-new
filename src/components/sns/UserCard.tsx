@@ -76,9 +76,9 @@ export default function UserCard({ profile, showFollow = true }: Props) {
             {profile.challenge_tags.slice(0, 4).map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-0.5 bg-stone-100 text-stone-500 rounded-full text-[10px]"
+                className="px-2 py-0.5 bg-teal-50 text-teal-700 rounded-full text-[10px]"
               >
-                {tag}
+                #{tag}
               </span>
             ))}
             {profile.challenge_tags.length > 4 && (

@@ -235,7 +235,7 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-teal-200 p-4 space-y-3 shadow-sm">
+    <div className="bg-white rounded-xl border border-teal-200 p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-stone-800">きょうの更新</h3>
@@ -266,7 +266,7 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
             onClick={() => setPostType(type)}
             className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
               postType === type
-                ? "bg-teal-600 text-white"
+                ? "bg-stone-900 text-white"
                 : "bg-stone-100 text-stone-500 hover:bg-stone-200"
             }`}
           >

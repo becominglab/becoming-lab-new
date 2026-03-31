@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import UserSearchResults from "./UserSearchResults";
 import MatchCard from "./MatchCard";
 import MentorRequestButton from "./MentorRequestButton";
@@ -238,7 +238,6 @@ function PostSearchTab() {
 }
 
 export default function SearchTabs() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = (searchParams.get("tab") as "search" | "posts" | "match" | "mentor") || "search";
   const [tab, setTab] = useState<"search" | "posts" | "match" | "mentor">(initialTab);
@@ -387,9 +386,9 @@ export default function SearchTabs() {
                   </p>
                 )}
                 {mentors.map((mentor) => (
-                  <div key={mentor.user_id} className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100">
+                  <div key={mentor.user_id} className="bg-white rounded-2xl p-4 border border-stone-200">
                     <div className="flex items-start gap-3">
-                      <button onClick={() => router.push(`/sns/profile/${mentor.user_id}`)}>
+                      <Link href={`/sns/profile/${mentor.user_id}`} className="shrink-0">
                         {mentor.avatar_url ? (
                           <Image
                             src={mentor.avatar_url}
@@ -403,14 +402,14 @@ export default function SearchTabs() {
                             {mentor.nickname[0]}
                           </div>
                         )}
-                      </button>
+                      </Link>
                       <div className="flex-1 min-w-0">
-                        <button
-                          onClick={() => router.push(`/sns/profile/${mentor.user_id}`)}
-                          className="font-semibold text-stone-900 text-sm"
+                        <Link
+                          href={`/sns/profile/${mentor.user_id}`}
+                          className="font-semibold text-stone-900 text-sm hover:underline"
                         >
                           {mentor.nickname}
-                        </button>
+                        </Link>
                         <span className="ml-2 text-xs px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full">
                           維持中
                         </span>

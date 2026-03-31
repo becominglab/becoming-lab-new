@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import FollowButton from "./FollowButton";
-import { X, Loader2 } from "lucide-react";
+import { X } from "lucide-react";
 
 interface UserItem {
   user_id: string;
@@ -44,7 +44,7 @@ export default function FollowListModal({ userId, currentUserId, type, onClose }
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200">
           <h2 className="text-sm font-semibold text-stone-800">
             {type === "followers" ? "フォロワー" : "フォロー中"}
           </h2>
@@ -59,8 +59,17 @@ export default function FollowListModal({ userId, currentUserId, type, onClose }
         {/* List */}
         <div className="overflow-y-auto flex-1">
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 size={20} className="animate-spin text-stone-400" />
+            <div className="p-4 space-y-3 animate-pulse">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-stone-200 shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-3.5 bg-stone-200 rounded w-28" />
+                    <div className="h-3 bg-stone-100 rounded w-40" />
+                  </div>
+                  <div className="h-7 w-14 bg-stone-100 rounded-full" />
+                </div>
+              ))}
             </div>
           ) : users.length === 0 ? (
             <div className="text-center py-12">
