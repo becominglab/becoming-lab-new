@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MessageSquare, UserPlus, Loader2, Bell, GraduationCap } from "lucide-react";
+import { Heart, MessageSquare, UserPlus, Bell, GraduationCap } from "lucide-react";
 
 interface Notification {
   id: string;
@@ -126,8 +126,16 @@ export default function NotificationList() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-20">
-        <Loader2 size={24} className="animate-spin text-stone-300" />
+      <div className="divide-y divide-stone-100">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="flex items-start gap-3 px-4 py-4 animate-pulse">
+            <div className="w-10 h-10 rounded-full bg-stone-200 shrink-0" />
+            <div className="flex-1 space-y-2 pt-1">
+              <div className="h-3.5 bg-stone-200 rounded w-4/5" />
+              <div className="h-3 bg-stone-100 rounded w-2/5" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

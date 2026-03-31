@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import FollowButton from "./FollowButton";
 
 interface Profile {
@@ -30,11 +31,20 @@ export default function UserCard({ profile, showFollow = true }: Props) {
 
   return (
     <div className="flex items-start gap-3 bg-white rounded-xl border border-stone-200 p-4">
-      <Link
-        href={`/sns/profile/${profile.user_id}`}
-        className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-sm font-bold text-teal-700 shrink-0"
-      >
-        {initial}
+      <Link href={`/sns/profile/${profile.user_id}`} className="shrink-0">
+        {profile.avatar_url ? (
+          <Image
+            src={profile.avatar_url}
+            alt={profile.nickname}
+            width={40}
+            height={40}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-sm font-bold text-teal-700">
+            {initial}
+          </div>
+        )}
       </Link>
 
       <div className="flex-1 min-w-0">

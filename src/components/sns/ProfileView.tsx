@@ -223,7 +223,7 @@ export default function ProfileView({ userId, currentUserId }: Props) {
                 <span className="ml-1">フォロー中</span>
               </button>
               <button className="text-xs text-stone-500">
-                <span className="font-semibold text-stone-800">{postCount}</span>
+                <span className="font-semibold text-stone-800">{postsHasMore ? `${postCount}+` : postCount}</span>
                 <span className="ml-1">投稿</span>
               </button>
               {totalReactions > 0 && (

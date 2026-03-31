@@ -198,7 +198,18 @@ function PostSearchTab() {
         <>
           {!searched && recentTags.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs text-stone-400 font-medium">最近検索したタグ</p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-stone-400 font-medium">最近検索したタグ</p>
+                <button
+                  onClick={() => {
+                    setRecentTags([]);
+                    try { localStorage.removeItem("sns_recent_tag_searches"); } catch { /* ignore */ }
+                  }}
+                  className="text-xs text-stone-300 hover:text-stone-500 transition-colors"
+                >
+                  すべて消去
+                </button>
+              </div>
               <div className="flex flex-wrap gap-1.5">
                 {recentTags.map((tag) => (
                   <button
