@@ -34,7 +34,25 @@ export default function RecommendedUsers() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl border border-stone-200 p-4 animate-pulse">
+        <div className="h-3 bg-stone-200 rounded w-28 mb-4" />
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-stone-200 shrink-0" />
+              <div className="flex-1 space-y-1.5">
+                <div className="h-3 bg-stone-200 rounded w-20" />
+                <div className="h-2.5 bg-stone-100 rounded w-32" />
+              </div>
+              <div className="w-8 h-8 rounded-full bg-stone-100" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (users.length === 0) {
     return (
