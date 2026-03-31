@@ -227,6 +227,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
             { type: "update", label: "📝 更新" },
             { type: "declaration", label: "💪 宣言" },
             { type: "milestone", label: "🏆 達成" },
+            { type: "auto_log", label: "🔥 Body記録" },
           ].map(({ type, label }) => (
             <button
               key={String(type)}

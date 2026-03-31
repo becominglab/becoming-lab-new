@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 
 // GET /api/sns/posts/[id]/comments — コメント一覧
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: postId } = await params;
@@ -11,12 +11,16 @@ export async function GET(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "not_authenticated" }, { status: 401 });
 
+  const searchParams = request.nextUrl.searchParams;
+  const limit = Math.min(parseInt(searchParams.get("limit") || "50", 10), 50);
+  const offset = parseInt(searchParams.get("offset") || "0", 10);
+
   const { data: comments, error } = await supabase
     .from("comments")
     .select("*, public_profiles!inner(nickname, avatar_url)")
     .eq("post_id", postId)
     .order("created_at", { ascending: true })
-    .limit(50);
+    .range(offset, offset + limit - 1);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
