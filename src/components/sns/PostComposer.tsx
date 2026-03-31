@@ -292,7 +292,7 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
               className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
               autoFocus={!!challengeTitle}
             />
-            <p className="text-xs text-stone-400 text-right">{did.length}/140</p>
+            <p className={`text-xs text-right ${did.length > 120 ? "text-orange-500" : "text-stone-400"}`}>{did.length}/140</p>
           </div>
           <div>
             <label className="block text-xs font-medium text-teal-700 mb-1">気づき（任意）</label>

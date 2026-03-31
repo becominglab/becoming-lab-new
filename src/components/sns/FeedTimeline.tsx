@@ -107,8 +107,9 @@ export default function FeedTimeline({ currentUserId }: Props) {
     fetchPosts(null, null);
   }, [fetchPosts]);
 
-  // typeFilterが変わったらリセットして再取得
+  // typeFilterが変わったらリセットして再取得（ローディングを先に立てて空フラッシュを防ぐ）
   useEffect(() => {
+    setLoading(true);
     setPosts([]);
     setCursor(null);
     setHasMore(true);
