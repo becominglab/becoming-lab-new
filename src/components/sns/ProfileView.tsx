@@ -317,6 +317,23 @@ export default function ProfileView({ userId, currentUserId }: Props) {
         })()}
       </div>
 
+      {/* 友達招待カード（自分のプロフィールのみ） */}
+      {isOwn && (
+        <button
+          onClick={handleShareProfile}
+          className="w-full flex items-center gap-3 bg-gradient-to-r from-stone-800 to-stone-700 rounded-xl px-4 py-3 text-white hover:from-stone-700 hover:to-stone-600 transition-all active:scale-[0.98] group"
+        >
+          <div className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center shrink-0 group-hover:bg-white/20 transition-colors">
+            <Share2 size={16} />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="text-sm font-semibold">友達を招待する</p>
+            <p className="text-xs opacity-70">プロフィールリンクをシェア</p>
+          </div>
+          <span className="text-xs opacity-60">→</span>
+        </button>
+      )}
+
       {/* プロフィールタブ */}
       <div className="flex gap-1 bg-white rounded-xl border border-stone-200 p-1">
         {(["posts", "badges", "calendar"] as const).map((tab) => {
