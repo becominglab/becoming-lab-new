@@ -63,20 +63,9 @@ function renderPostItems(
           onUpdated={onUpdated}
           onCommentClick={onCommentClick}
         />
-        {/* 2投稿目の後にPostComposerを差し込む（フィルター無効時のみ） */}
-        {i === 1 && !typeFilter && (
-          <div className="mt-4">
-            <PostComposer onPosted={onPosted} initialPrompt={composerPrompt} />
-          </div>
-        )}
         {/* 5投稿目の後におすすめユーザーを差し込む */}
         {i === 4 && <div className="mt-4"><RecommendedUsers /></div>}
       </div>
-    );
-  }
-  if (posts.length <= 1 && !typeFilter) {
-    items.push(
-      <PostComposer key="bottom-composer" onPosted={onPosted} initialPrompt={composerPrompt} />
     );
   }
   return items;
@@ -161,6 +150,16 @@ export default function FeedTimeline({ currentUserId }: Props) {
 
   useEffect(() => {
     fetchPosts(null, null);
+  }, [fetchPosts]);
+
+  // FABや他コンポーネントから投稿された場合にフィードを更新
+  useEffect(() => {
+    const handler = () => {
+      setComposerPrompt(undefined);
+      fetchPosts(null, null);
+    };
+    window.addEventListener("sns:post-created", handler);
+    return () => window.removeEventListener("sns:post-created", handler);
   }, [fetchPosts]);
 
   // typeFilterが変わったらリセットして再取得（初回マウント時は初期ロードと重複するためスキップ）
@@ -272,6 +271,12 @@ export default function FeedTimeline({ currentUserId }: Props) {
     fetchPosts();
   };
 
+  // チェックイン後: composerPrompt をセットしてトップへスクロール
+  const handleCheckinAndPost = (prompt: string) => {
+    setComposerPrompt(prompt);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleDeleted = (postId: string) => {
     setPosts((prev) => prev.filter((p) => p.id !== postId));
   };
@@ -324,10 +329,21 @@ export default function FeedTimeline({ currentUserId }: Props) {
         </div>
       )}
 
-      {/* デイリーチェックイン（最上部に配置） */}
-      <DailyCheckin
-        onCheckinAndPost={(prompt) => setComposerPrompt(prompt)}
-      />
+      {/* デイリーチェックイン */}
+      <DailyCheckin onCheckinAndPost={handleCheckinAndPost} />
+
+      {/* 投稿コンポーザー（常に上部に表示） */}
+      {!typeFilter && (
+        <PostComposer
+          onPosted={handlePosted}
+          initialPrompt={composerPrompt}
+          collapsedPlaceholder={
+            composerPrompt
+              ? "チェックイン完了！今日の学びを記録しよう ✨"
+              : "今日の更新・宣言・達成を記録する..."
+          }
+        />
+      )}
 
       {/* 投稿タイプフィルター */}
       {posts.length > 0 && (
@@ -424,7 +440,11 @@ export default function FeedTimeline({ currentUserId }: Props) {
 
           {/* フィルター中は投稿フォームを先頭に固定表示 */}
           {typeFilter && (
-            <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
+            <PostComposer
+              onPosted={handlePosted}
+              initialPrompt={composerPrompt}
+              collapsedPlaceholder="今日の更新・宣言・達成を記録する..."
+            />
           )}
 
           {renderPostItems(posts, currentUserId, composerPrompt, typeFilter, handlePosted, handleDeleted, handleUpdated, setCommentPostId)}
@@ -452,7 +472,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-24 right-4 w-10 h-10 bg-white border border-stone-200 rounded-full shadow-md flex items-center justify-center text-stone-500 hover:text-teal-600 hover:border-teal-200 transition-all z-40"
+          className="fixed bottom-36 right-4 w-10 h-10 bg-white border border-stone-200 rounded-full shadow-md flex items-center justify-center text-stone-500 hover:text-teal-600 hover:border-teal-200 transition-all z-40"
           aria-label="トップに戻る"
         >
           <ChevronUp size={18} />
