@@ -59,7 +59,7 @@ export default function DailyCheckin({ onCheckinAndPost }: Props) {
         setTodayChecked(true);
         setStreak(data.streak || 0);
         setShowCelebration(true);
-        setTimeout(() => setShowCelebration(false), 2500);
+        setTimeout(() => setShowCelebration(false), 8000);
         // 投稿フォームを開く
         onCheckinAndPost?.(prompt);
       }
@@ -105,7 +105,7 @@ export default function DailyCheckin({ onCheckinAndPost }: Props) {
             {showCelebration ? `${streak}日連続チェックイン！🎉` : "今日もチェックイン済み！"}
           </p>
           <p className="text-xs text-stone-400">
-            {showCelebration ? "この調子で続けよう✨" : "投稿してさらに仲間に共有しよう"}
+            {showCelebration ? "この調子で続けよう✨ 今日の更新を投稿しよう！" : "投稿してさらに仲間に共有しよう"}
           </p>
         </div>
       ) : (

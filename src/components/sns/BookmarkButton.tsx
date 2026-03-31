@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Bookmark, BookmarkCheck } from "lucide-react";
+import { useToast } from "@/contexts/ToastContext";
 
 interface Props {
   postId: string;
@@ -11,6 +12,7 @@ interface Props {
 export default function BookmarkButton({ postId, isBookmarked: initial }: Props) {
   const [bookmarked, setBookmarked] = useState(initial);
   const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
 
   const toggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -27,11 +29,14 @@ export default function BookmarkButton({ postId, isBookmarked: initial }: Props)
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ post_id: postId }),
         });
+        showToast("ブックマークしました", "success");
       } else {
         await fetch(`/api/sns/bookmarks?post_id=${postId}`, { method: "DELETE" });
+        showToast("ブックマークを解除しました", "info");
       }
     } catch {
       setBookmarked(!newState); // revert on error
+      showToast("ブックマークに失敗しました", "error");
     } finally {
       setLoading(false);
     }

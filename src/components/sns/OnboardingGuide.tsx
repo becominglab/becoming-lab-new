@@ -68,28 +68,31 @@ export default function OnboardingGuide() {
 
       {/* ステップ一覧 */}
       <div className="space-y-2">
-        {steps.map((step) => (
-          <Link
-            key={step.key}
-            href={step.done ? "#" : step.href}
-            onClick={(e) => step.done && e.preventDefault()}
-            className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors ${
-              step.done
-                ? "bg-teal-50/50 cursor-default"
-                : "bg-white hover:bg-stone-50 active:scale-[0.98]"
-            }`}
-          >
-            {step.done ? (
+        {steps.map((step) =>
+          step.done ? (
+            <div
+              key={step.key}
+              className="flex items-center gap-3 p-2.5 rounded-xl bg-teal-50/50"
+            >
               <CheckCircle2 size={18} className="text-teal-500 shrink-0" />
-            ) : (
+              <span className="flex-1 text-sm text-stone-400 line-through">
+                {step.label}
+              </span>
+            </div>
+          ) : (
+            <Link
+              key={step.key}
+              href={step.href}
+              className="flex items-center gap-3 p-2.5 rounded-xl transition-colors bg-white hover:bg-stone-50 active:scale-[0.98]"
+            >
               <Circle size={18} className="text-stone-300 shrink-0" />
-            )}
-            <span className={`flex-1 text-sm ${step.done ? "text-stone-400 line-through" : "text-stone-700 font-medium"}`}>
-              {step.label}
-            </span>
-            {!step.done && <ChevronRight size={16} className="text-stone-300 shrink-0" />}
-          </Link>
-        ))}
+              <span className="flex-1 text-sm text-stone-700 font-medium">
+                {step.label}
+              </span>
+              <ChevronRight size={16} className="text-stone-300 shrink-0" />
+            </Link>
+          )
+        )}
       </div>
 
       {allDone && (
