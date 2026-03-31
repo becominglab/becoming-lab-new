@@ -54,6 +54,7 @@ export default function ProfileView({ userId, currentUserId }: Props) {
   const [totalReactions, setTotalReactions] = useState(0);
   const [postsHasMore, setPostsHasMore] = useState(false);
   const [postsLoadingMore, setPostsLoadingMore] = useState(false);
+  const [profileTab, setProfileTab] = useState<"posts" | "badges" | "calendar">("posts");
   const isOwn = userId === currentUserId;
   const { showToast } = useToast();
 
@@ -255,18 +256,42 @@ export default function ProfileView({ userId, currentUserId }: Props) {
         </div>
       </div>
 
-      {/* 更新カレンダー */}
-      <div className="bg-white rounded-xl border border-stone-200 p-4">
-        <UpdateCalendar userId={userId} />
+      {/* プロフィールタブ */}
+      <div className="flex gap-1 bg-white rounded-xl border border-stone-200 p-1">
+        {(["posts", "badges", "calendar"] as const).map((tab) => {
+          const labels = { posts: "投稿", badges: "バッジ", calendar: "カレンダー" };
+          const icons = { posts: "📝", badges: "🏅", calendar: "📅" };
+          return (
+            <button
+              key={tab}
+              onClick={() => setProfileTab(tab)}
+              className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                profileTab === tab ? "bg-stone-900 text-white" : "text-stone-500 hover:bg-stone-50"
+              }`}
+            >
+              <span>{icons[tab]}</span>
+              {labels[tab]}
+            </button>
+          );
+        })}
       </div>
+
+      {/* 更新カレンダー */}
+      {profileTab === "calendar" && (
+        <div className="bg-white rounded-xl border border-stone-200 p-4">
+          <UpdateCalendar userId={userId} />
+        </div>
+      )}
 
       {/* バッジ一覧 */}
-      <div className="bg-white rounded-xl border border-stone-200 p-4">
-        <BadgeGrid userId={isOwn ? undefined : userId} />
-      </div>
+      {profileTab === "badges" && (
+        <div className="bg-white rounded-xl border border-stone-200 p-4">
+          <BadgeGrid userId={isOwn ? undefined : userId} />
+        </div>
+      )}
 
       {/* 最近の投稿 */}
-      {posts.length > 0 && (
+      {profileTab === "posts" && posts.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-stone-700">最近の更新</h3>
                 {isOwn && postCount === 1 && posts.length === 1 && (
@@ -295,6 +320,12 @@ export default function ProfileView({ userId, currentUserId }: Props) {
               )}
             </button>
           )}
+        </div>
+      )}
+      {profileTab === "posts" && posts.length === 0 && !loading && (
+        <div className="bg-white rounded-xl border border-stone-200 p-8 text-center space-y-2">
+          <p className="text-2xl">📝</p>
+          <p className="text-stone-400 text-sm">まだ投稿がありません</p>
         </div>
       )}
 
