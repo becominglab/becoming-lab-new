@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Save, Loader2, Camera } from "lucide-react";
+import { Save, Loader2, Camera, X } from "lucide-react";
 
 const CHALLENGE_TAG_OPTIONS = [
   "ダイエット", "筋トレ", "ランニング", "読書", "瞑想",
@@ -50,7 +50,19 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [customTagInput, setCustomTagInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const addCustomTag = () => {
+    const tag = customTagInput.trim().replace(/^#/, "");
+    if (!tag || tags.includes(tag) || tags.length >= 10) return;
+    setTags((prev) => [...prev, tag]);
+    setCustomTagInput("");
+  };
+
+  const removeTag = (tag: string) => {
+    setTags((prev) => prev.filter((t) => t !== tag));
+  };
 
   const toggleTag = (tag: string) => {
     setTags((prev) =>
@@ -198,10 +210,14 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
 
       {/* 挑戦タグ */}
       <div>
-        <label className="block text-sm font-medium text-stone-700 mb-2">
-          挑戦タグ
-        </label>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-sm font-medium text-stone-700">
+            挑戦タグ
+          </label>
+          <span className="text-xs text-stone-400">{tags.length}/10</span>
+        </div>
+        {/* プリセットタグ */}
+        <div className="flex flex-wrap gap-2 mb-3">
           {CHALLENGE_TAG_OPTIONS.map((tag) => (
             <button
               key={tag}
@@ -217,6 +233,39 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
             </button>
           ))}
         </div>
+        {/* カスタムタグ入力 */}
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={customTagInput}
+            onChange={(e) => setCustomTagInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomTag(); } }}
+            placeholder="カスタムタグを追加（例: ポモドーロ）"
+            maxLength={20}
+            className="flex-1 px-3 py-1.5 border border-stone-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+          <button
+            type="button"
+            onClick={addCustomTag}
+            disabled={!customTagInput.trim() || tags.length >= 10}
+            className="px-3 py-1.5 bg-stone-100 text-stone-600 rounded-lg text-xs hover:bg-stone-200 disabled:opacity-40 transition-colors"
+          >
+            追加
+          </button>
+        </div>
+        {/* 選択中タグ（プリセット以外のカスタムタグを X で消せる） */}
+        {tags.filter((t) => !CHALLENGE_TAG_OPTIONS.includes(t)).length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {tags.filter((t) => !CHALLENGE_TAG_OPTIONS.includes(t)).map((tag) => (
+              <span key={tag} className="flex items-center gap-1 px-2 py-0.5 bg-teal-50 text-teal-700 rounded-full text-xs border border-teal-200">
+                #{tag}
+                <button type="button" onClick={() => removeTag(tag)} className="text-teal-400 hover:text-teal-700">
+                  <X size={10} />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 更新フェーズ */}
