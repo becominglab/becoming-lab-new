@@ -30,11 +30,17 @@ export default function SnsSidebar() {
   const [recommended, setRecommended] = useState<RecommendedUser[]>([]);
   const [trendTags, setTrendTags] = useState<TrendTag[]>([]);
   const [tagsLoading, setTagsLoading] = useState(true);
+  const [trendPosts, setTrendPosts] = useState<any[]>([]);
 
   useEffect(() => {
     fetch("/api/sns/recommendations")
       .then((r) => r.json())
       .then((d) => setRecommended((d.users || []).slice(0, 3)))
+      .catch(() => {});
+
+    fetch("/api/sns/posts?feed=trending&limit=3")
+      .then((r) => r.json())
+      .then((d) => setTrendPosts((d.posts || []).slice(0, 3)))
       .catch(() => {});
 
     fetch("/api/sns/trending-tags")
@@ -49,6 +55,49 @@ export default function SnsSidebar() {
 
   return (
     <aside className="space-y-4">
+      {/* 今週の人気投稿 */}
+      {trendPosts.length > 0 && (
+        <div className="bg-white rounded-2xl border border-stone-200 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp size={14} className="text-amber-500" />
+            <p className="text-xs font-semibold text-stone-700">今週の人気投稿</p>
+          </div>
+          <div className="space-y-2.5">
+            {trendPosts.map((post) => (
+              <Link
+                key={post.id}
+                href={`/sns/posts/${post.id}`}
+                className="block group"
+              >
+                <div className="flex items-start gap-2">
+                  {post.public_profiles?.avatar_url ? (
+                    <Image
+                      src={post.public_profiles.avatar_url}
+                      alt={post.public_profiles.nickname}
+                      width={24}
+                      height={24}
+                      className="rounded-full object-cover shrink-0 mt-0.5"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-teal-100 flex items-center justify-center text-[10px] font-bold text-teal-700 shrink-0 mt-0.5">
+                      {post.public_profiles?.nickname?.[0] || "?"}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-xs text-stone-700 line-clamp-2 group-hover:text-teal-600 transition-colors leading-relaxed">
+                      {post.content?.did || post.content?.content || post.content?.label || ""}
+                    </p>
+                    <p className="text-[10px] text-stone-400 mt-0.5">
+                      {post.public_profiles?.nickname} · {post.reactions?.total || 0}❤
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* トレンドタグ */}
       <div className="bg-white rounded-2xl border border-stone-200 p-4">
         <div className="flex items-center gap-2 mb-3">

@@ -47,6 +47,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const [pullDistance, setPullDistance] = useState(0);
   const [newPostCount, setNewPostCount] = useState(0);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const [welcomeBack, setWelcomeBack] = useState(false);
 
   const fetchPosts = useCallback(async (cursorParam?: string | null) => {
     const isInitial = !cursorParam;
@@ -68,6 +69,15 @@ export default function FeedTimeline({ currentUserId }: Props) {
         if ((data.posts || []).length === 0) {
           fetchTrending();
         }
+        // 久しぶりチェック
+        try {
+          const lastVisit = localStorage.getItem("sns_last_visit");
+          const now = Date.now();
+          if (lastVisit && now - parseInt(lastVisit) > 2 * 24 * 60 * 60 * 1000) {
+            setWelcomeBack(true);
+          }
+          localStorage.setItem("sns_last_visit", String(now));
+        } catch { /* ignore */ }
       } else {
         setPosts((prev) => [...prev, ...(data.posts || [])]);
       }
@@ -222,6 +232,18 @@ export default function FeedTimeline({ currentUserId }: Props) {
           <RefreshCw size={14} />
           {newPostCount}件の新しい投稿を見る ↑
         </button>
+      )}
+
+      {welcomeBack && (
+        <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-amber-800">おかえりなさい👋</p>
+            <p className="text-xs text-amber-600">仲間の新しい更新が届いています</p>
+          </div>
+          <button onClick={() => setWelcomeBack(false)} className="text-amber-400 hover:text-amber-600 p-1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+          </button>
+        </div>
       )}
 
       {/* デイリーチェックイン（最上部に配置） */}
