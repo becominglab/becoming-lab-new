@@ -292,17 +292,37 @@ export default function FeedTimeline({ currentUserId }: Props) {
         </div>
       ) : posts.length === 0 ? (
         <div className="space-y-4">
-          {/* 空フィード: おすすめユーザー */}
-          <div className="text-center py-6 space-y-2">
-            <p className="text-2xl">🌱</p>
-            <p className="text-stone-500 text-sm font-medium">まだ投稿がありません</p>
-            <p className="text-stone-400 text-xs">仲間をフォローするとここに投稿が流れてきます</p>
-          </div>
+          {/* フィルター中の空状態 */}
+          {typeFilter ? (
+            <div className="text-center py-10 space-y-3">
+              <p className="text-3xl">
+                {typeFilter === "update" ? "📝" : typeFilter === "declaration" ? "💪" : typeFilter === "milestone" ? "🏆" : "🔥"}
+              </p>
+              <p className="text-stone-500 text-sm font-medium">
+                {typeFilter === "update" ? "更新" : typeFilter === "declaration" ? "宣言" : typeFilter === "milestone" ? "達成" : "Body記録"}の投稿がまだありません
+              </p>
+              <button
+                onClick={() => setTypeFilter(null)}
+                className="text-xs text-teal-600 hover:underline"
+              >
+                すべての投稿を見る
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* 空フィード: おすすめユーザー */}
+              <div className="text-center py-6 space-y-2">
+                <p className="text-2xl">🌱</p>
+                <p className="text-stone-500 text-sm font-medium">まだ投稿がありません</p>
+                <p className="text-stone-400 text-xs">仲間をフォローするとここに投稿が流れてきます</p>
+              </div>
+            </>
+          )}
 
-          <RecommendedUsers />
+          {!typeFilter && <RecommendedUsers />}
 
           {/* 空フィード: 人気投稿をプレビュー */}
-          {trendingPosts.length > 0 && (
+          {!typeFilter && trendingPosts.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs font-medium text-stone-500">
@@ -389,6 +409,13 @@ export default function FeedTimeline({ currentUserId }: Props) {
       <div ref={observerRef} className="h-10 flex items-center justify-center">
         {loadingMore && <Loader2 size={18} className="animate-spin text-stone-400" />}
       </div>
+
+      {/* フィード末尾メッセージ */}
+      {!loading && !loadingMore && !hasMore && posts.length > 0 && (
+        <div className="text-center py-4">
+          <p className="text-xs text-stone-300">最新まで読み込みました</p>
+        </div>
+      )}
 
       {/* コメントセクション */}
       {commentPostId && (
