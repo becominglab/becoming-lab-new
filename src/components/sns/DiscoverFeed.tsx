@@ -142,7 +142,7 @@ export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
           <button
             onClick={() => handleTagSelect(null)}
             className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              !selectedTag ? "bg-teal-600 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+              !selectedTag ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
             }`}
           >
             すべて
@@ -152,7 +152,7 @@ export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
               key={tag}
               onClick={() => handleTagSelect(selectedTag === tag ? null : tag)}
               className={`shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                selectedTag === tag ? "bg-teal-600 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+                selectedTag === tag ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
               }`}
             >
               <Hash size={10} />

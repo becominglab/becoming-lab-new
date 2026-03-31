@@ -74,7 +74,7 @@ export default function MentorSection({ isMentor, onToggleMentor }: Props) {
   const displayList = tab === "requests" ? requests : connections;
 
   return (
-    <div className="bg-white rounded-2xl p-4 border border-stone-100">
+    <div className="bg-white rounded-2xl p-4 border border-stone-200">
       {/* ヘッダー + メンタートグル */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
