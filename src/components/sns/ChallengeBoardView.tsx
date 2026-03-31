@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Loader2, Target } from "lucide-react";
+import { Target } from "lucide-react";
+import Link from "next/link";
 import FollowButton from "./FollowButton";
+import SkeletonCard from "./SkeletonCard";
 import { PHASE_LABELS } from "@/lib/sns/phases";
 
 const TAG_OPTIONS = [
@@ -115,13 +117,22 @@ export default function ChallengeBoardView() {
 
       {/* チャレンジ一覧 */}
       {loading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 size={22} className="animate-spin text-stone-300" />
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => <SkeletonCard key={i} />)}
         </div>
       ) : challenges.length === 0 ? (
-        <div className="text-center py-12 space-y-2">
+        <div className="text-center py-12 space-y-3">
           <Target size={32} className="mx-auto text-stone-200" />
-          <p className="text-stone-400 text-sm">チャレンジ中のメンバーが見つかりません</p>
+          <div>
+            <p className="text-stone-500 text-sm font-medium">まだチャレンジ中のメンバーがいません</p>
+            <p className="text-stone-400 text-xs mt-1">仲間をフォローするか、自分でチャレンジを始めよう</p>
+          </div>
+          <Link
+            href="/body/challenges"
+            className="inline-block text-sm text-teal-600 border border-teal-200 rounded-xl px-4 py-2 hover:bg-teal-50 transition-colors"
+          >
+            チャレンジを始める →
+          </Link>
         </div>
       ) : (
         <div className="space-y-3">

@@ -265,6 +265,7 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
   const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
   const [imageOpen, setImageOpen] = useState(false);
+  const [contentExpanded, setContentExpanded] = useState(false);
 
   const handleDelete = async () => {
     if (!confirm("この投稿を削除しますか？")) return;
@@ -397,19 +398,41 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
         <EditForm post={post} onSave={handleSaved} onCancel={() => setEditing(false)} />
       ) : (
         <div>
-          {post.post_type === "update" && <UpdateContent content={post.content} />}
-          {post.post_type === "auto_log" && <AutoLogContent content={post.content} />}
-          {post.post_type === "declaration" && (
-            <p className="text-sm text-stone-800 border-l-2 border-blue-300 pl-3 italic leading-relaxed">
-              {post.content.content}
-            </p>
-          )}
-          {post.post_type === "milestone" && (
-            <div className="flex items-center gap-2 text-sm bg-amber-50 rounded-lg px-3 py-2">
-              <Trophy size={18} className="text-amber-500 shrink-0" />
-              <span className="font-medium text-stone-800">{post.content.label}</span>
-            </div>
-          )}
+          <div
+            className={`relative ${!contentExpanded ? "max-h-32 overflow-hidden" : ""}`}
+          >
+            {post.post_type === "update" && <UpdateContent content={post.content} />}
+            {post.post_type === "auto_log" && <AutoLogContent content={post.content} />}
+            {post.post_type === "declaration" && (
+              <p className="text-sm text-stone-800 border-l-2 border-blue-300 pl-3 italic leading-relaxed">
+                {post.content.content}
+              </p>
+            )}
+            {post.post_type === "milestone" && (
+              <div className="flex items-center gap-2 text-sm bg-amber-50 rounded-lg px-3 py-2">
+                <Trophy size={18} className="text-amber-500 shrink-0" />
+                <span className="font-medium text-stone-800">{post.content.label}</span>
+              </div>
+            )}
+            {/* グラデーションオーバーレイ（折りたたみ時のみ） */}
+            {!contentExpanded && (
+              <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+            )}
+          </div>
+          {/* もっと読む / 折りたたむ ボタン */}
+          {(() => {
+            const textLength = (post.content.did?.length || 0) + (post.content.learned?.length || 0) + (post.content.tomorrow?.length || 0) + (post.content.content?.length || 0);
+            if (textLength < 80 && post.post_type !== "update") return null;
+            if (post.post_type === "update" && textLength < 80) return null;
+            return (
+              <button
+                onClick={() => setContentExpanded(!contentExpanded)}
+                className="text-xs text-teal-600 hover:text-teal-700 mt-1 font-medium"
+              >
+                {contentExpanded ? "折りたたむ" : "もっと読む"}
+              </button>
+            );
+          })()}
         </div>
       )}
 
