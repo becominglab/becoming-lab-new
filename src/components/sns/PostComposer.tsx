@@ -224,6 +224,22 @@ export default function PostComposer({
           window.dispatchEvent(new CustomEvent("sns:post-created"));
         }
         onPosted?.();
+        // バッジ獲得チェック（非同期・非ブロッキング）
+        fetch("/api/sns/badges/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ categories: ["social", "story"] }),
+        })
+          .then((r) => r.json())
+          .then((d) => {
+            const earned: Array<{ name: string; icon: string }> = d.newly_earned || [];
+            earned.slice(0, 2).forEach((badge, i) => {
+              setTimeout(() => {
+                showToast(`🏅 バッジ獲得！「${badge.icon}${badge.name}」`, "success");
+              }, i * 1500);
+            });
+          })
+          .catch(() => {});
       } else {
         const data = await res.json();
         showToast(data.error || "投稿に失敗しました", "error");
