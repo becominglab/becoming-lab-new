@@ -117,17 +117,22 @@ function CommentContent({
       {/* 入力エリア */}
       <div className="shrink-0 px-4 py-3 border-t border-stone-100">
         <div className="flex gap-2 items-end">
-          <textarea
-            ref={inputRef}
-            value={text}
-            onChange={(e) => onTextChange(e.target.value)}
-            onKeyDown={onKeyDown}
-            placeholder="コメントを入力... (Enterで送信)"
-            maxLength={300}
-            rows={1}
-            className="flex-1 border border-stone-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-400 min-h-[40px] max-h-[100px]"
-            style={{ fieldSizing: "content" } as React.CSSProperties}
-          />
+          <div className="flex-1 flex flex-col">
+            <textarea
+              ref={inputRef}
+              value={text}
+              onChange={(e) => onTextChange(e.target.value)}
+              onKeyDown={onKeyDown}
+              placeholder="コメントを入力... (Enterで送信)"
+              maxLength={200}
+              rows={1}
+              className="flex-1 border border-stone-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-400 min-h-[40px] max-h-[100px]"
+              style={{ fieldSizing: "content" } as React.CSSProperties}
+            />
+            <p className={`text-[10px] text-right mt-0.5 ${text.length > 180 ? "text-orange-500" : "text-stone-400"}`}>
+              {text.length}/200
+            </p>
+          </div>
           <button
             onClick={onSubmit}
             disabled={!text.trim() || posting}
@@ -140,9 +145,6 @@ function CommentContent({
             )}
           </button>
         </div>
-        {text.length > 250 && (
-          <p className="text-xs text-stone-400 text-right mt-1">{text.length}/300</p>
-        )}
       </div>
     </>
   );

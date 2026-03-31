@@ -51,6 +51,8 @@ export default function ProfileView({ userId, currentUserId }: Props) {
   const [followModal, setFollowModal] = useState<"followers" | "following" | null>(null);
   const [postCount, setPostCount] = useState(0);
   const [totalReactions, setTotalReactions] = useState(0);
+  const [postsHasMore, setPostsHasMore] = useState(false);
+  const [postsLoadingMore, setPostsLoadingMore] = useState(false);
   const isOwn = userId === currentUserId;
 
   useEffect(() => {
@@ -76,6 +78,7 @@ export default function ProfileView({ userId, currentUserId }: Props) {
         setPostCount(count);
         const reactions = (postsData.posts || []).reduce((sum: number, p: any) => sum + (p.reactions?.total || 0), 0);
         setTotalReactions(reactions);
+        setPostsHasMore(count >= 10);
 
         // メンター接続状態取得 (他ユーザーのみ)
         if (!isOwn && mentorsRes) {
@@ -93,6 +96,23 @@ export default function ProfileView({ userId, currentUserId }: Props) {
 
     load();
   }, [userId, isOwn]);
+
+  const loadMorePosts = async () => {
+    if (postsLoadingMore || !postsHasMore || posts.length === 0) return;
+    setPostsLoadingMore(true);
+    try {
+      const lastPost = posts[posts.length - 1];
+      const res = await fetch(`/api/sns/posts?user_id=${userId}&limit=10&cursor=${encodeURIComponent(lastPost.created_at)}`);
+      const data = await res.json();
+      const newPosts = data.posts || [];
+      setPosts((prev) => [...prev, ...newPosts]);
+      setPostsHasMore(newPosts.length >= 10);
+    } catch {
+      // silently fail
+    } finally {
+      setPostsLoadingMore(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -226,6 +246,22 @@ export default function ProfileView({ userId, currentUserId }: Props) {
           {posts.map((post) => (
             <PostCard key={post.id} post={post} currentUserId={currentUserId} />
           ))}
+          {postsHasMore && (
+            <button
+              onClick={loadMorePosts}
+              disabled={postsLoadingMore}
+              className="w-full py-2.5 text-sm text-teal-600 hover:text-teal-700 border border-teal-200 rounded-xl hover:bg-teal-50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {postsLoadingMore ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  読み込み中...
+                </>
+              ) : (
+                "もっと見る"
+              )}
+            </button>
+          )}
         </div>
       )}
 

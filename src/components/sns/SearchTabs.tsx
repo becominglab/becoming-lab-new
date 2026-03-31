@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import UserSearchResults from "./UserSearchResults";
 import MatchCard from "./MatchCard";
 import MentorRequestButton from "./MentorRequestButton";
-import { Loader2, Sparkles, GraduationCap } from "lucide-react";
+import { Loader2, Sparkles, GraduationCap, Hash, Search, Flame, FileText, Trophy, MessageSquare } from "lucide-react";
+import Link from "next/link";
 
 interface MatchUser {
   user_id: string;
@@ -29,9 +30,167 @@ interface MentorUser {
   connection_status: string | null;
 }
 
+interface PostResult {
+  id: string;
+  user_id: string;
+  post_type: string;
+  content: {
+    did?: string;
+    content?: string;
+    label?: string;
+  };
+  tags?: string[];
+  created_at: string;
+  public_profiles: {
+    nickname: string;
+    avatar_url: string | null;
+  };
+}
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "今";
+  if (mins < 60) return `${mins}分前`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}時間前`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}日前`;
+  return new Date(dateStr).toLocaleDateString("ja-JP", { month: "short", day: "numeric" });
+}
+
+function PostTypeIcon({ type }: { type: string }) {
+  switch (type) {
+    case "auto_log": return <Flame size={11} className="text-orange-500" />;
+    case "declaration": return <MessageSquare size={11} className="text-blue-500" />;
+    case "milestone": return <Trophy size={11} className="text-amber-500" />;
+    default: return <FileText size={11} className="text-teal-500" />;
+  }
+}
+
+function PostSearchTab() {
+  const [tagQuery, setTagQuery] = useState("");
+  const [results, setResults] = useState<PostResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searched, setSearched] = useState(false);
+
+  const handleSearch = async () => {
+    const tag = tagQuery.replace(/^#/, "").trim();
+    if (!tag) return;
+    setLoading(true);
+    setSearched(true);
+    try {
+      const res = await fetch(`/api/sns/posts?tag=${encodeURIComponent(tag)}&feed=discover&limit=20`);
+      const data = await res.json();
+      setResults(data.posts || []);
+    } catch {
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        <div className="flex-1 relative">
+          <Hash size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+          <input
+            type="text"
+            value={tagQuery}
+            onChange={(e) => setTagQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            placeholder="ハッシュタグで投稿を検索"
+            className="w-full pl-8 pr-3 py-2.5 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+        </div>
+        <button
+          onClick={handleSearch}
+          disabled={loading || !tagQuery.trim()}
+          className="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 disabled:opacity-50 transition-colors"
+        >
+          {loading ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <Loader2 size={20} className="animate-spin text-stone-400" />
+        </div>
+      ) : searched ? (
+        results.length > 0 ? (
+          <div className="space-y-3">
+            <p className="text-xs text-stone-400 text-center">
+              #{tagQuery.replace(/^#/, "")} の投稿 {results.length}件
+            </p>
+            {results.map((post) => (
+              <Link
+                key={post.id}
+                href={`/sns/posts/${post.id}`}
+                className="block bg-white rounded-xl border border-stone-200 p-3 hover:border-stone-300 transition-colors"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  {post.public_profiles.avatar_url ? (
+                    <Image
+                      src={post.public_profiles.avatar_url}
+                      alt={post.public_profiles.nickname}
+                      width={28}
+                      height={28}
+                      className="rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-teal-100 flex items-center justify-center text-xs font-bold text-teal-700">
+                      {post.public_profiles.nickname?.[0] || "?"}
+                    </div>
+                  )}
+                  <span className="text-xs font-medium text-stone-700">{post.public_profiles.nickname}</span>
+                  <div className="flex items-center gap-1 text-[10px] text-stone-400 ml-auto">
+                    <PostTypeIcon type={post.post_type} />
+                    <span>{timeAgo(post.created_at)}</span>
+                  </div>
+                </div>
+                <p className="text-sm text-stone-700 line-clamp-2">
+                  {post.content.did || post.content.content || post.content.label || ""}
+                </p>
+                {(post.tags || []).length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {(post.tags || []).slice(0, 4).map((tag) => (
+                      <span
+                        key={tag}
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                          tag === tagQuery.replace(/^#/, "")
+                            ? "bg-teal-100 text-teal-700 font-medium"
+                            : "bg-stone-100 text-stone-500"
+                        }`}
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-10 space-y-1">
+            <p className="text-2xl">🔍</p>
+            <p className="text-stone-400 text-sm">#{tagQuery.replace(/^#/, "")} の投稿が見つかりません</p>
+          </div>
+        )
+      ) : (
+        <div className="text-center py-10 space-y-1">
+          <p className="text-2xl">#</p>
+          <p className="text-stone-400 text-sm">ハッシュタグで投稿を検索できます</p>
+          <p className="text-stone-300 text-xs">例: #英語 #筋トレ #早起き</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function SearchTabs() {
   const router = useRouter();
-  const [tab, setTab] = useState<"search" | "match" | "mentor">("search");
+  const [tab, setTab] = useState<"search" | "posts" | "match" | "mentor">("search");
   const [matches, setMatches] = useState<MatchUser[]>([]);
   const [mentors, setMentors] = useState<MentorUser[]>([]);
   const [loading, setLoading] = useState(false);
@@ -78,7 +237,16 @@ export default function SearchTabs() {
             tab === "search" ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-500"
           }`}
         >
-          さがす
+          ユーザー
+        </button>
+        <button
+          onClick={() => setTab("posts")}
+          className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
+            tab === "posts" ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-500"
+          }`}
+        >
+          <Hash size={13} />
+          投稿
         </button>
         <button
           onClick={() => setTab("match")}
@@ -103,6 +271,8 @@ export default function SearchTabs() {
       {/* コンテンツ */}
       <div className="px-4">
         {tab === "search" && <UserSearchResults />}
+
+        {tab === "posts" && <PostSearchTab />}
 
         {tab === "match" && (
           <div>

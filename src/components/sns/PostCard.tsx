@@ -264,6 +264,7 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
   const [showMenu, setShowMenu] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [imageOpen, setImageOpen] = useState(false);
 
   const handleDelete = async () => {
     if (!confirm("この投稿を削除しますか？")) return;
@@ -414,15 +415,44 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
 
       {/* 投稿画像 */}
       {!editing && post.image_url && (
-        <div className="rounded-xl overflow-hidden">
-          <Image
-            src={post.image_url}
-            alt="投稿画像"
-            width={600}
-            height={400}
-            className="w-full h-auto max-h-80 object-cover"
-          />
-        </div>
+        <>
+          <button
+            onClick={() => setImageOpen(true)}
+            className="rounded-xl overflow-hidden w-full block focus:outline-none"
+          >
+            <Image
+              src={post.image_url}
+              alt="投稿画像"
+              width={600}
+              height={400}
+              className="w-full h-auto max-h-80 object-cover hover:opacity-95 transition-opacity"
+            />
+          </button>
+          {imageOpen && (
+            <div
+              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+              onClick={() => setImageOpen(false)}
+            >
+              <button
+                className="absolute top-4 right-4 text-white/80 hover:text-white p-2"
+                onClick={() => setImageOpen(false)}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </button>
+              <div onClick={(e) => e.stopPropagation()}>
+                <Image
+                  src={post.image_url!}
+                  alt="投稿画像"
+                  width={1200}
+                  height={900}
+                  className="max-w-full max-h-[85vh] object-contain rounded-lg"
+                />
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* タグ */}

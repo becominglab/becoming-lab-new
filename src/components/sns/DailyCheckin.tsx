@@ -115,6 +115,14 @@ export default function DailyCheckin({ onCheckinAndPost }: Props) {
             <p className="text-sm font-medium text-stone-700 mb-0.5">今日のお題</p>
             <p className="text-sm text-stone-500">{prompt}</p>
           </div>
+          {streak > 0 && (
+            <div className="flex items-center gap-1.5 bg-orange-50 border border-orange-100 rounded-xl px-3 py-2">
+              <Flame size={14} className="text-orange-500 shrink-0" />
+              <p className="text-xs text-orange-700 font-medium">
+                {streak}日連続が今日途切れます！チェックインで記録を守ろう
+              </p>
+            </div>
+          )}
           <button
             onClick={handleCheckin}
             disabled={checking}

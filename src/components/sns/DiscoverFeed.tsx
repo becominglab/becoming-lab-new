@@ -11,8 +11,6 @@ interface Props {
   initialTag?: string;
 }
 
-const POPULAR_TAGS = ["運動", "英語", "読書", "睡眠改善", "ダイエット", "早起き", "瞑想", "料理"];
-
 type DiscoverMode = "latest" | "trending";
 
 export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
@@ -24,6 +22,7 @@ export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
   const [selectedTag, setSelectedTag] = useState<string | null>(initialTag || null);
   const [mode, setMode] = useState<DiscoverMode>("latest");
   const [commentPostId, setCommentPostId] = useState<string | null>(null);
+  const [popularTags, setPopularTags] = useState<string[]>([]);
   const observerRef = useRef<HTMLDivElement>(null);
 
   const fetchPosts = useCallback(async (cursorParam?: string | null, tag?: string | null, currentMode?: DiscoverMode) => {
@@ -53,6 +52,16 @@ export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
       setLoading(false);
       setLoadingMore(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/sns/trending-tags")
+      .then((r) => r.json())
+      .then((d) => {
+        const tags = (d.tags || []).map((t: { tag: string }) => t.tag);
+        setPopularTags(tags.length > 0 ? tags : ["運動", "英語", "読書", "睡眠改善", "ダイエット", "早起き", "瞑想", "料理"]);
+      })
+      .catch(() => setPopularTags(["運動", "英語", "読書", "睡眠改善", "ダイエット", "早起き", "瞑想", "料理"]));
   }, []);
 
   useEffect(() => {
@@ -131,7 +140,7 @@ export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
           >
             すべて
           </button>
-          {POPULAR_TAGS.map((tag) => (
+          {popularTags.map((tag) => (
             <button
               key={tag}
               onClick={() => handleTagSelect(selectedTag === tag ? null : tag)}
@@ -147,7 +156,7 @@ export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
       )}
 
       {/* 選択中カスタムタグ */}
-      {mode === "latest" && selectedTag && !POPULAR_TAGS.includes(selectedTag) && (
+      {mode === "latest" && selectedTag && !popularTags.includes(selectedTag) && (
         <div className="flex items-center gap-2">
           <span className="flex items-center gap-1 px-2.5 py-1 bg-teal-50 text-teal-700 rounded-full text-xs font-medium">
             <Hash size={10} />

@@ -215,8 +215,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
         </div>
       ) : (
         <>
-          {/* 月曜日のみ週次サマリーカードを表示 */}
-          {new Date().getDay() === 1 && <WeeklySummaryCard />}
+          <WeeklySummaryCard />
 
           {/* はじめてガイド（初回ユーザー向け） */}
           <OnboardingGuide />
