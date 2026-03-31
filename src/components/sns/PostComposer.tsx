@@ -35,6 +35,9 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
   const [did, setDid] = useState(defaultDid);
   const [learned, setLearned] = useState("");
   const [tomorrow, setTomorrow] = useState("");
+  const [postType, setPostType] = useState<"update" | "declaration" | "milestone">("update");
+  const [declarationText, setDeclarationText] = useState("");
+  const [milestoneLabel, setMilestoneLabel] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -169,7 +172,9 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
   };
 
   const handleSubmit = async () => {
-    if (!did.trim()) return;
+    if (postType === "update" && !did.trim()) return;
+    if (postType === "declaration" && !declarationText.trim()) return;
+    if (postType === "milestone" && !milestoneLabel.trim()) return;
     if (uploadingImage) {
       showToast("画像をアップロード中です。しばらくお待ちください", "info");
       return;
@@ -181,12 +186,12 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          post_type: "update",
-          content: {
-            did: did.trim(),
-            learned: learned.trim() || null,
-            tomorrow: tomorrow.trim() || null,
-          },
+          post_type: postType,
+          content: postType === "update"
+            ? { did: did.trim(), learned: learned.trim() || null, tomorrow: tomorrow.trim() || null }
+            : postType === "declaration"
+            ? { content: declarationText.trim() }
+            : { label: milestoneLabel.trim() },
           tags: parsedTags,
           image_url: uploadedImageUrl || null,
         }),
@@ -196,6 +201,9 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
         setDid("");
         setLearned("");
         setTomorrow("");
+        setDeclarationText("");
+        setMilestoneLabel("");
+        setPostType("update");
         setTagInput("");
         removeImage();
         setExpanded(false);
@@ -221,7 +229,7 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
         className="w-full p-4 bg-white rounded-xl border border-stone-200 text-left text-sm text-stone-400 hover:border-teal-200 hover:text-stone-500 transition-colors flex items-center gap-2"
       >
         <span className="text-lg">✏️</span>
-        今日の更新を記録する...
+        今日の更新・宣言・達成を記録する...
       </button>
     );
   }
@@ -245,49 +253,108 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
         </button>
       </div>
 
-      <div>
-        <label className="block text-xs font-medium text-teal-700 mb-1">
-          やったこと <span className="text-red-400">*</span>
-        </label>
-        <textarea
-          value={did}
-          onChange={(e) => setDid(e.target.value)}
-          maxLength={140}
-          rows={2}
-          placeholder={initialPrompt || "今日取り組んだことを書く"}
-          className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-          autoFocus={!!challengeTitle}
-        />
-        <p className="text-xs text-stone-400 text-right">{did.length}/140</p>
+      {/* 投稿タイプ選択 */}
+      <div className="flex gap-1.5">
+        {([
+          { type: "update", label: "更新", emoji: "📝" },
+          { type: "declaration", label: "宣言", emoji: "💪" },
+          { type: "milestone", label: "達成", emoji: "🏆" },
+        ] as const).map(({ type, label, emoji }) => (
+          <button
+            key={type}
+            type="button"
+            onClick={() => setPostType(type)}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+              postType === type
+                ? "bg-teal-600 text-white"
+                : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+            }`}
+          >
+            <span>{emoji}</span>
+            {label}
+          </button>
+        ))}
       </div>
 
-      <div>
-        <label className="block text-xs font-medium text-teal-700 mb-1">
-          気づき（任意）
-        </label>
-        <textarea
-          value={learned}
-          onChange={(e) => setLearned(e.target.value)}
-          maxLength={140}
-          rows={2}
-          placeholder="気づきや学びがあれば"
-          className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-      </div>
+      {/* タイプ別フォーム */}
+      {postType === "update" && (
+        <>
+          <div>
+            <label className="block text-xs font-medium text-teal-700 mb-1">
+              やったこと <span className="text-red-400">*</span>
+            </label>
+            <textarea
+              value={did}
+              onChange={(e) => setDid(e.target.value)}
+              maxLength={140}
+              rows={2}
+              placeholder={initialPrompt || "今日取り組んだことを書く"}
+              className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+              autoFocus={!!challengeTitle}
+            />
+            <p className="text-xs text-stone-400 text-right">{did.length}/140</p>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-teal-700 mb-1">気づき（任意）</label>
+            <textarea
+              value={learned}
+              onChange={(e) => setLearned(e.target.value)}
+              maxLength={140}
+              rows={2}
+              placeholder="気づいたこと、学んだこと"
+              className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-stone-400 mb-1">明日やること（任意）</label>
+            <textarea
+              value={tomorrow}
+              onChange={(e) => setTomorrow(e.target.value)}
+              maxLength={140}
+              rows={1}
+              placeholder="次のアクション"
+              className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+        </>
+      )}
 
-      <div>
-        <label className="block text-xs font-medium text-teal-700 mb-1">
-          明日やること（任意）
-        </label>
-        <textarea
-          value={tomorrow}
-          onChange={(e) => setTomorrow(e.target.value)}
-          maxLength={140}
-          rows={2}
-          placeholder="明日の一歩を宣言"
-          className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-      </div>
+      {postType === "declaration" && (
+        <div>
+          <label className="block text-xs font-medium text-blue-600 mb-1">
+            宣言する内容 <span className="text-red-400">*</span>
+          </label>
+          <textarea
+            value={declarationText}
+            onChange={(e) => setDeclarationText(e.target.value)}
+            maxLength={140}
+            rows={3}
+            placeholder="例: 今月中に英語の勉強を毎日30分続けます！"
+            className="w-full px-3 py-2 border border-blue-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+            autoFocus
+          />
+          <p className={`text-xs text-right mt-0.5 ${declarationText.length > 120 ? "text-orange-500" : "text-stone-400"}`}>{declarationText.length}/140</p>
+          <p className="text-xs text-blue-400 mt-1">💡 宣言は仲間に見える公開投稿になります</p>
+        </div>
+      )}
+
+      {postType === "milestone" && (
+        <div>
+          <label className="block text-xs font-medium text-amber-600 mb-1">
+            達成したこと <span className="text-red-400">*</span>
+          </label>
+          <input
+            value={milestoneLabel}
+            onChange={(e) => setMilestoneLabel(e.target.value)}
+            maxLength={60}
+            placeholder="例: 30日間連続ランニング達成！"
+            className="w-full px-3 py-2 border border-amber-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+            autoFocus
+          />
+          <p className={`text-xs text-right mt-0.5 ${milestoneLabel.length > 50 ? "text-orange-500" : "text-stone-400"}`}>{milestoneLabel.length}/60</p>
+          <p className="text-xs text-amber-500 mt-1">🏆 マイルストーンは特別な達成として記録されます</p>
+        </div>
+      )}
 
       {/* 画像添付 */}
       <div>
@@ -377,7 +444,12 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
 
       <button
         onClick={handleSubmit}
-        disabled={!did.trim() || posting || uploadingImage}
+        disabled={
+          posting || uploadingImage ||
+          (postType === "update" && !did.trim()) ||
+          (postType === "declaration" && !declarationText.trim()) ||
+          (postType === "milestone" && !milestoneLabel.trim())
+        }
         className="w-full flex items-center justify-center gap-2 py-2.5 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 disabled:opacity-50 transition-colors"
       >
         {posting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
