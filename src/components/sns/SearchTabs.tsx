@@ -301,7 +301,7 @@ export default function SearchTabs() {
         <button
           onClick={() => setTab("match")}
           className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
-            tab === "match" ? "bg-teal-600 text-white" : "bg-stone-100 text-stone-500"
+            tab === "match" ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-500"
           }`}
         >
           <Sparkles size={13} />
@@ -310,7 +310,7 @@ export default function SearchTabs() {
         <button
           onClick={() => setTab("mentor")}
           className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1 ${
-            tab === "mentor" ? "bg-amber-500 text-white" : "bg-stone-100 text-stone-500"
+            tab === "mentor" ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-500"
           }`}
         >
           <GraduationCap size={13} />
