@@ -394,11 +394,34 @@ export default function FeedTimeline({ currentUserId }: Props) {
             </div>
           ) : (
             <>
-              {/* 空フィード: おすすめユーザー */}
-              <div className="text-center py-6 space-y-2">
-                <p className="text-2xl">🌱</p>
-                <p className="text-stone-500 text-sm font-medium">まだ投稿がありません</p>
-                <p className="text-stone-400 text-xs">仲間をフォローするとここに投稿が流れてきます</p>
+              {/* 空フィード: 3ステップガイド */}
+              <div className="space-y-3">
+                <div className="text-center py-4">
+                  <p className="text-2xl mb-1">🌱</p>
+                  <p className="text-stone-700 text-sm font-semibold mb-0.5">はじめの一歩を踏み出そう</p>
+                  <p className="text-stone-400 text-xs">仲間を見つけてフォローすると投稿が流れてきます</p>
+                </div>
+                <div className="space-y-2">
+                  {[
+                    { step: "1", emoji: "✏️", title: "今日の更新を投稿する", desc: "上のフォームから1つ記録してみよう", href: null },
+                    { step: "2", emoji: "🔍", title: "仲間を見つける", desc: "共通のタグで志を同じくする人を探そう", href: "/sns/search" },
+                    { step: "3", emoji: "💪", title: "応援し合う", desc: "仲間の投稿にリアクションすると繋がりが深まる", href: "/sns/search" },
+                  ].map(({ step, emoji, title, desc, href }) => (
+                    <div key={step} className="flex items-center gap-3 bg-white rounded-xl border border-stone-100 p-3">
+                      <div className="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center text-xs font-bold text-stone-500 shrink-0">
+                        {step}
+                      </div>
+                      <div className="text-lg shrink-0">{emoji}</div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-stone-700">{title}</p>
+                        <p className="text-xs text-stone-400">{desc}</p>
+                      </div>
+                      {href && (
+                        <Link href={href} className="text-xs text-teal-600 font-medium shrink-0">→</Link>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}
