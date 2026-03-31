@@ -5,11 +5,6 @@ import { useSearchParams } from "next/navigation";
 import UserCard from "./UserCard";
 import { Search, Loader2 } from "lucide-react";
 
-const TAG_OPTIONS = [
-  "ダイエット", "筋トレ", "ランニング", "読書", "瞑想",
-  "早起き", "英語", "副業", "食事改善",
-];
-
 const PHASE_OPTIONS = [
   { value: "", label: "すべて" },
   { value: "exploring", label: "模索中" },
@@ -38,6 +33,17 @@ export default function UserSearchResults() {
   const [results, setResults] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [tagOptions, setTagOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/sns/trending-tags")
+      .then((r) => r.json())
+      .then((d) => {
+        const tags = (d.tags || []).map((t: { tag: string }) => t.tag);
+        setTagOptions(tags.length > 0 ? tags : ["ダイエット", "筋トレ", "ランニング", "読書", "瞑想", "早起き", "英語", "副業", "食事改善"]);
+      })
+      .catch(() => setTagOptions(["ダイエット", "筋トレ", "ランニング", "読書", "瞑想", "早起き", "英語", "副業", "食事改善"]));
+  }, []);
 
   const handleSearch = useCallback(async (tagsOverride?: string[]) => {
     const tags = tagsOverride ?? selectedTags;
@@ -103,7 +109,7 @@ export default function UserSearchResults() {
       <div>
         <p className="text-xs text-stone-500 mb-1.5">挑戦タグで絞り込み</p>
         <div className="flex flex-wrap gap-1.5">
-          {TAG_OPTIONS.map((tag) => (
+          {tagOptions.map((tag) => (
             <button
               key={tag}
               onClick={() => toggleTag(tag)}

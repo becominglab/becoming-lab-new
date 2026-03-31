@@ -1078,18 +1078,18 @@ interface ScreeningFilters {
 }
 
 const DEFAULT_FILTERS: ScreeningFilters = {
-  priceMin: 1500,      // 1,500万円
-  priceMax: 15000,     // 1.5億円
-  yieldMin: 6.0,       // 利回り6%以上
+  priceMin: 0,
+  priceMax: 0,
+  yieldMin: 0,
   scoreMin: 0,
   cfPositiveOnly: false,
   ward: "",
   judgments: [],
   sortBy: "rank",
-  structures: ["W", "LS", "RC", "S"],  // 木造・軽量鉄骨・RC・S
-  ageMax: 0,           // 上限なし（築古リスクは後段で評価）
-  walkMax: 15,         // 駅徒歩15分以内
-  totalUnitsMin: 4,    // 4戸以上を優先
+  structures: [],
+  ageMax: 0,
+  walkMax: 0,
+  totalUnitsMin: 0,
   buildingAreaMin: 0,
   landAreaMin: 0,
   reBuildableOnly: false,

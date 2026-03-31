@@ -8,7 +8,8 @@ import UpdateCalendar from "./UpdateCalendar";
 import PostCard from "./PostCard";
 import MentorRequestButton from "./MentorRequestButton";
 import FollowListModal from "./FollowListModal";
-import { Loader2 } from "lucide-react";
+import { Loader2, Share2 } from "lucide-react";
+import { useToast } from "@/contexts/ToastContext";
 
 const PHASE_LABELS: Record<string, string> = {
   exploring: "模索中",
@@ -54,6 +55,21 @@ export default function ProfileView({ userId, currentUserId }: Props) {
   const [postsHasMore, setPostsHasMore] = useState(false);
   const [postsLoadingMore, setPostsLoadingMore] = useState(false);
   const isOwn = userId === currentUserId;
+  const { showToast } = useToast();
+
+  const handleShareProfile = async () => {
+    const url = `${window.location.origin}/sns/profile/${userId}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `${profile?.nickname}のプロフィール`, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        showToast("リンクをコピーしました", "success");
+      }
+    } catch {
+      // user cancelled
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -167,6 +183,16 @@ export default function ProfileView({ userId, currentUserId }: Props) {
                     />
                   )}
                 </div>
+              )}
+              {/* プロフィールシェアボタン */}
+              {isOwn && (
+                <button
+                  onClick={handleShareProfile}
+                  className="flex items-center gap-1 px-3 py-1.5 border border-stone-200 text-stone-500 hover:text-teal-600 hover:border-teal-200 rounded-xl text-xs transition-colors"
+                >
+                  <Share2 size={13} />
+                  シェア
+                </button>
               )}
             </div>
 
