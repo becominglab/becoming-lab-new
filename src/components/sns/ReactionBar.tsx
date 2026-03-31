@@ -83,7 +83,7 @@ export default function ReactionBar({ postId, myReactions: initialMy, types: ini
             key={type}
             onClick={() => toggle(type)}
             disabled={isOwn}
-            className={`flex items-center gap-0.5 px-2.5 py-1.5 rounded-full text-xs transition-all ${
+            className={`flex items-center gap-0.5 px-2.5 py-1.5 rounded-full text-xs transition-all active:scale-90 ${
               isOwn
                 ? "bg-stone-50 border border-stone-100 text-stone-400 cursor-default"
                 : isActive

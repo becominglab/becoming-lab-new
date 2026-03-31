@@ -31,7 +31,7 @@ export default async function SnsLayout({
     <ToastProvider>
       <div className="min-h-screen bg-stone-50">
         {/* モバイル: 1カラム / PC: 2カラム (メイン + サイドバー) */}
-        <div className="mx-auto max-w-5xl px-0 lg:px-6 min-h-screen pb-20 lg:pb-8">
+        <div className="mx-auto max-w-5xl px-0 lg:px-6 min-h-screen pb-24 lg:pb-8">
           <div className="lg:grid lg:grid-cols-[1fr_300px] lg:gap-6 lg:pt-6">
             {/* メインコンテンツ */}
             <main className="min-w-0">

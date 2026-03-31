@@ -168,7 +168,7 @@ export default function SnsNav({ currentUserId }: Props) {
   }, [pathname, unreadCount]);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 z-50" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       <div className="mx-auto max-w-md flex justify-around items-center h-16">
         {NAV_ITEMS.map(({ href, label, Icon, showBadge }) => {
           const active =
