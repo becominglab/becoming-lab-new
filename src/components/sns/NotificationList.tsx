@@ -85,6 +85,33 @@ function notifHref(n: Notification): string {
 export default function NotificationList() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [handledRequests, setHandledRequests] = useState<Set<string>>(new Set());
+
+  const handleMentorResponse = async (notif: Notification, status: "accepted" | "declined") => {
+    if (!notif.actor_id) return;
+    setActionLoading(notif.id);
+    try {
+      // Find the mentor connection via API
+      const res = await fetch("/api/sns/mentors?tab=requests");
+      const data = await res.json();
+      const connection = (data.requests || []).find(
+        (r: any) => r.mentor_id === notif.actor_id || r.mentee_id === notif.actor_id
+      );
+      if (connection) {
+        await fetch(`/api/sns/mentors/${connection.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }),
+        });
+        setHandledRequests((prev) => new Set([...prev, notif.id]));
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   useEffect(() => {
     fetch("/api/sns/notifications")
@@ -119,14 +146,9 @@ export default function NotificationList() {
     <div className="divide-y divide-stone-100">
       {notifications.map((n) => {
         const { main, sub } = notifText(n);
-        return (
-          <Link
-            key={n.id}
-            href={notifHref(n)}
-            className={`flex items-start gap-3 px-4 py-3.5 hover:bg-stone-50 transition-colors ${
-              !n.is_read ? "bg-teal-50/60" : ""
-            }`}
-          >
+        const isMentorRequest = n.type === "mentor_request";
+        const inner = (
+          <>
             {/* アクターアバター */}
             <div className="relative shrink-0">
               {n.public_profiles?.avatar_url ? (
@@ -156,12 +178,58 @@ export default function NotificationList() {
                 <p className="text-xs text-stone-400 mt-0.5 truncate">{sub}</p>
               )}
               <p className="text-xs text-stone-400 mt-0.5">{timeAgo(n.created_at)}</p>
+              {isMentorRequest && !handledRequests.has(n.id) && (
+                <div className="flex gap-2 mt-2" onClick={(e) => e.preventDefault()}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleMentorResponse(n, "accepted"); }}
+                    disabled={actionLoading === n.id}
+                    className="flex-1 py-1 bg-teal-600 text-white rounded-lg text-xs font-medium hover:bg-teal-700 disabled:opacity-50 transition-colors"
+                  >
+                    {actionLoading === n.id ? "..." : "承認する"}
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleMentorResponse(n, "declined"); }}
+                    disabled={actionLoading === n.id}
+                    className="flex-1 py-1 bg-stone-100 text-stone-600 rounded-lg text-xs font-medium hover:bg-stone-200 disabled:opacity-50 transition-colors"
+                  >
+                    断る
+                  </button>
+                </div>
+              )}
+              {isMentorRequest && handledRequests.has(n.id) && (
+                <p className="text-xs text-teal-600 mt-1 font-medium">✓ 対応済み</p>
+              )}
             </div>
 
             {/* 未読インジケーター */}
             {!n.is_read && (
               <div className="w-2 h-2 rounded-full bg-teal-500 shrink-0 mt-2" />
             )}
+          </>
+        );
+
+        if (isMentorRequest) {
+          return (
+            <div
+              key={n.id}
+              className={`flex items-start gap-3 px-4 py-3.5 hover:bg-stone-50 transition-colors ${
+                !n.is_read ? "bg-teal-50/60" : ""
+              }`}
+            >
+              {inner}
+            </div>
+          );
+        }
+
+        return (
+          <Link
+            key={n.id}
+            href={notifHref(n)}
+            className={`flex items-start gap-3 px-4 py-3.5 hover:bg-stone-50 transition-colors ${
+              !n.is_read ? "bg-teal-50/60" : ""
+            }`}
+          >
+            {inner}
           </Link>
         );
       })}

@@ -44,6 +44,8 @@ function CommentContent({
   onDelete,
   onKeyDown,
   inputRef,
+  commentsHasMore,
+  onLoadMore,
 }: {
   comments: Comment[];
   loading: boolean;
@@ -54,6 +56,8 @@ function CommentContent({
   onDelete: (id: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   inputRef: React.RefObject<HTMLTextAreaElement | null>;
+  commentsHasMore: boolean;
+  onLoadMore: () => void;
 }) {
   return (
     <>
@@ -112,6 +116,14 @@ function CommentContent({
             );
           })
         )}
+        {commentsHasMore && (
+          <button
+            onClick={onLoadMore}
+            className="w-full text-xs text-stone-400 hover:text-teal-600 py-2 transition-colors"
+          >
+            もっと見る
+          </button>
+        )}
       </div>
 
       {/* 入力エリア */}
@@ -157,17 +169,21 @@ export default function CommentSection({ postId, onClose, inline }: Props) {
   const [text, setText] = useState("");
   const [posting, setPosting] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [commentsHasMore, setCommentsHasMore] = useState(false);
+  const [commentsPage, setCommentsPage] = useState(0);
+  const COMMENTS_LIMIT = 10;
 
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch(`/api/sns/posts/${postId}/comments`);
+        const res = await fetch(`/api/sns/posts/${postId}/comments?limit=${COMMENTS_LIMIT}&offset=0`);
         if (!res.ok) {
           showToast("コメントの読み込みに失敗しました", "error");
           return;
         }
         const data = await res.json();
         setComments(data.comments || []);
+        setCommentsHasMore((data.comments || []).length === COMMENTS_LIMIT);
       } catch {
         showToast("コメントの読み込みに失敗しました", "error");
       } finally {
@@ -178,6 +194,18 @@ export default function CommentSection({ postId, onClose, inline }: Props) {
     load();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId]);
+
+  const loadMoreComments = async () => {
+    const nextPage = commentsPage + 1;
+    try {
+      const res = await fetch(`/api/sns/posts/${postId}/comments?limit=${COMMENTS_LIMIT}&offset=${nextPage * COMMENTS_LIMIT}`);
+      const data = await res.json();
+      const newComments = data.comments || [];
+      setComments((prev) => [...prev, ...newComments]);
+      setCommentsPage(nextPage);
+      setCommentsHasMore(newComments.length === COMMENTS_LIMIT);
+    } catch { /* silently fail */ }
+  };
 
   const handleSubmit = async () => {
     if (!text.trim() || posting) return;
@@ -246,6 +274,8 @@ export default function CommentSection({ postId, onClose, inline }: Props) {
             onDelete={handleDelete}
             onKeyDown={handleKeyDown}
             inputRef={inputRef}
+            commentsHasMore={commentsHasMore}
+            onLoadMore={loadMoreComments}
           />
         </div>
       </div>
@@ -282,6 +312,8 @@ export default function CommentSection({ postId, onClose, inline }: Props) {
           onDelete={handleDelete}
           onKeyDown={handleKeyDown}
           inputRef={inputRef}
+          commentsHasMore={commentsHasMore}
+          onLoadMore={loadMoreComments}
         />
       </div>
     </div>

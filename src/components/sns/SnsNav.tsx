@@ -191,6 +191,11 @@ export default function SnsNav({ currentUserId }: Props) {
                 active ? "text-teal-600" : "text-stone-400 hover:text-stone-600"
               }`}
             >
+              {active && (
+                <span className="absolute top-0 inset-x-0 flex justify-center">
+                  <span className="w-5 h-0.5 bg-teal-500 rounded-full" />
+                </span>
+              )}
               <div className="relative">
                 <Icon active={active} />
                 {badgeCount > 0 && (

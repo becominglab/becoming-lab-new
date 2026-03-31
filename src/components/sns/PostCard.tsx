@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ReactionBar from "./ReactionBar";
@@ -267,6 +267,28 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
   const [imageOpen, setImageOpen] = useState(false);
   const [contentExpanded, setContentExpanded] = useState(false);
 
+  const lastTapRef = useRef<number>(0);
+  const [tapEffect, setTapEffect] = useState(false);
+
+  const handleDoubleTap = async () => {
+    if (isOwn) return; // can't react to own post
+    const now = Date.now();
+    const timeSinceLastTap = now - lastTapRef.current;
+    lastTapRef.current = now;
+    if (timeSinceLastTap < 300 && timeSinceLastTap > 0) {
+      // Double tap detected — add 🔥 reaction
+      setTapEffect(true);
+      setTimeout(() => setTapEffect(false), 800);
+      try {
+        await fetch("/api/sns/reactions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ post_id: post.id, reaction_type: "nice_update" }),
+        });
+      } catch { /* silently fail */ }
+    }
+  };
+
   const handleDelete = async () => {
     if (!confirm("この投稿を削除しますか？")) return;
     setDeleting(true);
@@ -308,7 +330,12 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
   };
 
   return (
-    <div className={`bg-white rounded-xl border border-stone-200 border-l-4 ${postTypeBorder(post.post_type)} p-4 space-y-3 relative`}>
+    <div className={`bg-white rounded-xl border border-stone-200 border-l-4 ${postTypeBorder(post.post_type)} p-4 space-y-3 relative`} onTouchEnd={handleDoubleTap}>
+      {tapEffect && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 rounded-xl">
+          <span className="text-5xl animate-ping" style={{ animationDuration: "0.6s", animationIterationCount: 1 }}>🔥</span>
+        </div>
+      )}
       {/* ヘッダー */}
       <div className="flex items-center gap-3">
         <Link href={isOwn ? "/sns/profile" : `/sns/profile/${post.user_id}`} className="shrink-0">
