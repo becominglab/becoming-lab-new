@@ -67,7 +67,7 @@ export default function FollowButton({ userId, isFollowing: initial, onToggle, c
     <button
       onClick={toggle}
       disabled={loading}
-      className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+      className={`group flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
         following
           ? "bg-stone-100 text-stone-600 hover:bg-red-50 hover:text-red-600"
           : "bg-teal-600 text-white hover:bg-teal-700"
@@ -80,7 +80,8 @@ export default function FollowButton({ userId, isFollowing: initial, onToggle, c
       ) : (
         <UserPlus size={12} />
       )}
-      {following ? "フォロー中" : "フォロー"}
+      <span className="group-hover:hidden">{following ? "フォロー中" : "フォロー"}</span>
+      {following && <span className="hidden group-hover:inline">解除</span>}
     </button>
   );
 }

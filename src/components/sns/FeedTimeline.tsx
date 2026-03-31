@@ -364,8 +364,8 @@ export default function FeedTimeline({ currentUserId }: Props) {
                     onUpdated={handleUpdated}
                     onCommentClick={(id) => setCommentPostId(id)}
                   />
-                  {/* 2投稿目の後にPostComposerを差し込む */}
-                  {i === 1 && (
+                  {/* 2投稿目の後にPostComposerを差し込む（フィルター無効時のみ） */}
+                  {i === 1 && !typeFilter && (
                     <div className="mt-4">
                       <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
                     </div>
