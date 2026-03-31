@@ -49,7 +49,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [welcomeBack, setWelcomeBack] = useState(false);
 
-  const fetchPosts = useCallback(async (cursorParam?: string | null) => {
+  const fetchPosts = useCallback(async (cursorParam?: string | null, filterOverride?: string | null) => {
     const isInitial = !cursorParam;
     if (isInitial) {
       setNewPostCount(0);
@@ -57,8 +57,10 @@ export default function FeedTimeline({ currentUserId }: Props) {
     } else setLoadingMore(true);
 
     try {
+      const activeFilter = filterOverride !== undefined ? filterOverride : typeFilter;
       const params = new URLSearchParams({ limit: "20" });
       if (cursorParam) params.set("cursor", cursorParam);
+      if (activeFilter) params.set("post_type", activeFilter);
 
       const res = await fetch(`/api/sns/posts?${params}`);
       const data = await res.json();
@@ -102,8 +104,16 @@ export default function FeedTimeline({ currentUserId }: Props) {
   };
 
   useEffect(() => {
-    fetchPosts();
+    fetchPosts(null, null);
   }, [fetchPosts]);
+
+  // typeFilterが変わったらリセットして再取得
+  useEffect(() => {
+    setPosts([]);
+    setCursor(null);
+    setHasMore(true);
+    fetchPosts(null, typeFilter);
+  }, [typeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 無限スクロール
   useEffect(() => {
@@ -320,17 +330,20 @@ export default function FeedTimeline({ currentUserId }: Props) {
         </div>
       ) : (
         <>
-          <WeeklySummaryCard />
+          {/* タイプフィルター無効時のみサマリーとガイドを表示 */}
+          {!typeFilter && <WeeklySummaryCard />}
+          {!typeFilter && <OnboardingGuide />}
 
-          {/* はじめてガイド（初回ユーザー向け） */}
-          <OnboardingGuide />
+          {/* フィルター中は投稿フォームを先頭に固定表示 */}
+          {typeFilter && (
+            <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
+          )}
 
           {(() => {
-            const filtered = posts.filter((p) => !typeFilter || p.post_type === typeFilter);
             let lastDate = "";
             const items = [];
-            for (let i = 0; i < filtered.length; i++) {
-              const post = filtered[i];
+            for (let i = 0; i < posts.length; i++) {
+              const post = posts[i];
               const dateLabel = getDateLabel(post.created_at);
               if (dateLabel !== lastDate) {
                 lastDate = dateLabel;
@@ -351,8 +364,8 @@ export default function FeedTimeline({ currentUserId }: Props) {
                     onUpdated={handleUpdated}
                     onCommentClick={(id) => setCommentPostId(id)}
                   />
-                  {/* 2投稿目の後にPostComposerを差し込む */}
-                  {i === 1 && (
+                  {/* 2投稿目の後にPostComposerを差し込む（フィルター無効時のみ） */}
+                  {i === 1 && !typeFilter && (
                     <div className="mt-4">
                       <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
                     </div>
@@ -362,7 +375,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
                 </div>
               );
             }
-            if (filtered.length <= 1 && !typeFilter) {
+            if (posts.length <= 1 && !typeFilter) {
               items.push(
                 <PostComposer key="bottom-composer" onPosted={handlePosted} initialPrompt={composerPrompt} />
               );

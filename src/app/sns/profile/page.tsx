@@ -27,7 +27,7 @@ export default async function SnsProfilePage() {
           <div className="mt-6">
             <MentorSectionWrapper isMentor={profile.is_mentor ?? false} />
           </div>
-          <div className="mt-6 mb-4">
+          <div id="profile-edit" className="mt-6 mb-4">
             <h2 className="text-sm font-medium text-stone-700 mb-3">プロフィール編集</h2>
             <ProfileSetupForm initialProfile={profile} />
           </div>

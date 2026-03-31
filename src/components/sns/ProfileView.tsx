@@ -8,7 +8,7 @@ import UpdateCalendar from "./UpdateCalendar";
 import PostCard from "./PostCard";
 import MentorRequestButton from "./MentorRequestButton";
 import FollowListModal from "./FollowListModal";
-import { Loader2, Share2 } from "lucide-react";
+import { Loader2, Share2, Pencil } from "lucide-react";
 import { useToast } from "@/contexts/ToastContext";
 
 const PHASE_LABELS: Record<string, string> = {
@@ -185,15 +185,24 @@ export default function ProfileView({ userId, currentUserId }: Props) {
                   )}
                 </div>
               )}
-              {/* プロフィールシェアボタン */}
+              {/* 自分のプロフィール操作ボタン */}
               {isOwn && (
-                <button
-                  onClick={handleShareProfile}
-                  className="flex items-center gap-1 px-3 py-1.5 border border-stone-200 text-stone-500 hover:text-teal-600 hover:border-teal-200 rounded-xl text-xs transition-colors"
-                >
-                  <Share2 size={13} />
-                  シェア
-                </button>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <a
+                    href="#profile-edit"
+                    className="flex items-center gap-1 px-3 py-1.5 border border-stone-200 text-stone-500 hover:text-teal-600 hover:border-teal-200 rounded-xl text-xs transition-colors"
+                  >
+                    <Pencil size={12} />
+                    編集
+                  </a>
+                  <button
+                    onClick={handleShareProfile}
+                    className="flex items-center gap-1 px-3 py-1.5 border border-stone-200 text-stone-500 hover:text-teal-600 hover:border-teal-200 rounded-xl text-xs transition-colors"
+                  >
+                    <Share2 size={13} />
+                    シェア
+                  </button>
+                </div>
               )}
             </div>
 

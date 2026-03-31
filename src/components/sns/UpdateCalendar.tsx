@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface DayData {
   body_log: boolean;
@@ -71,6 +71,7 @@ export default function UpdateCalendar({ userId, year: initialYear }: Props) {
   const year = initialYear || new Date().getFullYear();
   const [days, setDays] = useState<Record<string, DayData>>({});
   const [tooltip, setTooltip] = useState<{ date: string; data: DayData } | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const params = new URLSearchParams({ year: year.toString() });
@@ -82,13 +83,27 @@ export default function UpdateCalendar({ userId, year: initialYear }: Props) {
       .catch(() => {});
   }, [userId, year]);
 
+  // 今日の列までスクロール（カレンダーマウント後）
+  useEffect(() => {
+    if (!scrollRef.current) return;
+    const el = scrollRef.current;
+    // 今日がカレンダー全体の何%位置にあるかを計算
+    const today = new Date();
+    const startOfYear = new Date(year, 0, 1);
+    const dayOfYear = Math.floor((today.getTime() - startOfYear.getTime()) / 86400000);
+    const weekIndex = Math.floor(dayOfYear / 7);
+    const cellWidth = 13 + 2; // width + gap
+    const targetScroll = Math.max(0, weekIndex * cellWidth - el.clientWidth + cellWidth * 4);
+    el.scrollLeft = targetScroll;
+  }, [year]);
+
   const weeks = getDatesForYear(year);
 
   return (
     <div className="space-y-2">
       <h3 className="text-xs font-medium text-stone-500">{year}年の更新カレンダー</h3>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" ref={scrollRef}>
         <div className="inline-flex flex-col gap-0.5" style={{ minWidth: "max-content" }}>
           {/* 月ラベル */}
           <div className="flex gap-0.5 mb-1 pl-5">

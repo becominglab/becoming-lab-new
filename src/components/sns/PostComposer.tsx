@@ -304,6 +304,9 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
               placeholder="気づいたこと、学んだこと"
               className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
+            {learned.length > 0 && (
+              <p className={`text-xs text-right mt-0.5 ${learned.length > 120 ? "text-orange-500" : "text-stone-400"}`}>{learned.length}/140</p>
+            )}
           </div>
           <div>
             <label className="block text-xs font-medium text-stone-400 mb-1">明日やること（任意）</label>
@@ -315,6 +318,9 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
               placeholder="次のアクション"
               className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
+            {tomorrow.length > 0 && (
+              <p className={`text-xs text-right mt-0.5 ${tomorrow.length > 120 ? "text-orange-500" : "text-stone-400"}`}>{tomorrow.length}/140</p>
+            )}
           </div>
         </>
       )}

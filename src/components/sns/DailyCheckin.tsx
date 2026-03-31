@@ -3,6 +3,16 @@
 import { useState, useEffect } from "react";
 import { Flame, CheckCircle2 } from "lucide-react";
 
+function getNextMilestone(streak: number): { milestone: number; daysLeft: number } | null {
+  const milestones = [3, 7, 14, 30, 100];
+  for (const m of milestones) {
+    if (streak < m && m - streak <= 3) {
+      return { milestone: m, daysLeft: m - streak };
+    }
+  }
+  return null;
+}
+
 const DAILY_PROMPTS = [
   "今日の進捗を一言でどうぞ 💬",
   "今日頑張ったことを共有しよう ✨",
@@ -104,9 +114,18 @@ export default function DailyCheckin({ onCheckinAndPost }: Props) {
           <p className="text-sm font-medium text-teal-700">
             {showCelebration ? `${streak}日連続チェックイン！🎉` : "今日もチェックイン済み！"}
           </p>
-          <p className="text-xs text-stone-400">
-            {showCelebration ? "この調子で続けよう✨ 今日の更新を投稿しよう！" : "投稿してさらに仲間に共有しよう"}
-          </p>
+          {(() => {
+            const next = getNextMilestone(streak);
+            return (
+              <p className="text-xs text-stone-400">
+                {showCelebration
+                  ? "この調子で続けよう✨ 今日の更新を投稿しよう！"
+                  : next
+                  ? `あと${next.daysLeft}日で${next.milestone}日連続達成！`
+                  : "投稿してさらに仲間に共有しよう"}
+              </p>
+            );
+          })()}
         </div>
       ) : (
         /* 未チェックイン */
@@ -115,14 +134,19 @@ export default function DailyCheckin({ onCheckinAndPost }: Props) {
             <p className="text-sm font-medium text-stone-700 mb-0.5">今日のお題</p>
             <p className="text-sm text-stone-500">{prompt}</p>
           </div>
-          {streak > 0 && (
-            <div className="flex items-center gap-1.5 bg-orange-50 border border-orange-100 rounded-xl px-3 py-2">
-              <Flame size={14} className="text-orange-500 shrink-0" />
-              <p className="text-xs text-orange-700 font-medium">
-                {streak}日連続が今日途切れます！チェックインで記録を守ろう
-              </p>
-            </div>
-          )}
+          {streak > 0 && (() => {
+            const next = getNextMilestone(streak);
+            return (
+              <div className="flex items-center gap-1.5 bg-orange-50 border border-orange-100 rounded-xl px-3 py-2">
+                <Flame size={14} className="text-orange-500 shrink-0" />
+                <p className="text-xs text-orange-700 font-medium">
+                  {next
+                    ? `あと${next.daysLeft}日で${next.milestone}日連続達成！今日もチェックインしよう`
+                    : `${streak}日連続が今日途切れます！チェックインで記録を守ろう`}
+                </p>
+              </div>
+            );
+          })()}
           <button
             onClick={handleCheckin}
             disabled={checking}

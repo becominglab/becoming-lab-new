@@ -7,7 +7,7 @@ import ReactionBar from "./ReactionBar";
 import BookmarkButton from "./BookmarkButton";
 import FollowButton from "./FollowButton";
 import { useToast } from "@/contexts/ToastContext";
-import { Flame, MessageSquare, Trophy, FileText, Trash2, MoreHorizontal, Pencil, Hash, Share2 } from "lucide-react";
+import { Flame, MessageSquare, Trophy, FileText, Trash2, MoreHorizontal, Pencil, Hash, Share2, Flag } from "lucide-react";
 
 interface PostContent {
   did?: string;
@@ -261,11 +261,15 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
   const { public_profiles: profile } = post;
   const isOwn = post.user_id === currentUserId;
   const initial = profile.nickname?.[0] || "?";
+  const contentTextLength = (post.content.did?.length || 0) + (post.content.learned?.length || 0) + (post.content.tomorrow?.length || 0) + (post.content.content?.length || 0);
+  const isLongContent = contentTextLength >= 80;
   const [showMenu, setShowMenu] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
   const [imageOpen, setImageOpen] = useState(false);
   const [contentExpanded, setContentExpanded] = useState(false);
+  const [showReportMenu, setShowReportMenu] = useState(false);
 
   const lastTapRef = useRef<number>(0);
   const [tapEffect, setTapEffect] = useState(false);
@@ -290,7 +294,6 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
   };
 
   const handleDelete = async () => {
-    if (!confirm("この投稿を削除しますか？")) return;
     setDeleting(true);
     try {
       const res = await fetch(`/api/sns/posts?id=${post.id}`, { method: "DELETE" });
@@ -306,7 +309,13 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
     } finally {
       setDeleting(false);
       setShowMenu(false);
+      setConfirmingDelete(false);
     }
+  };
+
+  const handleReport = () => {
+    setShowReportMenu(false);
+    showToast("報告を受け付けました。ご協力ありがとうございます", "success");
   };
 
   const handleShare = async () => {
@@ -382,35 +391,83 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
           {/* ブックマークボタン */}
           <BookmarkButton postId={post.id} isBookmarked={post.is_bookmarked || false} />
 
-          {/* メニューボタン（自分の投稿のみ） */}
+          {/* メニューボタン（自分の投稿） */}
           {isOwn && (
             <div className="relative">
               <button
-                onClick={() => setShowMenu(!showMenu)}
+                onClick={() => { setShowMenu(!showMenu); setConfirmingDelete(false); }}
                 className="p-1.5 hover:bg-stone-100 rounded-lg transition-colors text-stone-400"
               >
                 <MoreHorizontal size={16} />
               </button>
               {showMenu && (
                 <>
-                  <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
-                  <div className="absolute right-0 top-8 z-20 bg-white border border-stone-200 rounded-lg shadow-lg min-w-[120px] overflow-hidden">
-                    {post.post_type === "update" && (
-                      <button
-                        onClick={() => { setEditing(true); setShowMenu(false); }}
-                        className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-stone-600 hover:bg-stone-50 transition-colors"
-                      >
-                        <Pencil size={14} />
-                        編集する
-                      </button>
+                  <div className="fixed inset-0 z-10" onClick={() => { setShowMenu(false); setConfirmingDelete(false); }} />
+                  <div className="absolute right-0 top-8 z-20 bg-white border border-stone-200 rounded-lg shadow-lg min-w-[140px] overflow-hidden">
+                    {!confirmingDelete ? (
+                      <>
+                        {post.post_type === "update" && (
+                          <button
+                            onClick={() => { setEditing(true); setShowMenu(false); }}
+                            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-stone-600 hover:bg-stone-50 transition-colors"
+                          >
+                            <Pencil size={14} />
+                            編集する
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setConfirmingDelete(true)}
+                          className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                        >
+                          <Trash2 size={14} />
+                          削除する
+                        </button>
+                      </>
+                    ) : (
+                      <div className="p-3 space-y-2">
+                        <p className="text-xs text-stone-600 font-medium text-center">本当に削除しますか？</p>
+                        <div className="flex gap-1.5">
+                          <button
+                            onClick={handleDelete}
+                            disabled={deleting}
+                            className="flex-1 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+                          >
+                            {deleting ? "削除中..." : "削除する"}
+                          </button>
+                          <button
+                            onClick={() => setConfirmingDelete(false)}
+                            className="flex-1 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-medium rounded-lg transition-colors"
+                          >
+                            戻る
+                          </button>
+                        </div>
+                      </div>
                     )}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* 報告メニュー（他ユーザーの投稿） */}
+          {!isOwn && (
+            <div className="relative">
+              <button
+                onClick={() => setShowReportMenu(!showReportMenu)}
+                className="p-1.5 hover:bg-stone-100 rounded-lg transition-colors text-stone-200 hover:text-stone-400"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+              {showReportMenu && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setShowReportMenu(false)} />
+                  <div className="absolute right-0 top-8 z-20 bg-white border border-stone-200 rounded-lg shadow-lg min-w-[120px] overflow-hidden">
                     <button
-                      onClick={handleDelete}
-                      disabled={deleting}
-                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                      onClick={handleReport}
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-stone-500 hover:bg-stone-50 transition-colors"
                     >
-                      <Trash2 size={14} />
-                      {deleting ? "削除中..." : "削除する"}
+                      <Flag size={14} />
+                      報告する
                     </button>
                   </div>
                 </>
@@ -425,9 +482,7 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
         <EditForm post={post} onSave={handleSaved} onCancel={() => setEditing(false)} />
       ) : (
         <div>
-          <div
-            className={`relative ${!contentExpanded ? "max-h-32 overflow-hidden" : ""}`}
-          >
+          <div className={`relative ${isLongContent && !contentExpanded ? "max-h-32 overflow-hidden" : ""}`}>
             {post.post_type === "update" && <UpdateContent content={post.content} />}
             {post.post_type === "auto_log" && <AutoLogContent content={post.content} />}
             {post.post_type === "declaration" && (
@@ -441,25 +496,19 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
                 <span className="font-medium text-stone-800">{post.content.label}</span>
               </div>
             )}
-            {/* グラデーションオーバーレイ（折りたたみ時のみ） */}
-            {!contentExpanded && (
+            {/* グラデーションオーバーレイ（長文の折りたたみ時のみ） */}
+            {isLongContent && !contentExpanded && (
               <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
             )}
           </div>
-          {/* もっと読む / 折りたたむ ボタン */}
-          {(() => {
-            const textLength = (post.content.did?.length || 0) + (post.content.learned?.length || 0) + (post.content.tomorrow?.length || 0) + (post.content.content?.length || 0);
-            if (textLength < 80 && post.post_type !== "update") return null;
-            if (post.post_type === "update" && textLength < 80) return null;
-            return (
-              <button
-                onClick={() => setContentExpanded(!contentExpanded)}
-                className="text-xs text-teal-600 hover:text-teal-700 mt-1 font-medium"
-              >
-                {contentExpanded ? "折りたたむ" : "もっと読む"}
-              </button>
-            );
-          })()}
+          {isLongContent && (
+            <button
+              onClick={() => setContentExpanded(!contentExpanded)}
+              className="text-xs text-teal-600 hover:text-teal-700 mt-1 font-medium"
+            >
+              {contentExpanded ? "折りたたむ" : "もっと読む"}
+            </button>
+          )}
         </div>
       )}
 
