@@ -48,6 +48,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const [newPostCount, setNewPostCount] = useState(0);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [welcomeBack, setWelcomeBack] = useState(false);
+  const filterInitialized = useRef(false);
 
   const fetchPosts = useCallback(async (cursorParam?: string | null, filterOverride?: string | null) => {
     const isInitial = !cursorParam;
@@ -107,8 +108,12 @@ export default function FeedTimeline({ currentUserId }: Props) {
     fetchPosts(null, null);
   }, [fetchPosts]);
 
-  // typeFilterが変わったらリセットして再取得（ローディングを先に立てて空フラッシュを防ぐ）
+  // typeFilterが変わったらリセットして再取得（初回マウント時は初期ロードと重複するためスキップ）
   useEffect(() => {
+    if (!filterInitialized.current) {
+      filterInitialized.current = true;
+      return;
+    }
     setLoading(true);
     setPosts([]);
     setCursor(null);
