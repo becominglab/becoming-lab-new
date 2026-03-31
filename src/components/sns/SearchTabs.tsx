@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import UserSearchResults from "./UserSearchResults";
 import MatchCard from "./MatchCard";
 import MentorRequestButton from "./MentorRequestButton";
-import { Loader2, Sparkles, GraduationCap, Hash, Search, Flame, FileText, Trophy, MessageSquare } from "lucide-react";
+import { Loader2, Sparkles, GraduationCap, Hash, Search, Flame, FileText, Trophy, MessageSquare, X } from "lucide-react";
 import Link from "next/link";
 
 interface MatchUser {
@@ -240,7 +240,9 @@ function PostSearchTab() {
 export default function SearchTabs() {
   const searchParams = useSearchParams();
   const initialTab = (searchParams.get("tab") as "search" | "posts" | "match" | "mentor") || "search";
+  const isOnboarding = searchParams.get("onboarding") === "1";
   const [tab, setTab] = useState<"search" | "posts" | "match" | "mentor">(initialTab);
+  const [showOnboardingBanner, setShowOnboardingBanner] = useState(isOnboarding);
   const [matches, setMatches] = useState<MatchUser[]>([]);
   const [mentors, setMentors] = useState<MentorUser[]>([]);
   const [loading, setLoading] = useState(false);
@@ -279,6 +281,34 @@ export default function SearchTabs() {
 
   return (
     <div>
+      {/* オンボーディングウェルカムバナー */}
+      {showOnboardingBanner && (
+        <div className="mx-4 mb-4 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-2xl p-4 text-white">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1">
+              <p className="text-sm font-bold">🎉 プロフィール作成完了！</p>
+              <p className="text-xs opacity-90">
+                同じ目標を持つ仲間をフォローして<br />フィードを賑やかにしましょう
+              </p>
+            </div>
+            <button
+              onClick={() => setShowOnboardingBanner(false)}
+              className="p-1 opacity-70 hover:opacity-100"
+            >
+              <X size={14} />
+            </button>
+          </div>
+          <div className="mt-3 flex items-center gap-2">
+            <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold">1</div>
+            <p className="text-xs opacity-90">「マッチ」タブで仲間を見つけてフォロー</p>
+          </div>
+          <div className="flex items-center gap-2 mt-1.5">
+            <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold">2</div>
+            <p className="text-xs opacity-90">フィードに戻って今日の更新を投稿</p>
+          </div>
+        </div>
+      )}
+
       {/* タブ */}
       <div className="flex gap-1 px-4 mb-4">
         <button

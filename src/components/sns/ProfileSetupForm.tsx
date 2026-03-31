@@ -133,9 +133,9 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
 
       onSaved?.();
       if (!initialProfile) {
-        // 新規プロフィール作成 → フィードへ
-        showToast("プロフィールを作成しました🎉", "success");
-        router.push("/sns");
+        // 新規プロフィール作成 → 仲間を見つけるページへ（空フィードより有益）
+        showToast("プロフィールを作成しました🎉 まず仲間を見つけましょう！", "success");
+        router.push("/sns/search?tab=match&onboarding=1");
       } else {
         showToast("プロフィールを保存しました", "success");
       }
