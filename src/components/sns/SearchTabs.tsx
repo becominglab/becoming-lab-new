@@ -50,7 +50,7 @@ interface PostResult {
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "今";
+  if (mins < 1) return "たった今";
   if (mins < 60) return `${mins}分前`;
   const hours = Math.floor(mins / 60);
   if (hours < 24) return `${hours}時間前`;
