@@ -54,20 +54,18 @@ function IconSearch({ active }: { active: boolean }) {
   );
 }
 
-function IconCircles({ active }: { active: boolean }) {
+function IconBell({ active }: { active: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       {active ? (
         <>
-          <circle cx="9" cy="10" r="5" fill="currentColor" />
-          <circle cx="16" cy="10" r="5" fill="currentColor" fillOpacity="0.6" />
-          <path d="M9 17c-3.5 0-6.5 1.5-7 4h14c-.5-2.5-3.5-4-7-4z" fill="currentColor" />
+          <path d="M12 3C8.5 3 6 5.5 6 9v4l-2 2v1h16v-1l-2-2V9c0-3.5-2.5-6-6-6z" fill="currentColor" />
+          <path d="M10 18c0 1.1.9 2 2 2s2-.9 2-2h-4z" fill="currentColor" />
         </>
       ) : (
         <>
-          <circle cx="9" cy="10" r="5" stroke="currentColor" strokeWidth="1.5" />
-          <circle cx="16" cy="10" r="5" stroke="currentColor" strokeWidth="1.5" />
-          <path d="M9 17c-3.5 0-6.5 1.5-7 4h14c-.5-2.5-3.5-4-7-4z" stroke="currentColor" strokeWidth="1.5" fill="none" />
+          <path d="M12 3C8.5 3 6 5.5 6 9v4l-2 2v1h16v-1l-2-2V9c0-3.5-2.5-6-6-6z" stroke="currentColor" strokeWidth="1.5" fill="none" />
+          <path d="M10 18c0 1.1.9 2 2 2s2-.9 2-2h-4z" stroke="currentColor" strokeWidth="1.5" fill="none" />
         </>
       )}
     </svg>
@@ -93,9 +91,9 @@ function IconProfile({ active }: { active: boolean }) {
 }
 
 const NAV_ITEMS = [
-  { href: "/sns", label: "フィード", Icon: IconFeed, showBadge: true },
+  { href: "/sns", label: "フィード", Icon: IconFeed, showBadge: false },
   { href: "/sns/search", label: "さがす", Icon: IconSearch, showBadge: false },
-  { href: "/sns/circles", label: "サークル", Icon: IconCircles, showBadge: false },
+  { href: "/sns/notifications", label: "通知", Icon: IconBell, showBadge: true },
   { href: "/sns/profile", label: "プロフィール", Icon: IconProfile, showBadge: false },
 ];
 
@@ -176,14 +174,12 @@ export default function SnsNav({ currentUserId }: Props) {
           const active =
             pathname === href || (href !== "/sns" && pathname.startsWith(href));
           const badgeCount = showBadge ? unreadCount : 0;
-          // 未読通知がある場合はフィードアイコンから通知ページへ飛ぶ
-          const targetHref = showBadge && badgeCount > 0 ? "/sns/notifications" : href;
           return (
             <Link
               key={href}
-              href={targetHref}
+              href={href}
               className={`relative flex flex-col items-center gap-0.5 px-3 py-2 transition-colors ${
-                active || (showBadge && pathname === "/sns/notifications") ? "text-teal-600" : "text-stone-400 hover:text-stone-600"
+                active ? "text-teal-600" : "text-stone-400 hover:text-stone-600"
               }`}
             >
               <div className="relative">
