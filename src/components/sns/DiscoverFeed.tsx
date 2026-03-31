@@ -209,6 +209,13 @@ export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
         {loadingMore && <Loader2 size={18} className="animate-spin text-stone-400" />}
       </div>
 
+      {/* フィード末尾メッセージ */}
+      {!loading && !loadingMore && !hasMore && posts.length > 0 && mode !== "trending" && (
+        <div className="text-center py-4">
+          <p className="text-xs text-stone-300">最新まで読み込みました</p>
+        </div>
+      )}
+
       {/* コメントセクション */}
       {commentPostId && (
         <CommentSection postId={commentPostId} onClose={handleCommentClose} />
