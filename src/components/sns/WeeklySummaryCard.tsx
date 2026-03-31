@@ -14,25 +14,21 @@ export default function WeeklySummaryCard() {
   const [stats, setStats] = useState<WeekStats | null>(null);
   const [dismissed, setDismissed] = useState(false);
 
-  useEffect(() => {
-    // 月曜日のみ表示 (0=日, 1=月)
-    const day = new Date().getDay();
-    if (day !== 1) return;
+  const getDismissKey = () => {
+    // 3日ごとにリセット (ISO date / 3日)
+    const d = new Date();
+    const daysSinceEpoch = Math.floor(d.getTime() / (3 * 24 * 60 * 60 * 1000));
+    return `weekly_summary_${daysSinceEpoch}`;
+  };
 
-    // 今週の集計を取得
-    const weekKey = `weekly_summary_${getWeekKey()}`;
-    if (localStorage.getItem(weekKey)) return; // 今週は既に見た
+  useEffect(() => {
+    // 今期間すでに見ていたらスキップ
+    const dismissKey = getDismissKey();
+    if (localStorage.getItem(dismissKey)) return;
 
     fetchStats();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const getWeekKey = () => {
-    const d = new Date();
-    const year = d.getFullYear();
-    const week = Math.ceil((d.getTime() - new Date(d.getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
-    return `${year}_${week}`;
-  };
 
   const fetchStats = async () => {
     try {
@@ -52,7 +48,7 @@ export default function WeeklySummaryCard() {
 
   const handleDismiss = () => {
     setDismissed(true);
-    localStorage.setItem(`weekly_summary_${getWeekKey()}`, "1");
+    localStorage.setItem(getDismissKey(), "1");
   };
 
   if (!stats || dismissed) return null;
@@ -69,7 +65,7 @@ export default function WeeklySummaryCard() {
         <div>
           <div className="flex items-center gap-1.5 mb-0.5">
             <TrendingUp size={14} className="opacity-80" />
-            <p className="text-xs font-medium opacity-80">先週のまとめ</p>
+            <p className="text-xs font-medium opacity-80">直近7日のまとめ</p>
           </div>
           <p className="text-sm font-bold">{encouragement}</p>
         </div>
