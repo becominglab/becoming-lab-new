@@ -112,20 +112,20 @@ export default function DiscoverFeed({ currentUserId, initialTag }: Props) {
         <button
           onClick={() => handleModeChange("latest")}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-            mode === "latest" ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+            mode === "latest" ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-500 hover:bg-stone-200"
           }`}
         >
           <Clock size={12} />
-          最新
+          新着
         </button>
         <button
           onClick={() => handleModeChange("trending")}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-            mode === "trending" ? "bg-amber-500 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+            mode === "trending" ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-500 hover:bg-stone-200"
           }`}
         >
           <TrendingUp size={12} />
-          人気（週間）
+          人気
         </button>
       </div>
 
