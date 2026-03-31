@@ -15,11 +15,6 @@ interface Circle {
   my_role?: string;
 }
 
-const TAG_OPTIONS = [
-  "ダイエット", "筋トレ", "ランニング", "読書", "瞑想",
-  "早起き", "英語", "副業", "食事改善",
-];
-
 export default function CirclesView() {
   const [tab, setTab] = useState<"joined" | "discover">("joined");
   const [circles, setCircles] = useState<Circle[]>([]);
@@ -150,6 +145,17 @@ function CreateCircleModal({
   const [maxMembers, setMaxMembers] = useState(6);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [tagOptions, setTagOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/sns/trending-tags")
+      .then((r) => r.json())
+      .then((d) => {
+        const tags = (d.tags || []).map((t: { tag: string }) => t.tag);
+        setTagOptions(tags.length > 0 ? tags : ["ダイエット", "筋トレ", "ランニング", "読書", "瞑想", "早起き", "英語", "副業", "食事改善"]);
+      })
+      .catch(() => setTagOptions(["ダイエット", "筋トレ", "ランニング", "読書", "瞑想", "早起き", "英語", "副業", "食事改善"]));
+  }, []);
 
   const selectedTag = themeTag || customTag;
 
@@ -216,7 +222,7 @@ function CreateCircleModal({
           <div>
             <label className="text-xs text-stone-500 mb-1 block">テーマタグ *</label>
             <div className="flex flex-wrap gap-1.5 mb-2">
-              {TAG_OPTIONS.map((tag) => (
+              {tagOptions.map((tag) => (
                 <button
                   key={tag}
                   type="button"
