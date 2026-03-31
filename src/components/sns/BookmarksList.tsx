@@ -67,6 +67,10 @@ export default function BookmarksList({ currentUserId }: Props) {
     setPosts((prev) => prev.filter((p) => p.id !== postId));
   };
 
+  const handleUnbookmarked = (postId: string) => {
+    setPosts((prev) => prev.filter((p) => p.id !== postId));
+  };
+
   if (loading) {
     return (
       <div className="space-y-4">
@@ -93,6 +97,7 @@ export default function BookmarksList({ currentUserId }: Props) {
           post={{ ...post, is_bookmarked: true }}
           currentUserId={currentUserId}
           onDeleted={handleDeleted}
+          onUnbookmarked={handleUnbookmarked}
         />
       ))}
 

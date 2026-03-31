@@ -53,6 +53,7 @@ interface Props {
   onDeleted?: (postId: string) => void;
   onCommentClick?: (postId: string) => void;
   onUpdated?: (post: Post) => void;
+  onUnbookmarked?: (postId: string) => void;
 }
 
 function timeAgo(dateStr: string): string {
@@ -261,7 +262,7 @@ function EditForm({ post, onSave, onCancel }: { post: Post; onSave: (updated: Po
   );
 }
 
-export default function PostCard({ post: initialPost, currentUserId, onDeleted, onCommentClick, onUpdated }: Props) {
+export default function PostCard({ post: initialPost, currentUserId, onDeleted, onCommentClick, onUpdated, onUnbookmarked }: Props) {
   const { showToast } = useToast();
   const [post, setPost] = useState(initialPost);
   const { public_profiles: profile } = post;
@@ -413,7 +414,11 @@ export default function PostCard({ post: initialPost, currentUserId, onDeleted, 
           </button>
 
           {/* ブックマークボタン */}
-          <BookmarkButton postId={post.id} isBookmarked={post.is_bookmarked || false} />
+          <BookmarkButton
+            postId={post.id}
+            isBookmarked={post.is_bookmarked || false}
+            onChanged={(bm) => { if (!bm) onUnbookmarked?.(post.id); }}
+          />
 
           {/* メニューボタン（自分の投稿） */}
           {isOwn && (

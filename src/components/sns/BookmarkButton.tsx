@@ -7,9 +7,10 @@ import { useToast } from "@/contexts/ToastContext";
 interface Props {
   postId: string;
   isBookmarked: boolean;
+  onChanged?: (isBookmarked: boolean) => void;
 }
 
-export default function BookmarkButton({ postId, isBookmarked: initial }: Props) {
+export default function BookmarkButton({ postId, isBookmarked: initial, onChanged }: Props) {
   const [bookmarked, setBookmarked] = useState(initial);
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
@@ -34,6 +35,7 @@ export default function BookmarkButton({ postId, isBookmarked: initial }: Props)
         await fetch(`/api/sns/bookmarks?post_id=${postId}`, { method: "DELETE" });
         showToast("ブックマークを解除しました", "info");
       }
+      onChanged?.(newState);
     } catch {
       setBookmarked(!newState); // revert on error
       showToast("ブックマークに失敗しました", "error");
