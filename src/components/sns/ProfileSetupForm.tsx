@@ -2,7 +2,9 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Save, Loader2, Camera, X } from "lucide-react";
+import { useToast } from "@/contexts/ToastContext";
 
 const CHALLENGE_TAG_OPTIONS = [
   "ダイエット", "筋トレ", "ランニング", "読書", "瞑想",
@@ -39,6 +41,8 @@ interface Props {
 }
 
 export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
+  const router = useRouter();
+  const { showToast } = useToast();
   const [nickname, setNickname] = useState(initialProfile?.nickname || "");
   const [bio, setBio] = useState(initialProfile?.bio || "");
   const [tags, setTags] = useState<string[]>(initialProfile?.challenge_tags || []);
@@ -128,6 +132,13 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
       }
 
       onSaved?.();
+      if (!initialProfile) {
+        // 新規プロフィール作成 → フィードへ
+        showToast("プロフィールを作成しました🎉", "success");
+        router.push("/sns");
+      } else {
+        showToast("プロフィールを保存しました", "success");
+      }
     } catch {
       setError("ネットワークエラーが発生しました");
     } finally {
