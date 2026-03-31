@@ -42,6 +42,8 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [posting, setPosting] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
+  const [tagSuggestions, setTagSuggestions] = useState<string[]>([]);
+  const [tagFocused, setTagFocused] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 下書き復元（challengeTitle や initialPrompt がない場合のみ）
@@ -93,11 +95,29 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
     if (challengeTitle) setExpanded(true);
   }, [challengeTitle]);
 
+  useEffect(() => {
+    fetch("/api/sns/trending-tags")
+      .then((r) => r.json())
+      .then((d) => {
+        const tags = (d.tags || []).map((t: { tag: string }) => t.tag);
+        setTagSuggestions(tags.length > 0 ? tags.slice(0, 8) : ["運動", "英語", "読書", "ダイエット", "早起き", "瞑想"]);
+      })
+      .catch(() => setTagSuggestions(["運動", "英語", "読書", "ダイエット", "早起き", "瞑想"]));
+  }, []);
+
   const parsedTags = tagInput
     .split(/[\s,　]+/)
     .map((t) => t.replace(/^#/, "").trim())
     .filter(Boolean)
     .slice(0, 5);
+
+  const addTagSuggestion = (tag: string) => {
+    if (parsedTags.includes(tag) || parsedTags.length >= 5) return;
+    setTagInput((prev) => {
+      const existing = prev.trim();
+      return existing ? `${existing} ${tag}` : tag;
+    });
+  };
 
   const removeTag = (tag: string) => {
     const remaining = parsedTags.filter((t) => t !== tag);
@@ -243,7 +263,7 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
 
       <div>
         <label className="block text-xs font-medium text-teal-700 mb-1">
-          気づいたこと
+          気づき（任意）
         </label>
         <textarea
           value={learned}
@@ -257,7 +277,7 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
 
       <div>
         <label className="block text-xs font-medium text-teal-700 mb-1">
-          明日やること
+          明日やること（任意）
         </label>
         <textarea
           value={tomorrow}
@@ -319,9 +339,28 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
         <input
           value={tagInput}
           onChange={(e) => setTagInput(e.target.value)}
+          onFocus={() => setTagFocused(true)}
+          onBlur={() => setTimeout(() => setTagFocused(false), 150)}
           placeholder="運動 英語 読書"
           className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
+        {/* タグサジェスト */}
+        {tagFocused && tagSuggestions.length > 0 && parsedTags.length < 5 && (
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {tagSuggestions
+              .filter((t) => !parsedTags.includes(t))
+              .map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onMouseDown={(e) => { e.preventDefault(); addTagSuggestion(tag); }}
+                  className="text-xs px-2 py-0.5 bg-stone-100 text-stone-500 rounded-full hover:bg-teal-50 hover:text-teal-600 transition-colors"
+                >
+                  +#{tag}
+                </button>
+              ))}
+          </div>
+        )}
         {parsedTags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2">
             {parsedTags.map((tag) => (

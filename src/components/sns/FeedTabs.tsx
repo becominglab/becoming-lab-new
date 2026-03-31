@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import FeedTimeline from "./FeedTimeline";
 import DiscoverFeed from "./DiscoverFeed";
@@ -20,6 +20,31 @@ export default function FeedTabs({ currentUserId }: { currentUserId: string }) {
     if (t && t !== tab) setTab(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
+    if (Math.abs(dx) < 50 || dy > 60) return; // minimum swipe distance, not vertical
+
+    const tabs: ("feed" | "discover" | "board")[] = ["feed", "discover", "board"];
+    const currentIndex = tabs.indexOf(tab);
+
+    if (dx < 0 && currentIndex < tabs.length - 1) {
+      // swipe left = next tab
+      handleTabChange(tabs[currentIndex + 1]);
+    } else if (dx > 0 && currentIndex > 0) {
+      // swipe right = prev tab
+      handleTabChange(tabs[currentIndex - 1]);
+    }
+  };
 
   const handleTabChange = (newTab: "feed" | "discover" | "board") => {
     setTab(newTab);
@@ -61,7 +86,11 @@ export default function FeedTabs({ currentUserId }: { currentUserId: string }) {
         </button>
       </div>
 
-      <div className="px-4">
+      <div
+        className="px-4"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {tab === "feed" && <FeedTimeline currentUserId={currentUserId} />}
         {tab === "discover" && <DiscoverFeed currentUserId={currentUserId} initialTag={initialTag} />}
         {tab === "board" && (
