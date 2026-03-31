@@ -32,6 +32,7 @@ export default function BadgeGrid({ userId, compact }: Props) {
   const [badges, setBadges] = useState<Badge[]>([]);
   const [pinned, setPinned] = useState<Badge[]>([]);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
+  const [loading, setLoading] = useState(true);
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -42,7 +43,8 @@ export default function BadgeGrid({ userId, compact }: Props) {
         setBadges(data.badges || []);
         setPinned(data.pinned || []);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [userId]);
 
   const togglePin = async (badgeId: string, currentPinned: boolean) => {
@@ -95,6 +97,19 @@ export default function BadgeGrid({ userId, compact }: Props) {
     const d = new Date(dateStr);
     return d.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" });
   };
+
+  if (!compact && loading) {
+    return (
+      <div className="animate-pulse">
+        <div className="h-4 bg-stone-100 rounded w-24 mb-4" />
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="w-10 h-10 rounded-xl bg-stone-100" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

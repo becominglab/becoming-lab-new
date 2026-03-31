@@ -11,6 +11,7 @@ import RecommendedUsers from "./RecommendedUsers";
 import SkeletonCard from "./SkeletonCard";
 import WeeklySummaryCard from "./WeeklySummaryCard";
 import { Loader2, RefreshCw, TrendingUp, Compass } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 interface Props {
   currentUserId: string;
@@ -31,11 +32,14 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef<number>(0);
   const [pullDistance, setPullDistance] = useState(0);
+  const [newPostCount, setNewPostCount] = useState(0);
 
   const fetchPosts = useCallback(async (cursorParam?: string | null) => {
     const isInitial = !cursorParam;
-    if (isInitial) setLoading(true);
-    else setLoadingMore(true);
+    if (isInitial) {
+      setNewPostCount(0);
+      setLoading(true);
+    } else setLoadingMore(true);
 
     try {
       const params = new URLSearchParams({ limit: "20" });
@@ -132,6 +136,35 @@ export default function FeedTimeline({ currentUserId }: Props) {
     };
   }, [pullDistance, refreshing, fetchPosts]);
 
+  // Realtime: フォロー中ユーザーの新着投稿を検知
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("posts:new")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "posts" },
+        () => {
+          // フィードが既に表示中(posts.length > 0)なら新着バッジをインクリメント
+          setNewPostCount((prev) => prev + 1);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleShowNewPosts = async () => {
+    setNewPostCount(0);
+    setRefreshing(true);
+    await fetchPosts();
+    setRefreshing(false);
+    // スクロールをトップに戻す
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handlePosted = () => {
     setComposerPrompt(undefined);
     fetchPosts();
@@ -164,6 +197,17 @@ export default function FeedTimeline({ currentUserId }: Props) {
             style={{ transform: `rotate(${pullDistance * 3}deg)` }}
           />
         </div>
+      )}
+
+      {/* 新着投稿バナー */}
+      {newPostCount > 0 && posts.length > 0 && (
+        <button
+          onClick={handleShowNewPosts}
+          className="w-full flex items-center justify-center gap-2 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-xl hover:bg-teal-700 transition-all shadow-sm"
+        >
+          <RefreshCw size={14} />
+          {newPostCount}件の新しい投稿を見る ↑
+        </button>
       )}
 
       {/* デイリーチェックイン（最上部に配置） */}
