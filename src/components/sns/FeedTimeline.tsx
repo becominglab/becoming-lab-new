@@ -14,6 +14,16 @@ import WeeklySummaryCard from "./WeeklySummaryCard";
 import { Loader2, RefreshCw, TrendingUp, Compass } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
+function getDateLabel(dateStr: string): string {
+  const d = new Date(dateStr);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return "今日";
+  if (d.toDateString() === yesterday.toDateString()) return "昨日";
+  return d.toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "short" });
+}
+
 interface Props {
   currentUserId: string;
 }
@@ -293,29 +303,50 @@ export default function FeedTimeline({ currentUserId }: Props) {
           {/* はじめてガイド（初回ユーザー向け） */}
           <OnboardingGuide />
 
-          {posts.filter((p) => !typeFilter || p.post_type === typeFilter).map((post, i) => (
-            <div key={post.id}>
-              <PostCard
-                post={post}
-                currentUserId={currentUserId}
-                onDeleted={handleDeleted}
-                onUpdated={handleUpdated}
-                onCommentClick={(id) => setCommentPostId(id)}
-              />
-              {/* 2投稿目の後にPostComposerを差し込む */}
-              {i === 1 && (
-                <div className="mt-4">
-                  <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
+          {(() => {
+            const filtered = posts.filter((p) => !typeFilter || p.post_type === typeFilter);
+            let lastDate = "";
+            const items = [];
+            for (let i = 0; i < filtered.length; i++) {
+              const post = filtered[i];
+              const dateLabel = getDateLabel(post.created_at);
+              if (dateLabel !== lastDate) {
+                lastDate = dateLabel;
+                items.push(
+                  <div key={`date-${dateLabel}`} className="flex items-center gap-2 py-1">
+                    <div className="flex-1 h-px bg-stone-100" />
+                    <span className="text-[10px] text-stone-400 font-medium px-2">{dateLabel}</span>
+                    <div className="flex-1 h-px bg-stone-100" />
+                  </div>
+                );
+              }
+              items.push(
+                <div key={post.id}>
+                  <PostCard
+                    post={post}
+                    currentUserId={currentUserId}
+                    onDeleted={handleDeleted}
+                    onUpdated={handleUpdated}
+                    onCommentClick={(id) => setCommentPostId(id)}
+                  />
+                  {/* 2投稿目の後にPostComposerを差し込む */}
+                  {i === 1 && (
+                    <div className="mt-4">
+                      <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
+                    </div>
+                  )}
+                  {/* 5投稿目の後におすすめユーザーを差し込む */}
+                  {i === 4 && <div className="mt-4"><RecommendedUsers /></div>}
                 </div>
-              )}
-              {/* 5投稿目の後におすすめユーザーを差し込む */}
-              {i === 4 && <div className="mt-4"><RecommendedUsers /></div>}
-            </div>
-          ))}
-          {/* 2投稿未満の場合は最後にPostComposerを表示 */}
-          {posts.length <= 1 && (
-            <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
-          )}
+              );
+            }
+            if (filtered.length <= 1 && !typeFilter) {
+              items.push(
+                <PostComposer key="bottom-composer" onPosted={handlePosted} initialPrompt={composerPrompt} />
+              );
+            }
+            return items;
+          })()}
         </>
       )}
 

@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Users, Loader2, LogOut, Trash2 } from "lucide-react";
+import { ArrowLeft, Users, Loader2, LogOut, Trash2, RefreshCw } from "lucide-react";
 import CirclePostComposer from "./CirclePostComposer";
+import { createClient } from "@/lib/supabase/client";
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -66,6 +67,7 @@ export default function CircleDetailView({
   const [joinError, setJoinError] = useState("");
   const [showMembers, setShowMembers] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [newCirclePost, setNewCirclePost] = useState(false);
 
   const loadCircle = useCallback(async () => {
     const res = await fetch(`/api/sns/circles/${circleId}`);
@@ -98,6 +100,19 @@ export default function CircleDetailView({
   useEffect(() => {
     if (isMember) loadPosts();
   }, [isMember, loadPosts]);
+
+  // Realtime: サークル内の新着投稿を検知
+  useEffect(() => {
+    if (!circleId) return;
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`circle:${circleId}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "circle_posts", filter: `circle_id=eq.${circleId}` }, () => {
+        setNewCirclePost(true);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [circleId]);
 
   // IntersectionObserver for infinite scroll
   useEffect(() => {
@@ -209,6 +224,15 @@ export default function CircleDetailView({
       {isMember ? (
         <>
           <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+            {newCirclePost && (
+              <button
+                onClick={() => { setNewCirclePost(false); loadPosts(); }}
+                className="w-full py-2 bg-teal-600 text-white text-xs font-medium rounded-xl flex items-center justify-center gap-2"
+              >
+                <RefreshCw size={12} />
+                新しい投稿があります — タップして更新
+              </button>
+            )}
             {posts.length === 0 && !postsLoading && (
               <div className="text-center py-10">
                 <p className="text-stone-400 text-sm">まだ投稿がありません。最初に投稿しましょう！</p>
