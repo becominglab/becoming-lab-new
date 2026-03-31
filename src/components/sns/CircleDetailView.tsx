@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Users, Loader2, LogOut, Trash2, RefreshCw } from "lucide-react";
 import CirclePostComposer from "./CirclePostComposer";
@@ -171,9 +172,9 @@ export default function CircleDetailView({
       {/* ヘッダー */}
       <div className="shrink-0 bg-white border-b border-stone-200 px-4 pt-safe pt-4 pb-3">
         <div className="flex items-center gap-3 mb-2">
-          <button onClick={() => router.push("/sns/circles")}>
+          <Link href="/sns/circles">
             <ArrowLeft size={20} className="text-stone-500" />
-          </button>
+          </Link>
           <div className="flex-1 min-w-0">
             <h1 className="font-bold text-stone-900 truncate">{circle.name}</h1>
             <span className="text-xs text-teal-600">#{circle.theme_tag}</span>
@@ -381,12 +382,12 @@ export default function CircleDetailView({
               )}
             </button>
 
-            <button
-              onClick={() => router.push("/sns/circles")}
-              className="w-full py-2.5 text-sm text-stone-400 hover:text-stone-600 transition-colors"
+            <Link
+              href="/sns/circles"
+              className="block w-full py-2.5 text-sm text-stone-400 hover:text-stone-600 transition-colors text-center"
             >
               戻る
-            </button>
+            </Link>
           </div>
         </div>
       )}
