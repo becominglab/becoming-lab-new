@@ -107,19 +107,6 @@ export default function KataribeVol1() {
         </div>
       </section>
 
-      {/* 申し込み導線 */}
-      <section className="px-6 py-24 bg-stone-900 text-white">
-        <div className="max-w-2xl mx-auto text-center">
-          <span className="text-xs tracking-[0.3em] text-stone-500 block mb-4">JOIN US</span>
-          <h2 className="text-2xl font-light mb-8 tracking-tight">参加申し込み</h2>
-          <Link href="/contact" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-stone-900 hover:bg-stone-100 transition-colors duration-300">
-            <span className="text-sm">▶</span>
-            <span>参加を申し込む</span>
-          </Link>
-          <p className="text-sm text-stone-500 mt-8">※ 定員に達し次第、締め切らせていただきます</p>
-        </div>
-      </section>
-
     </main>
   );
 }
