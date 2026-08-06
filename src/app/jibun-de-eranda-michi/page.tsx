@@ -67,6 +67,9 @@ export default function KataribePage() {
               <Link href="/jibun-de-eranda-michi/vol6" className="block text-[#1B6B7A] hover:opacity-70 transition-opacity">
               ▶ vol.6
               </Link>
+              <Link href="/jibun-de-eranda-michi/vol7" className="block text-[#1B6B7A] hover:opacity-70 transition-opacity">
+              ▶ vol.7
+              </Link>
             </div>
           </div>
         </div>
