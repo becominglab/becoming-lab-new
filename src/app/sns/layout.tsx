@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import SnsNav from "@/components/sns/SnsNav";
 import SnsSidebar from "@/components/sns/SnsSidebar";
 import SnsHeader from "@/components/sns/SnsHeader";
+import ComposeFAB from "@/components/sns/ComposeFAB";
 import { ToastProvider } from "@/contexts/ToastContext";
 
 export const metadata: Metadata = {
@@ -49,6 +50,7 @@ export default async function SnsLayout({
           </div>
         </div>
         <SnsNav currentUserId={currentUserId} />
+        <ComposeFAB />
       </div>
     </ToastProvider>
   );
