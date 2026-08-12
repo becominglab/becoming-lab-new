@@ -4,6 +4,8 @@ export type BecomingEvent = {
   date: string | null;
   guest: string | null;
   theme: string | null;
+  /** 各回の詳細ページ。あれば線の点がリンクになる */
+  href?: string;
   subtitle?: string;
   time?: string;
   doorsOpen?: string;
@@ -15,29 +17,66 @@ export type BecomingEvent = {
 
 /**
  * 回を追加するときは、この配列に1件足すだけ。
- * トップの線・次回情報・各回ページが自動で追従します。
+ * トップの線・次回情報・申込ボタンが自動で追従します。
  * 未定の回は date/guest/theme を null のままにしておくと、
  * 線の右側に「これから」の枠として表示されます。
  */
 export const events: BecomingEvent[] = [
-  { vol: 1, date: '2025-10-01', guest: null, theme: null },
-  { vol: 2, date: '2025-12-01', guest: null, theme: null },
-  { vol: 3, date: '2026-02-01', guest: null, theme: null },
-  { vol: 4, date: '2026-04-01', guest: null, theme: null },
-  { vol: 5, date: '2026-06-01', guest: '鬼木洋一', theme: null },
-  { vol: 6, date: '2026-08-05', guest: '亀田健', theme: null },
+  {
+    vol: 1,
+    date: '2026-03-12',
+    guest: '立川雄介',
+    theme: '圧倒的成果を手放し、山へ還った24歳',
+    href: '/jibun-de-eranda-michi/vol1',
+  },
+  {
+    vol: 2,
+    date: '2026-04-22',
+    guest: '山岸穂高',
+    theme: 'ロングディスタンス日本一。そしてプロアスリートへ。',
+    href: '/jibun-de-eranda-michi/vol2',
+  },
+  {
+    vol: 3,
+    date: '2026-05-19',
+    guest: '山崎満広',
+    theme: 'なぜ彼は、アメリカで道を切り拓けたのか',
+    href: '/jibun-de-eranda-michi/vol3',
+  },
+  {
+    vol: 4,
+    date: '2026-06-24',
+    guest: '佐藤加奈子',
+    theme: '最前線で戦う女性は、何を見ているのか',
+    href: '/jibun-de-eranda-michi/vol4',
+  },
+  {
+    vol: 5,
+    date: '2026-07-15',
+    guest: '鬼木陽一',
+    theme: '100億円の事業をつくった人が、それでも「何でもない自分」を、生きている',
+    href: '/jibun-de-eranda-michi/vol5',
+  },
+  {
+    vol: 6,
+    date: '2026-08-05',
+    guest: '亀田憲',
+    theme: '人生カスタマイズ時代を、どう生きるのか',
+    href: '/jibun-de-eranda-michi/vol6',
+  },
   {
     vol: 7,
     date: '2026-09-17',
     guest: '村松健一',
     theme: '誰のために、今を歩く。',
     subtitle: '目標を失って見つけた、「人のために」という生き方',
+    href: '/jibun-de-eranda-michi/vol7',
     time: '19:30 – 21:30',
     doorsOpen: '19:15',
-    venue: '神田SDGSコネクション 3F',
+    venue: '神田SDGsコネクション 3階',
     address: '東京都千代田区神田錦町2-9-15',
-    fee: '3,000円（懇親会費を含みます）',
-    applyUrl: 'https://peatix.com/', // ← 実際の申込URLに差し替え
+    fee: '3,000円（税込・懇親会費を含みます）',
+    applyUrl: 'https://forms.gle/bDM2tyMbvBvSuWPf9',
   },
   { vol: 8, date: null, guest: null, theme: null },
   { vol: 9, date: null, guest: null, theme: null },

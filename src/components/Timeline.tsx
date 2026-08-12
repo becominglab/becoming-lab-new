@@ -1,8 +1,15 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import RingMark from '@/components/RingMark';
-import { formatDate, nextEvent, timelineWindow, type BecomingEvent } from '@/content/events';
+import {
+  events,
+  formatDate,
+  nextEvent,
+  timelineWindow,
+  type BecomingEvent,
+} from '@/content/events';
 
 export default function Timeline() {
   const items = timelineWindow();
@@ -12,6 +19,7 @@ export default function Timeline() {
 
   const currentIndex = items.findIndex((e) => e.vol === current?.vol);
   const ratio = currentIndex < 0 ? 1 : (currentIndex + 0.5) / items.length;
+  const firstDate = events.find((e) => e.date)?.date ?? null;
 
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -26,7 +34,7 @@ export default function Timeline() {
     <section className="bc-timeline" aria-label="これまでの開催">
       <div className="bc-wrap">
         <p className="bc-timeline-label">
-          {formatDate(items[0]?.date) || '2025.10'} — 更新中
+          {formatDate(firstDate)} — 更新中
         </p>
 
         <div className="bc-track">
@@ -74,6 +82,11 @@ export default function Timeline() {
             </p>
             <p className="bc-track-guest">{shown.guest ?? '（準備中）'}</p>
             <p className="bc-track-theme">{shown.theme ?? ''}</p>
+            {shown.href && (
+              <p className="bc-track-link">
+                <Link href={shown.href}>この回を読む</Link>
+              </p>
+            )}
           </div>
         )}
       </div>
