@@ -110,9 +110,17 @@ export default function KakomuPage() {
             <p><span className="text-gray-400 inline-block w-16">参加費</span>実費のみ</p>
             <p><span className="text-gray-400 inline-block w-16">場所</span>東京・神田／日本橋周辺</p>
           </div>
-          <Link href="/contact" className="inline-block mt-8 text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
-            ▶ 連絡する
-          </Link>
+          <div className="mt-8 pt-6 border-t border-stone-200">
+            <p className="text-sm text-gray-500 mb-2">ご連絡先</p>
+            <a href="mailto:otsukatakao@gmail.com?subject=その道を、囲む%20参加希望" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
+              otsukatakao@gmail.com
+            </a>
+            <p className="mt-4">
+              <Link href="/contact" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
+                ▶ フォームから送る
+              </Link>
+            </p>
+          </div>
         </div>
       </section>
 

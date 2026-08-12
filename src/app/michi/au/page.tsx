@@ -98,9 +98,17 @@ export default function AuPage() {
             <p><span className="text-gray-400 inline-block w-16">雨天時</span>原則、雨天決行です。</p>
             <p><span className="text-gray-400 inline-block w-16">持ち物</span>動きやすい服装・靴、着替え、タオル、水分（多めに）</p>
           </div>
-          <Link href="/contact" className="inline-block mt-8 text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
-            ▶ 連絡する
-          </Link>
+          <div className="mt-8 pt-6 border-t border-stone-200">
+            <p className="text-sm text-gray-500 mb-2">ご連絡先</p>
+            <a href="mailto:otsukatakao@gmail.com?subject=その道で、会う%20参加希望" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
+              otsukatakao@gmail.com
+            </a>
+            <p className="mt-4">
+              <Link href="/contact" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
+                ▶ フォームから送る
+              </Link>
+            </p>
+          </div>
         </div>
       </section>
 
