@@ -1,150 +1,230 @@
 import Link from "next/link";
+import Reveal from "@/components/Reveal";
+import Cycle from "@/components/Cycle";
+import "@/styles/becoming.css";
 
 export const metadata = {
   title: "コミュニティ",
   description: "語り、聴き、一緒に過ごす場。becoming labのコミュニティで、日常が少しずつ更新されていく。",
 };
 
+const rings = (cx: number, cy: number, count: number, step: number) =>
+  Array.from({ length: count }, (_, i) => (
+    <circle
+      key={i}
+      cx={cx}
+      cy={cy}
+      r={step * (i + 1)}
+      fill="none"
+      stroke="var(--bc-mist)"
+      strokeWidth="1"
+      opacity={Math.max(0.1, 0.9 - i * 0.13)}
+      style={{ animationDelay: `${i * 70}ms` }}
+    />
+  ));
+
+const attitudes = [
+  "自分の人生を自分で選ぼうとする人",
+  "人生の途中を正直に語れる人",
+  "誰かの挑戦を応援できる人",
+];
+
+const airs = [
+  "無理に話さなくていい",
+  "立派なことを言わなくていい",
+  "未完成のままでいていい",
+];
+
+const distances = [
+  "参加は自由",
+  "継続は義務ではありません",
+  "参加と距離の取り方は、自分で決められます",
+];
+
 export default function CommunityPage() {
   return (
-    <>
-      {/* ヘッダー */}
-      <section className="pt-32 pb-12">
-        <div className="max-w-2xl mx-auto px-8">
-          <p className="text-xs tracking-widest text-gray-400 mb-4">COMMUNITY</p>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Community</h1>
-          <p className="text-lg text-gray-600">語りが、日常へと続いていく場所。</p>
+    <div className="bc">
+      <section className="bc-hero bc-hero-sub">
+        <svg
+          className="bc-hero-rings"
+          viewBox="0 0 680 300"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+        >
+          {rings(600, 150, 6, 46)}
+        </svg>
+        <div className="bc-wrap bc-hero-inner">
+          <p className="bc-eyebrow">COMMUNITY</p>
+          <h1>
+            語りが、
+            <br />
+            日常へと続いていく。
+          </h1>
+          <p className="bc-voice">一人で始めたことが、いつのまにか続いている。</p>
         </div>
       </section>
 
-      {/* メインコンテンツ */}
-      <section className="pb-20">
-        <div className="max-w-2xl mx-auto px-8">
-
-          {/* コミュニティとは */}
-          <div className="mb-16">
-            <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>becoming lab のコミュニティは、自分で選んだ道で生まれた言葉や気づきが、日常の時間へとゆっくり溶け込んでいく場です。</p>
-              <p>語る／聴く、だけで終わらず、一緒に過ごし、動き、対話する中で、人生が少しずつ更新されていきます。</p>
-            </div>
-          </div>
-
-          {/* メンバーの定義 */}
-          <div className="mb-16">
-            <p className="text-xs tracking-widest text-gray-400 mb-4">MEMBER</p>
-            <h2 className="text-xl font-bold text-gray-900 mb-6">becoming lab メンバーの定義</h2>
-            <p className="text-gray-600 leading-relaxed mb-6">
-              becoming labのメンバーとは、人生を更新し続けようとする人です。<br />
-              年齢や職業、立場は問いません。共通しているのは、次の姿勢です。
+      <section className="bc-wrap bc-block">
+        <Reveal>
+          <div className="bc-prose">
+            <p>
+              becoming lab のコミュニティは、「自分で選んだ道」で生まれた言葉や気づきが、日常の時間へゆっくり溶け込んでいく場です。
             </p>
-            <ul className="space-y-2 text-gray-600 mb-6">
-              <li className="flex items-start gap-2"><span className="text-stone-400 mt-1">・</span>自分の人生を自分で選ぼうとする人</li>
-              <li className="flex items-start gap-2"><span className="text-stone-400 mt-1">・</span>人生の途中を正直に語れる人</li>
-              <li className="flex items-start gap-2"><span className="text-stone-400 mt-1">・</span>誰かの挑戦を応援できる人</li>
-            </ul>
-            <p className="text-gray-500">
-              becoming labは、完成された人が集まる場所ではありません。<br />
-              迷いながらも、考えながらも、自分の人生を歩こうとする人たちが集まるコミュニティです。
+            <p>
+              語る、聴く、で終わらせない。一緒に過ごし、動き、話しているうちに、人生が少しずつ更新されていきます。
             </p>
           </div>
+        </Reveal>
+      </section>
 
-          {/* メンバーの役割 */}
-          <div className="mb-16">
-            <p className="text-xs tracking-widest text-gray-400 mb-4">ROLES</p>
-            <h2 className="text-xl font-bold text-gray-900 mb-8">Member Roles</h2>
-            <p className="text-gray-600 mb-8">becoming labには、それぞれの人生を歩む人が集まり、さまざまな形でコミュニティに関わっています。</p>
-            <div className="space-y-10">
-              {[
-                { en: "Story Teller", ja: "人生の途中を語る人", body: "Story Tellerは、自分の人生の途中を語る人です。完成された成功談ではなく、迷いや葛藤も含めたリアルな人生の物語を共有します。そのストーリーは、参加者に新しい問いを生みます。" },
-                { en: "Challenger", ja: "自分で選んだ道を歩む人", body: "Challengerは、自分で選んだ道を歩んでいる人です。まだ途中でも、迷いながらでも構いません。挑戦している姿そのものが、コミュニティに勇気を与えます。" },
-                { en: "Supporter", ja: "挑戦を応援する人", body: "Supporterは、コミュニティの仲間を応援する人です。誰かの挑戦を見守り、励まし、その歩みを尊重します。becoming labは応援の文化で成り立っています。" },
-                { en: "Path Finder", ja: "新しい道を見つける人", body: "Path Finderは、人生の問いを持ち、自分の道を探している人です。まだ答えがなくても構いません。問いを持つこと自体が、人生を更新する第一歩です。" },
-                { en: "Curator", ja: "コミュニティを育てる人", body: "Curatorは、becoming labという場を育てる人です。人と人をつなぎ、ストーリーが生まれる場をつくります。" },
-              ].map((role, i) => (
-                <div key={i} className="border-l-2 border-stone-200 pl-6">
-                  <p className="text-xs tracking-widest text-stone-400 mb-1">{i + 1}</p>
-                  <h3 className="font-bold text-gray-900 mb-1">{role.en}</h3>
-                  <p className="text-sm text-stone-500 mb-3">{role.ja}</p>
-                  <p className="text-gray-600 leading-relaxed text-sm">{role.body}</p>
+      <section className="bc-band">
+        <div className="bc-wrap">
+          <Reveal>
+            <p className="bc-eyebrow">MEMBER</p>
+            <h2 className="bc-h2">メンバーとは</h2>
+            <p className="bc-lead">
+              人生を更新し続けようとする人です。年齢も職業も立場も問いません。共通しているのは、この三つだけです。
+            </p>
+          </Reveal>
+          <div className="bc-stack">
+            {attitudes.map((a, i) => (
+              <Reveal key={a} delay={i * 120}>
+                <div className="bc-line-item">
+                  <span className="bc-line-num">{String(i + 1).padStart(2, "0")}</span>
+                  <span>{a}</span>
                 </div>
-              ))}
-            </div>
+              </Reveal>
+            ))}
           </div>
-
-          {/* 大切にしている空気感 */}
-          <div className="mb-16">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">大切にしている空気感</h2>
-            <ul className="space-y-2 text-gray-600 mb-4">
-              <li className="flex items-start gap-2"><span className="text-stone-400 mt-1">・</span>無理に話さなくていい</li>
-              <li className="flex items-start gap-2"><span className="text-stone-400 mt-1">・</span>立派なことを言わなくていい</li>
-              <li className="flex items-start gap-2"><span className="text-stone-400 mt-1">・</span>未完成のままでいていい</li>
-            </ul>
-            <p className="text-gray-500">ここは、自分を整えながら、他者と重なっていく場です。</p>
-          </div>
-
-          {/* 道 */}
-          <div className="mb-16">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">主な活動</h2>
-            <div className="space-y-4 text-gray-600 leading-relaxed mb-6">
-              <p>月に一度のトークイベント「自分で選んだ道」を起点に、走る会、食事会、勉強会や対話会、合宿など、いくつかの集まりが続いています。</p>
-              <p className="text-gray-500">それぞれの日程と参加のしかたは、「道」にまとめています。</p>
-            </div>
-            <Link href="/michi" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
-              ▶ 道を見る
-            </Link>
-          </div>
-
-          {/* コミュニティとの関わり方 */}
-          <div className="mb-16">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">コミュニティとの関わり方</h2>
-            <ul className="space-y-2 text-gray-600 mb-4">
-              <li className="flex items-start gap-2"><span className="text-stone-400 mt-1">・</span>参加は自由</li>
-              <li className="flex items-start gap-2"><span className="text-stone-400 mt-1">・</span>継続は義務ではありません</li>
-              <li className="flex items-start gap-2"><span className="text-stone-400 mt-1">・</span>参加と距離の取り方は、自分で決められます</li>
-            </ul>
-            <p className="text-gray-500">必要なタイミングで、必要な関わり方を。</p>
-          </div>
-
-          {/* 自分で選んだ道 — Featured Event */}
-          <div className="mb-16 rounded-2xl border border-[#1B6B7A]/20 p-6 md:p-8" style={{ backgroundColor: "rgba(27,107,122,0.03)" }}>
-            <p className="text-[10px] tracking-[0.25em] uppercase mb-3" style={{ color: "#1B6B7A" }}>Featured Event</p>
-            <h2 className="text-lg font-bold text-gray-900 mb-2">自分で選んだ道</h2>
-            <p className="text-sm text-gray-600 leading-relaxed mb-4">
-              月に一度、一人のスピーカーが人生の途中を語ります。成功談ではなく、未完成のままの物語。
-              すべての活動の起点となるイベントです。
+          <Reveal delay={400}>
+            <p className="bc-note">
+              完成された人が集まる場所ではありません。迷いながら、考えながら、自分の人生を歩こうとする人たちの集まりです。
             </p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/jibun-de-eranda-michi" className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-lg transition-colors hover:opacity-90" style={{ backgroundColor: "#1B6B7A", color: "#fff" }}>
-                詳しく見る →
-              </Link>
-              <Link href="/jibun-de-eranda-michi/archive" className="inline-flex items-center gap-1 text-sm px-4 py-2 rounded-lg border transition-colors hover:bg-[#1B6B7A]/5" style={{ borderColor: "#1B6B7A", color: "#1B6B7A" }}>
-                過去の物語
-              </Link>
-            </div>
-          </div>
+          </Reveal>
+        </div>
+      </section>
 
-          {/* メンバー紹介へ */}
-          <div className="mb-16 p-6 bg-stone-50 border border-stone-200">
-            <h2 className="text-lg font-bold text-gray-900 mb-3">コミュニティメンバー</h2>
-            <p className="text-gray-600 text-sm mb-4">becoming labには、それぞれの人生を自分で選び、更新し続けようとしている人たちが集まっています。</p>
-            <Link href="/members" className="text-sm text-[#1B6B7A] hover:opacity-70 transition-opacity">
-              ▶ メンバーを見る
+      <section className="bc-wrap bc-block">
+        <Reveal>
+          <p className="bc-eyebrow">CYCLE</p>
+          <h2 className="bc-h2">一度きりでは、終わりません</h2>
+          <p className="bc-lead">
+            更新した自分で、また新しい人に会う。また整う。また一歩進む。ここで起きているのは、その繰り返しです。
+          </p>
+        </Reveal>
+        <Reveal delay={150}>
+          <Cycle />
+        </Reveal>
+        <Reveal delay={300}>
+          <p className="bc-note">
+            どこから入っても構いません。何周しても構いません。急ぐ必要もありません。
+          </p>
+        </Reveal>
+      </section>
+
+      <section className="bc-band">
+        <div className="bc-wrap">
+          <Reveal>
+            <h2 className="bc-h2">大切にしている空気感</h2>
+          </Reveal>
+          <div className="bc-airs">
+            {airs.map((a, i) => (
+              <Reveal key={a} delay={i * 140}>
+                <p className="bc-air">{a}</p>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal delay={480}>
+            <p className="bc-note">ここは、自分を整えながら、他者と重なっていく場です。</p>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="bc-wrap bc-block">
+        <Reveal>
+          <p className="bc-eyebrow">ACTIVITIES</p>
+          <h2 className="bc-h2">主な活動</h2>
+          <div className="bc-prose">
+            <p>
+              月に一度のトークイベント「自分で選んだ道」を起点に、走る会、食事会、勉強会や対話会、合宿など、いくつかの集まりが続いています。
+            </p>
+          </div>
+        </Reveal>
+        <Reveal delay={150}>
+          <div className="bc-ways-list bc-ways-list-sub">
+            <Link href="/jibun-de-eranda-michi" className="bc-way">
+              <span className="bc-way-verb">聴く。</span>
+              <span className="bc-way-note">月に一度、人生の途中を聴く</span>
+            </Link>
+            <Link href="/michi/au" className="bc-way">
+              <span className="bc-way-verb">会う。</span>
+              <span className="bc-way-note">毎月一度、皇居に集まる</span>
+            </Link>
+            <Link href="/michi/kakomu" className="bc-way">
+              <span className="bc-way-verb">囲む。</span>
+              <span className="bc-way-note">8名で、テーブルを囲む</span>
             </Link>
           </div>
+          <p className="bc-more">
+            <Link href="/michi">それぞれの日程と参加のしかたを見る →</Link>
+          </p>
+        </Reveal>
+      </section>
+
+      <section className="bc-band">
+        <div className="bc-wrap">
+          <Reveal>
+            <h2 className="bc-h2">距離の取り方</h2>
+          </Reveal>
+          <div className="bc-stack">
+            {distances.map((d, i) => (
+              <Reveal key={d} delay={i * 120}>
+                <div className="bc-line-item">
+                  <span className="bc-line-num">{String(i + 1).padStart(2, "0")}</span>
+                  <span>{d}</span>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal delay={400}>
+            <p className="bc-note">必要なタイミングで、必要な関わり方を。</p>
+          </Reveal>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 bg-[#1B6B7A] text-white">
-        <div className="max-w-2xl mx-auto px-8 space-y-4">
-          <Link href="/contact" className="block hover:opacity-70 transition-opacity">
-            ▶ 開催情報を受け取る
-          </Link>
-          <Link href="/contact" className="block hover:opacity-70 transition-opacity">
-            ▶ コミュニティについて相談する
-          </Link>
+      <section className="bc-wrap bc-block">
+        <Reveal>
+          <p className="bc-eyebrow">MEMBERS</p>
+          <h2 className="bc-h2">ここにいる人たち</h2>
+          <div className="bc-prose">
+            <p>
+              それぞれの人生を自分で選び、更新し続けようとしている人たちが集まっています。
+            </p>
+          </div>
+          <p className="bc-more">
+            <Link href="/members">メンバーを見る →</Link>
+          </p>
+        </Reveal>
+      </section>
+
+      <section className="bc-cta">
+        <div className="bc-wrap">
+          <p className="bc-cta-kicker">JOIN</p>
+          <h2>まず、一度来てみてください。</h2>
+          <p className="bc-cta-sub">
+            入会の手続きも、会費もありません。来た人が、メンバーです。
+          </p>
+          <div className="bc-cta-actions">
+            <Link className="bc-btn bc-btn-invert" href="/michi">
+              道を見る
+            </Link>
+            <p className="bc-cta-note">日程と参加のしかたは、こちらにまとめています</p>
+            <div className="bc-letter-signup">
+              <Link href="/contact">▶ まず話してみる</Link>
+            </div>
+          </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
