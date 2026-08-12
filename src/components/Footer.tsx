@@ -22,44 +22,36 @@ export default function Footer() {
           </p>
         </div>
         <div className="flex flex-wrap gap-x-8 gap-y-4 text-sm opacity-70 mb-12">
-          <Link
-            href="/mypage"
-            className="hover:opacity-100 transition-opacity"
-          >
-            マイページ
-          </Link>
-          <Link
-            href="/concept"
-            className="hover:opacity-100 transition-opacity"
-          >
+          <Link href="/concept" className="hover:opacity-100 transition-opacity">
             Concept
           </Link>
-          <Link
-            href="/members"
-            className="hover:opacity-100 transition-opacity"
-          >
-            Members
+          <Link href="/michi" className="hover:opacity-100 transition-opacity">
+            道
           </Link>
-          <Link
-            href="/community"
-            className="hover:opacity-100 transition-opacity"
-          >
+          <Link href="/community" className="hover:opacity-100 transition-opacity">
             Community
           </Link>
-          <Link
-            href="/service"
-            className="hover:opacity-100 transition-opacity"
-          >
+          <Link href="/members" className="hover:opacity-100 transition-opacity">
+            Members
+          </Link>
+          <Link href="/service" className="hover:opacity-100 transition-opacity">
             Service
           </Link>
-          <Link
-            href="/contact"
-            className="hover:opacity-100 transition-opacity"
-          >
+          <Link href="/contact" className="hover:opacity-100 transition-opacity">
             Contact
+          </Link>
+          <Link href="/mypage" className="hover:opacity-100 transition-opacity">
+            マイページ
           </Link>
         </div>
         <div className="pt-8 border-t border-white/20">
+          <p className="text-xs opacity-50 mb-2">
+            ご連絡は{" "}
+            <a href="mailto:otsukatakao@gmail.com" className="underline hover:opacity-100">
+              otsukatakao@gmail.com
+            </a>{" "}
+            へ。
+          </p>
           <p className="text-xs opacity-50">© 2026 becoming lab</p>
         </div>
       </div>

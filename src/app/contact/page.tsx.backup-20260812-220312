@@ -52,14 +52,7 @@ export default function ContactPage() {
         <div className="max-w-2xl mx-auto px-8">
           <p className="text-xs tracking-widest text-gray-400 mb-4">CONTACT</p>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Contact</h1>
-          <p className="text-gray-500 mb-4">申し込みではありません。対話の入口です。</p>
-          <p className="text-sm text-gray-500 leading-relaxed">
-            イベントへの参加は、
-            <a href="mailto:otsukatakao@gmail.com" className="underline hover:opacity-70" style={{ color: "#1B6B7A" }}>
-              otsukatakao@gmail.com
-            </a>
-            {" "}に「行きます」と一言いただくだけでも構いません。
-          </p>
+          <p className="text-gray-500">申し込みではありません。対話の入口です。</p>
         </div>
       </section>
 
@@ -102,14 +95,6 @@ export default function ContactPage() {
                 <label className="flex items-center gap-3 text-gray-600">
                   <input type="checkbox" name="interest" value="自分で選んだ道" className="w-4 h-4" />
                   自分で選んだ道
-                </label>
-                <label className="flex items-center gap-3 text-gray-600">
-                  <input type="checkbox" name="interest" value="その道で、会う（皇居ラン）" className="w-4 h-4" />
-                  その道で、会う（皇居ラン）
-                </label>
-                <label className="flex items-center gap-3 text-gray-600">
-                  <input type="checkbox" name="interest" value="その道を、囲む（食事会）" className="w-4 h-4" />
-                  その道を、囲む（食事会）
                 </label>
                 <label className="flex items-center gap-3 text-gray-600">
                   <input type="checkbox" name="interest" value="1on1セッション" className="w-4 h-4" />
