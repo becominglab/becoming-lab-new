@@ -7,6 +7,7 @@ import PostCard from "./PostCard";
 import PostComposer from "./PostComposer";
 import CommentSection from "./CommentSection";
 import DailyCheckin from "./DailyCheckin";
+import NewUserWelcome from "./NewUserWelcome";
 import OnboardingGuide from "./OnboardingGuide";
 import RecommendedUsers from "./RecommendedUsers";
 import SkeletonCard from "./SkeletonCard";
@@ -362,6 +363,9 @@ export default function FeedTimeline({ currentUserId }: Props) {
 
       {/* デイリーチェックイン */}
       <DailyCheckin onCheckinAndPost={handleCheckinAndPost} />
+
+      {/* 新規ユーザーウェルカム（フォロー0人の場合のみ表示） */}
+      {!typeFilter && <NewUserWelcome />}
 
       {/* 投稿コンポーザー（常に上部に表示） */}
       {!typeFilter && (

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { TrendingUp, Flame, Heart, X } from "lucide-react";
+import { TrendingUp, Flame, Heart, X, Share2 } from "lucide-react";
+import { useToast } from "@/contexts/ToastContext";
 
 interface WeekStats {
   post_count: number;
@@ -13,12 +14,17 @@ interface WeekStats {
 export default function WeeklySummaryCard() {
   const [stats, setStats] = useState<WeekStats | null>(null);
   const [dismissed, setDismissed] = useState(false);
+  const { showToast } = useToast();
 
   const getDismissKey = () => {
-    // 3日ごとにリセット (ISO date / 3日)
+    // 月曜日起点で週単位にリセット
     const d = new Date();
-    const daysSinceEpoch = Math.floor(d.getTime() / (3 * 24 * 60 * 60 * 1000));
-    return `weekly_summary_${daysSinceEpoch}`;
+    const day = d.getDay(); // 0=日, 1=月, ...
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    const monday = new Date(d);
+    monday.setDate(d.getDate() + diffToMonday);
+    const dateStr = monday.toISOString().split("T")[0];
+    return `weekly_summary_${dateStr}`;
   };
 
   useEffect(() => {
@@ -49,6 +55,23 @@ export default function WeeklySummaryCard() {
   const handleDismiss = () => {
     setDismissed(true);
     localStorage.setItem(getDismissKey(), "1");
+  };
+
+  const handleShare = async () => {
+    if (!stats) return;
+    const text = `【becoming 週間サマリー】\n✏️ 更新 ${stats.post_count}回 / 💪 応援 ${stats.reaction_count}回 / 🔥 ${stats.streak}日連続\n一緒に継続しよう → https://becominglab.app/sns`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ text });
+      } catch { /* cancelled */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("クリップボードにコピーしました", "success");
+      } catch {
+        showToast("シェアに失敗しました", "error");
+      }
+    }
   };
 
   if (!stats || dismissed) return null;
@@ -112,6 +135,15 @@ export default function WeeklySummaryCard() {
           })}
         </div>
       </div>
+
+      {/* シェアボタン */}
+      <button
+        onClick={handleShare}
+        className="mt-3 w-full flex items-center justify-center gap-1.5 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-xs font-medium text-white transition-colors"
+      >
+        <Share2 size={12} />
+        この週間サマリーをシェア
+      </button>
     </div>
   );
 }

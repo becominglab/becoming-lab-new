@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Flame, CheckCircle2 } from "lucide-react";
+import { Flame, CheckCircle2, Snowflake } from "lucide-react";
+import { useToast } from "@/contexts/ToastContext";
+
+const FREEZE_KEY = "sns_streak_freeze";
+const FREEZE_MONTHLY_LIMIT = 2;
 
 function getNextMilestone(streak: number): { milestone: number; daysLeft: number } | null {
   const milestones = [3, 7, 14, 30, 100];
@@ -56,12 +60,16 @@ interface Props {
 }
 
 export default function DailyCheckin({ onCheckinAndPost }: Props) {
+  const { showToast } = useToast();
   const [todayChecked, setTodayChecked] = useState(false);
   const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [milestoneCelebration, setMilestoneCelebration] = useState(false);
+  const [freezeCount, setFreezeCount] = useState(0);
+  const [freezeUsed, setFreezeUsed] = useState(false);
+  const [freezeActive, setFreezeActive] = useState(false);
 
   // 今日のプロンプト（日付で決定論的に選択）
   const today = new Date();
@@ -79,6 +87,21 @@ export default function DailyCheckin({ onCheckinAndPost }: Props) {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+
+    // フリーズ状態確認（今月の使用回数）
+    try {
+      const saved = localStorage.getItem(FREEZE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        const monthKey = getMonthKey();
+        if (data.month === monthKey) {
+          const count = data.count || 0;
+          setFreezeCount(count);
+          setFreezeUsed(count >= FREEZE_MONTHLY_LIMIT);
+          setFreezeActive(count > 0);
+        }
+      }
+    } catch { /* ignore */ }
   }, []);
 
   async function handleCheckin() {
@@ -102,10 +125,45 @@ export default function DailyCheckin({ onCheckinAndPost }: Props) {
 
         // 投稿フォームを開く
         onCheckinAndPost?.(prompt);
+
+        // バッジ獲得チェック（復帰バッジを含む）
+        fetch("/api/sns/badges/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ categories: ["social", "streak"] }),
+        })
+          .then((r) => r.json())
+          .then((d) => {
+            const earned: Array<{ id: string; name: string; icon: string }> = d.newly_earned || [];
+            earned.slice(0, 2).forEach((badge, i) => {
+              const msg = badge.id === "comeback"
+                ? `🔄 復帰バッジ獲得！ブランクを乗り越えて戻ってきた！`
+                : `🏅 バッジ獲得！「${badge.icon}${badge.name}」`;
+              setTimeout(() => showToast(msg, "success"), (i + 1) * 1500);
+            });
+          })
+          .catch(() => {});
       }
     } finally {
       setChecking(false);
     }
+  }
+
+  function getMonthKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth() + 1}`;
+  }
+
+  function handleFreeze() {
+    if (freezeUsed) return;
+    const monthKey = getMonthKey();
+    const newCount = freezeCount + 1;
+    try {
+      localStorage.setItem(FREEZE_KEY, JSON.stringify({ month: monthKey, count: newCount }));
+    } catch { /* ignore */ }
+    setFreezeCount(newCount);
+    setFreezeUsed(newCount >= FREEZE_MONTHLY_LIMIT);
+    setFreezeActive(true);
   }
 
   if (loading) return null;
@@ -183,7 +241,7 @@ export default function DailyCheckin({ onCheckinAndPost }: Props) {
             </p>
             <p className="text-xs text-stone-400">
               {showCelebration
-                ? "この調子で続けよう✨ 今日の更新を投稿しよう！"
+                ? "この調子で続けよう✨"
                 : nextMilestone
                 ? `あと${nextMilestone.daysLeft}日で${nextMilestone.milestone}日連続達成！`
                 : "投稿してさらに仲間に共有しよう"}
@@ -201,6 +259,24 @@ export default function DailyCheckin({ onCheckinAndPost }: Props) {
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
+              </div>
+            )}
+
+            {/* チェックイン後CTA */}
+            {showCelebration && (
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={() => onCheckinAndPost?.(prompt)}
+                  className="flex-1 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-medium rounded-xl transition-colors"
+                >
+                  ✏️ 今日の更新を投稿
+                </button>
+                <a
+                  href="/sns"
+                  className="flex-1 py-2 bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-medium rounded-xl transition-colors text-center"
+                >
+                  👥 仲間の更新を見る
+                </a>
               </div>
             )}
           </div>
@@ -228,6 +304,29 @@ export default function DailyCheckin({ onCheckinAndPost }: Props) {
             >
               {checking ? "チェックイン中..." : "✓ 今日もチェックイン！"}
             </button>
+
+            {/* フリーズ機能（週1回） */}
+            {streak >= 3 && (
+              <div className="flex items-center justify-between pt-1">
+                {freezeActive ? (
+                  <div className="flex items-center gap-1.5 text-xs text-blue-500">
+                    <Snowflake size={12} />
+                    <span>フリーズ使用中 — 今日のストリークは守られます</span>
+                  </div>
+                ) : !freezeUsed ? (
+                  <button
+                    type="button"
+                    onClick={handleFreeze}
+                    className="flex items-center gap-1.5 text-xs text-stone-400 hover:text-blue-500 transition-colors"
+                  >
+                    <Snowflake size={12} />
+                    <span>今日は休む（月{FREEZE_MONTHLY_LIMIT}回まで・残り{FREEZE_MONTHLY_LIMIT - freezeCount}回）</span>
+                  </button>
+                ) : (
+                  <p className="text-xs text-stone-300">今月のフリーズを{FREEZE_MONTHLY_LIMIT}回使い切りました</p>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

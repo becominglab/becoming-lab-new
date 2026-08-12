@@ -298,14 +298,33 @@ export default function SearchTabs() {
               <X size={14} />
             </button>
           </div>
-          <div className="mt-3 flex items-center gap-2">
-            <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold">1</div>
-            <p className="text-xs opacity-90">「マッチ」タブで仲間を見つけてフォロー</p>
+          <div className="mt-3 space-y-1.5">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold shrink-0">1</div>
+              <p className="text-xs opacity-90">「マッチ」タブで仲間を見つけてフォロー</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold shrink-0">2</div>
+              <p className="text-xs opacity-90">フィードに戻って今日の更新を投稿</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold shrink-0">3</div>
+              <p className="text-xs opacity-90">知り合いを招待して一緒に続けよう</p>
+            </div>
           </div>
-          <div className="flex items-center gap-2 mt-1.5">
-            <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold">2</div>
-            <p className="text-xs opacity-90">フィードに戻って今日の更新を投稿</p>
-          </div>
+          <button
+            onClick={async () => {
+              const text = "becoming で一緒に継続しよう！習慣化・挑戦を仲間と記録するアプリです → https://becominglab.app/sns";
+              if (navigator.share) {
+                try { await navigator.share({ text }); } catch { /* cancelled */ }
+              } else {
+                try { await navigator.clipboard.writeText(text); } catch { /* ignore */ }
+              }
+            }}
+            className="mt-3 w-full py-2 bg-white/20 hover:bg-white/30 rounded-xl text-xs font-medium text-white transition-colors"
+          >
+            📨 友達をbecomingに招待する
+          </button>
         </div>
       )}
 

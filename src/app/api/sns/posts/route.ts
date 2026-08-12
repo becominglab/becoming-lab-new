@@ -170,7 +170,8 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ error: "not_authenticated" }, { status: 401 });
 
   const body = await request.json();
-  const { post_type, content, source_id, tags, image_url } = body;
+  const { post_type, content, source_id, tags, image_url, visibility } = body;
+  const validVisibility = ["public", "followers", "private"].includes(visibility) ? visibility : "public";
 
   const validTypes = ["update", "auto_log", "declaration", "milestone"];
   if (!validTypes.includes(post_type)) {
@@ -206,6 +207,7 @@ export async function POST(request: NextRequest) {
       source_id: source_id || null,
       tags: validTags,
       image_url: validImageUrl,
+      visibility: validVisibility,
     })
     .select()
     .single();

@@ -7,6 +7,15 @@ import { Send, ChevronUp, Loader2, Hash, X, Camera } from "lucide-react";
 import { useToast } from "@/contexts/ToastContext";
 
 const DRAFT_KEY = "sns_post_draft";
+const VISIBILITY_KEY = "sns_post_visibility";
+
+const LEARNED_SUGGESTIONS = [
+  "継続することの大切さを再確認",
+  "小さな一歩が大事だと実感",
+  "習慣化には仕組みが必要",
+  "完璧を目指さず続けることが重要",
+  "記録することでモチベが上がる",
+];
 
 interface DraftData {
   did: string;
@@ -44,7 +53,7 @@ export default function PostComposer({
   const [did, setDid] = useState(defaultDid);
   const [learned, setLearned] = useState("");
   const [tomorrow, setTomorrow] = useState("");
-  const [postType, setPostType] = useState<"update" | "declaration" | "milestone">("update");
+  const [postType, setPostType] = useState<"update" | "oneliner" | "declaration" | "milestone">("oneliner");
   const [declarationText, setDeclarationText] = useState("");
   const [milestoneLabel, setMilestoneLabel] = useState("");
   const [tagInput, setTagInput] = useState("");
@@ -55,6 +64,16 @@ export default function PostComposer({
   const [posting, setPosting] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
   const [tagSuggestions, setTagSuggestions] = useState<string[]>([]);
+  const [learnedSkipped, setLearnedSkipped] = useState(false);
+  const [onelineText, setOnelineText] = useState("");
+  const [visibility, setVisibility] = useState<"public" | "followers" | "private">(() => {
+    if (typeof window === "undefined") return "public";
+    try {
+      const saved = localStorage.getItem(VISIBILITY_KEY);
+      if (saved === "public" || saved === "followers" || saved === "private") return saved;
+    } catch { /* ignore */ }
+    return "public";
+  });
   const [tagFocused, setTagFocused] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -106,6 +125,33 @@ export default function PostComposer({
   useEffect(() => {
     if (challengeTitle) setExpanded(true);
   }, [challengeTitle]);
+
+  // マウント時にDBからデフォルト公開範囲を取得
+  useEffect(() => {
+    fetch("/api/sns/profile")
+      .then(r => r.json())
+      .then(d => {
+        const v = d.profile?.default_visibility;
+        if (v === "public" || v === "followers" || v === "private") {
+          setVisibility(v);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // 公開範囲をlocalStorageとDBに保存（デバウンス）
+  useEffect(() => {
+    try { localStorage.setItem(VISIBILITY_KEY, visibility); } catch { /* ignore */ }
+    // DB保存（デバウンス）
+    const timer = setTimeout(() => {
+      fetch("/api/sns/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ default_visibility: visibility }),
+      }).catch(() => {});
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [visibility]);
 
   useEffect(() => {
     fetch("/api/sns/trending-tags")
@@ -182,6 +228,7 @@ export default function PostComposer({
 
   const handleSubmit = async () => {
     if (postType === "update" && !did.trim()) return;
+    if (postType === "oneliner" && !onelineText.trim()) return;
     if (postType === "declaration" && !declarationText.trim()) return;
     if (postType === "milestone" && !milestoneLabel.trim()) return;
     if (uploadingImage) {
@@ -195,14 +242,17 @@ export default function PostComposer({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          post_type: postType,
+          post_type: postType === "oneliner" ? "update" : postType,
           content: postType === "update"
-            ? { did: did.trim(), learned: learned.trim() || null, tomorrow: tomorrow.trim() || null }
+            ? { did: did.trim(), learned: learnedSkipped ? null : (learned.trim() || null), tomorrow: tomorrow.trim() || null }
+            : postType === "oneliner"
+            ? { did: onelineText.trim() }
             : postType === "declaration"
             ? { content: declarationText.trim() }
             : { label: milestoneLabel.trim() },
           tags: parsedTags,
           image_url: uploadedImageUrl || null,
+          visibility,
         }),
       });
 
@@ -210,15 +260,18 @@ export default function PostComposer({
         setDid("");
         setLearned("");
         setTomorrow("");
+        setOnelineText("");
+        setLearnedSkipped(false);
         setDeclarationText("");
         setMilestoneLabel("");
-        setPostType("update");
+        setPostType("oneliner");
         setTagInput("");
         removeImage();
         setExpanded(false);
         setDraftRestored(false);
         clearDraft();
-        showToast("投稿しました！", "success");
+        const visibilityLabel = visibility === "public" ? "🌐 全体" : visibility === "followers" ? "👥 フォロワー" : "🔒 自分のみ";
+        showToast(`投稿しました！ (${visibilityLabel})`, "success");
         // フィードに再取得を通知
         if (typeof window !== "undefined") {
           window.dispatchEvent(new CustomEvent("sns:post-created"));
@@ -286,9 +339,10 @@ export default function PostComposer({
       </div>
 
       {/* 投稿タイプ選択 */}
-      <div className="flex gap-1.5">
+      <div className="flex gap-1.5 flex-wrap">
         {([
-          { type: "update", label: "更新", emoji: "📝" },
+          { type: "update", label: "詳細更新", emoji: "📝" },
+          { type: "oneliner", label: "一言", emoji: "⚡" },
           { type: "declaration", label: "宣言", emoji: "💪" },
           { type: "milestone", label: "達成", emoji: "🏆" },
         ] as const).map(({ type, label, emoji }) => (
@@ -309,6 +363,24 @@ export default function PostComposer({
       </div>
 
       {/* タイプ別フォーム */}
+      {postType === "oneliner" && (
+        <div>
+          <label className="block text-xs font-medium text-teal-700 mb-1">
+            今日の一言 <span className="text-red-400">*</span>
+          </label>
+          <textarea
+            value={onelineText}
+            onChange={(e) => setOnelineText(e.target.value)}
+            maxLength={100}
+            rows={2}
+            placeholder="例: 今日も30分走った！疲れたけど気持ちよかった ✨"
+            className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+            autoFocus
+          />
+          <p className={`text-xs text-right ${onelineText.length > 80 ? "text-orange-500" : "text-stone-400"}`}>{onelineText.length}/100</p>
+          <p className="text-xs text-teal-500 mt-1">⚡ 一言でサクッと記録できます</p>
+        </div>
+      )}
       {postType === "update" && (
         <>
           <div>
@@ -327,17 +399,44 @@ export default function PostComposer({
             <p className={`text-xs text-right ${did.length > 120 ? "text-orange-500" : "text-stone-400"}`}>{did.length}/140</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-teal-700 mb-1">気づき（任意）</label>
-            <textarea
-              value={learned}
-              onChange={(e) => setLearned(e.target.value)}
-              maxLength={140}
-              rows={2}
-              placeholder="気づいたこと、学んだこと"
-              className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            {learned.length > 0 && (
-              <p className={`text-xs text-right mt-0.5 ${learned.length > 120 ? "text-orange-500" : "text-stone-400"}`}>{learned.length}/140</p>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-medium text-teal-700">気づき（任意）</label>
+              <button
+                type="button"
+                onClick={() => { setLearnedSkipped(!learnedSkipped); if (!learnedSkipped) setLearned(""); }}
+                className={`text-[10px] transition-colors ${learnedSkipped ? "text-teal-500 font-medium" : "text-stone-400 hover:text-stone-500"}`}
+              >
+                {learnedSkipped ? "✓ スキップ中" : "今日はなし →スキップ"}
+              </button>
+            </div>
+            {!learnedSkipped && (
+              <>
+                <textarea
+                  value={learned}
+                  onChange={(e) => setLearned(e.target.value)}
+                  maxLength={140}
+                  rows={2}
+                  placeholder="気づいたこと、学んだこと"
+                  className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                {learned.length > 0 && (
+                  <p className={`text-xs text-right mt-0.5 ${learned.length > 120 ? "text-orange-500" : "text-stone-400"}`}>{learned.length}/140</p>
+                )}
+                {learned.length === 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1.5">
+                    {LEARNED_SUGGESTIONS.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setLearned(s)}
+                        className="text-[10px] px-2 py-0.5 bg-stone-50 text-stone-400 border border-stone-200 rounded-full hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 transition-colors"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
           <div>
@@ -480,11 +579,36 @@ export default function PostComposer({
         )}
       </div>
 
+      {/* 公開範囲 */}
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs text-stone-400 shrink-0">公開範囲:</span>
+        {([
+          { value: "public", label: "全体", emoji: "🌐" },
+          { value: "followers", label: "フォロワー", emoji: "👥" },
+          { value: "private", label: "自分のみ", emoji: "🔒" },
+        ] as const).map(({ value, label, emoji }) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => setVisibility(value)}
+            className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-colors ${
+              visibility === value
+                ? "bg-stone-800 text-white"
+                : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+            }`}
+          >
+            <span>{emoji}</span>
+            {label}
+          </button>
+        ))}
+      </div>
+
       <button
         onClick={handleSubmit}
         disabled={
           posting || uploadingImage ||
           (postType === "update" && !did.trim()) ||
+          (postType === "oneliner" && !onelineText.trim()) ||
           (postType === "declaration" && !declarationText.trim()) ||
           (postType === "milestone" && !milestoneLabel.trim())
         }

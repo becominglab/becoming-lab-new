@@ -159,6 +159,34 @@ export async function checkAndAwardBadges(
     );
   }
 
+  // comeback: ストリークが途切れた後に復帰したかを検出
+  // 直近90日のチェックインを確認し、3日以上のギャップ後に復帰していればカウント=1
+  if (neededTypes.has("comeback")) {
+    countQueries.push(
+      supabase
+        .from("daily_checkins")
+        .select("checkin_date")
+        .eq("user_id", userId)
+        .order("checkin_date", { ascending: false })
+        .limit(90)
+        .then(({ data }) => {
+          const dates = (data || []).map((d: { checkin_date: string }) => d.checkin_date).sort();
+          let hasComeback = 0;
+          for (let i = 1; i < dates.length; i++) {
+            const prev = new Date(dates[i - 1]);
+            const curr = new Date(dates[i]);
+            const gap = Math.round((curr.getTime() - prev.getTime()) / 86400000);
+            // ギャップが3日以上あって、その前に少なくとも1回のチェックインがあれば復帰
+            if (gap >= 3 && i >= 3) {
+              hasComeback = 1;
+              break;
+            }
+          }
+          counts["comeback"] = hasComeback;
+        })
+    );
+  }
+
   await Promise.all(countQueries);
 
   // 条件を満たすバッジを判定

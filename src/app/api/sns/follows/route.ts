@@ -56,6 +56,18 @@ export async function POST(request: NextRequest) {
   // バッジチェック（非同期、レスポンスをブロックしない）
   checkAndAwardBadges(supabase, user.id, ["social"]).catch(() => {});
 
+  // フォロワーへのプッシュ通知
+  supabase.from("public_profiles").select("nickname").eq("user_id", user.id).single()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .then(async ({ data: myProfile }: { data: any }) => {
+      const { sendPushToUser } = await import("@/lib/push");
+      await sendPushToUser(following_id, {
+        title: "🎉 新しいフォロワー",
+        body: `${myProfile?.nickname || "誰か"}さんがフォローしました！`,
+        url: `/sns/profile/${user.id}`,
+      });
+    }).catch(() => {});
+
   return NextResponse.json({ follow: data }, { status: 201 });
 }
 

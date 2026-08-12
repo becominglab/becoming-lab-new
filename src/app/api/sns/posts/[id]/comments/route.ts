@@ -59,6 +59,20 @@ export async function POST(
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  // 投稿オーナーを取得してプッシュ通知
+  supabase.from("posts").select("user_id").eq("id", postId).single()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .then(async ({ data: postData }: { data: any }) => {
+      if (postData && postData.user_id !== user.id) {
+        const { sendPushToUser } = await import("@/lib/push");
+        await sendPushToUser(postData.user_id, {
+          title: "💬 新しいコメント",
+          body: content.length > 50 ? content.slice(0, 50) + "..." : content,
+          url: `/sns`,
+        });
+      }
+    }).catch(() => {});
+
   return NextResponse.json({ comment: { ...data, is_own: true } }, { status: 201 });
 }
 

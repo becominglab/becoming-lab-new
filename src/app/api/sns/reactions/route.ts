@@ -30,6 +30,21 @@ export async function POST(request: NextRequest) {
 
   checkAndAwardBadges(supabase, user.id, ["social"]).catch(() => {});
 
+  // 投稿オーナーを取得してプッシュ通知
+  supabase.from("posts").select("user_id").eq("id", post_id).single()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .then(async ({ data: postData }: { data: any }) => {
+      if (postData && postData.user_id !== user.id) {
+        const { sendPushToUser } = await import("@/lib/push");
+        const label = reaction_type === "nice_update" ? "いいね！" : reaction_type === "together" ? "一緒に！" : reaction_type === "helpful" ? "参考になった" : "頑張れ！";
+        await sendPushToUser(postData.user_id, {
+          title: "👍 応援が届きました",
+          body: `「${label}」のリアクションをもらいました！`,
+          url: `/sns`,
+        });
+      }
+    }).catch(() => {});
+
   return NextResponse.json({ reaction: data }, { status: 201 });
 }
 

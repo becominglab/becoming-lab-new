@@ -5,6 +5,7 @@ import SnsSidebar from "@/components/sns/SnsSidebar";
 import SnsHeader from "@/components/sns/SnsHeader";
 import ComposeFAB from "@/components/sns/ComposeFAB";
 import { ToastProvider } from "@/contexts/ToastContext";
+import PushNotificationRegistrar from "@/components/sns/PushNotificationRegistrar";
 
 export const metadata: Metadata = {
   title: "Becoming SNS — 更新をつなぐ",
@@ -51,6 +52,7 @@ export default async function SnsLayout({
         </div>
         <SnsNav currentUserId={currentUserId} />
         <ComposeFAB />
+        <PushNotificationRegistrar userId={currentUserId} />
       </div>
     </ToastProvider>
   );

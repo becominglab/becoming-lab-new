@@ -19,10 +19,10 @@ const PHASE_OPTIONS = [
 ];
 
 const SEEKING_OPTIONS = [
-  { value: "accountability", label: "仲間がほしい" },
-  { value: "inspiration", label: "刺激がほしい" },
-  { value: "advice", label: "先輩に聞きたい" },
-  { value: "companionship", label: "一緒に頑張りたい" },
+  { value: "accountability", label: "仲間がほしい", desc: "お互いに進捗を報告しあえる存在", emoji: "🤝" },
+  { value: "inspiration", label: "刺激がほしい", desc: "先に進んでいる人の投稿から刺激をもらいたい", emoji: "⚡" },
+  { value: "advice", label: "先輩に聞きたい", desc: "経験者のアドバイスや知識を参考にしたい", emoji: "💡" },
+  { value: "companionship", label: "一緒に頑張りたい", desc: "同じ目標の仲間と励まし合いたい", emoji: "💪" },
 ];
 
 interface Profile {
@@ -46,7 +46,7 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
   const [nickname, setNickname] = useState(initialProfile?.nickname || "");
   const [bio, setBio] = useState(initialProfile?.bio || "");
   const [tags, setTags] = useState<string[]>(initialProfile?.challenge_tags || []);
-  const [phase, setPhase] = useState(initialProfile?.update_phase || "exploring");
+  const [phase, setPhase] = useState(initialProfile?.update_phase || "starting");
   const [seeking, setSeeking] = useState(initialProfile?.seeking || "");
   const [isPublic, setIsPublic] = useState(initialProfile?.is_public !== false);
   const [avatarUrl, setAvatarUrl] = useState(initialProfile?.avatar_url || "");
@@ -55,6 +55,7 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [customTagInput, setCustomTagInput] = useState("");
+  const [showOptional, setShowOptional] = useState(!!initialProfile); // 編集時は最初から全表示
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addCustomTag = () => {
@@ -203,22 +204,6 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
         <p className="text-xs text-stone-400 mt-1">{nickname.length}/30</p>
       </div>
 
-      {/* 自己紹介 */}
-      <div>
-        <label className="block text-sm font-medium text-stone-700 mb-1">
-          ひとこと自己紹介
-        </label>
-        <textarea
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          maxLength={100}
-          rows={2}
-          placeholder="どんな挑戦をしていますか？"
-          className="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-        <p className="text-xs text-stone-400 mt-1">{bio.length}/100</p>
-      </div>
-
       {/* 挑戦タグ */}
       <div>
         <div className="flex items-center justify-between mb-2">
@@ -279,59 +264,113 @@ export default function ProfileSetupForm({ initialProfile, onSaved }: Props) {
         )}
       </div>
 
-      {/* 更新フェーズ */}
-      <div>
-        <label className="block text-sm font-medium text-stone-700 mb-2">
-          更新フェーズ
-        </label>
-        <div className="space-y-2">
-          {PHASE_OPTIONS.map((opt) => (
-            <label
-              key={opt.value}
-              className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                phase === opt.value
-                  ? "border-teal-500 bg-teal-50"
-                  : "border-stone-200 hover:border-stone-300"
-              }`}
-            >
-              <input
-                type="radio"
-                name="phase"
-                value={opt.value}
-                checked={phase === opt.value}
-                onChange={(e) => setPhase(e.target.value)}
-                className="accent-teal-600"
-              />
-              <div>
-                <p className="text-sm font-medium text-stone-800">{opt.label}</p>
-                <p className="text-xs text-stone-500">{opt.desc}</p>
-              </div>
-            </label>
-          ))}
-        </div>
-      </div>
+      {/* 任意項目のアコーディオン */}
+      <div className="border border-stone-200 rounded-xl overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setShowOptional(!showOptional)}
+          className="w-full flex items-center justify-between px-4 py-3 bg-stone-50 hover:bg-stone-100 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-stone-600">詳細プロフィール（任意）</span>
+            <span className="text-[10px] text-stone-400">自己紹介・フェーズ・求めるつながり</span>
+          </div>
+          <svg
+            width="16" height="16" viewBox="0 0 24 24" fill="none"
+            className={`text-stone-400 transition-transform ${showOptional ? "rotate-180" : ""}`}
+          >
+            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
 
-      {/* 求めるつながり */}
-      <div>
-        <label className="block text-sm font-medium text-stone-700 mb-2">
-          求めるつながり（任意）
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {SEEKING_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => setSeeking(seeking === opt.value ? "" : opt.value)}
-              className={`px-3 py-1.5 rounded-full text-xs transition-colors ${
-                seeking === opt.value
-                  ? "bg-teal-600 text-white"
-                  : "bg-stone-100 text-stone-600 hover:bg-stone-200"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
+        {showOptional && (
+          <div className="p-4 space-y-5">
+            {/* 自己紹介 */}
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1">
+                ひとこと自己紹介
+              </label>
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                maxLength={100}
+                rows={2}
+                placeholder="どんな挑戦をしていますか？"
+                className="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+              <p className="text-xs text-stone-400 mt-1">{bio.length}/100</p>
+            </div>
+
+            {/* 更新フェーズ */}
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-2">
+                更新フェーズ
+              </label>
+              <div className="space-y-2">
+                {PHASE_OPTIONS.map((opt) => (
+                  <label
+                    key={opt.value}
+                    className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                      phase === opt.value
+                        ? "border-teal-500 bg-teal-50"
+                        : "border-stone-200 hover:border-stone-300"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="phase"
+                      value={opt.value}
+                      checked={phase === opt.value}
+                      onChange={(e) => setPhase(e.target.value)}
+                      className="accent-teal-600"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-stone-800">{opt.label}</p>
+                      <p className="text-xs text-stone-500">{opt.desc}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* 求めるつながり */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-stone-700">
+                  求めるつながり
+                </label>
+                <span className="text-xs text-stone-400">あとで変更可</span>
+              </div>
+              <div className="space-y-2">
+                {SEEKING_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setSeeking(seeking === opt.value ? "" : opt.value)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-left transition-colors ${
+                      seeking === opt.value
+                        ? "border-teal-500 bg-teal-50"
+                        : "border-stone-200 hover:border-stone-300 bg-white"
+                    }`}
+                  >
+                    <span className="text-lg shrink-0">{opt.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-medium ${seeking === opt.value ? "text-teal-700" : "text-stone-800"}`}>{opt.label}</p>
+                      <p className="text-xs text-stone-400 truncate">{opt.desc}</p>
+                    </div>
+                    {seeking === opt.value && (
+                      <div className="w-4 h-4 rounded-full bg-teal-600 flex items-center justify-center shrink-0">
+                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                          <path d="M1 4l2.5 2.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 公開設定 */}

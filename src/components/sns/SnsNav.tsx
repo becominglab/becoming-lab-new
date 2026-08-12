@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useToast } from "@/contexts/ToastContext";
 
 interface Props {
   currentUserId?: string;
@@ -101,6 +102,7 @@ export default function SnsNav({ currentUserId }: Props) {
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
   const [streak, setStreak] = useState(0);
+  const { showToast } = useToast();
 
   useEffect(() => {
     // 初回の未読カウント取得
@@ -143,8 +145,24 @@ export default function SnsNav({ currentUserId }: Props) {
           table: "notifications",
           filter: `user_id=eq.${currentUserId}`,
         },
-        () => {
+        (payload) => {
           setUnreadCount((prev) => prev + 1);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const newNotif = (payload as any).new || {};
+          const { type, body } = newNotif;
+          let message: string;
+          if (body) {
+            message = body;
+          } else if (type === "comment") {
+            message = "💬 新しいコメントが届きました！";
+          } else if (type === "reaction") {
+            message = "👍 あなたの投稿に応援が届きました！";
+          } else if (type === "follow") {
+            message = "🎉 新しいフォロワーが増えました！";
+          } else {
+            message = "🔔 新しい通知があります";
+          }
+          showToast(message, "success");
         }
       )
       .subscribe();
