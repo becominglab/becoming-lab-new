@@ -54,11 +54,8 @@ export default function ContactPage() {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Contact</h1>
           <p className="text-gray-500 mb-4">申し込みではありません。対話の入口です。</p>
           <p className="text-sm text-gray-500 leading-relaxed">
-            イベントへの参加は、
-            <a href="mailto:otsukatakao@gmail.com" className="underline hover:opacity-70" style={{ color: "#1B6B7A" }}>
-              otsukatakao@gmail.com
-            </a>
-            {" "}に「行きます」と一言いただくだけでも構いません。
+            イベントへの参加は、下の「興味のあること」を選んで、
+            メッセージ欄に「行きます」と一言いただくだけで構いません。
           </p>
         </div>
       </section>

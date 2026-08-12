@@ -45,13 +45,6 @@ export default function Footer() {
           </Link>
         </div>
         <div className="pt-8 border-t border-white/20">
-          <p className="text-xs opacity-50 mb-2">
-            ご連絡は{" "}
-            <a href="mailto:otsukatakao@gmail.com" className="underline hover:opacity-100">
-              otsukatakao@gmail.com
-            </a>{" "}
-            へ。
-          </p>
           <p className="text-xs opacity-50">© 2026 becoming lab</p>
         </div>
       </div>

@@ -96,15 +96,12 @@ export default function MichiPage() {
             <p className="text-gray-500">予定が変わったら、当日でも構いません。来られなくなったことを、気に病まないでください。</p>
           </div>
           <div className="mt-8 pt-6 border-t border-stone-200">
-            <p className="text-sm text-gray-500 mb-2">ご連絡先</p>
-            <a href="mailto:otsukatakao@gmail.com" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
-              otsukatakao@gmail.com
-            </a>
-            <p className="mt-4">
-              <Link href="/contact" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
-                ▶ フォームから送る
-              </Link>
+            <p className="text-sm text-gray-600 leading-relaxed mb-4">
+              フォームから、ひとこと「行きます」とお送りください。それだけで十分です。
             </p>
+            <Link href="/contact" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
+              ▶ 連絡する
+            </Link>
           </div>
         </div>
       </section>

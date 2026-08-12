@@ -80,14 +80,8 @@ export default function ServicePage() {
       <section className="py-16 bg-[#1B6B7A] text-white">
         <div className="max-w-2xl mx-auto px-8">
           <p className="text-sm opacity-80 mb-6">どれが合うか分からないときも、まずお話しください。</p>
-          <a
-            href="mailto:otsukatakao@gmail.com"
-            className="block hover:opacity-70 transition-opacity mb-3"
-          >
-            ▶ otsukatakao@gmail.com
-          </a>
-          <Link href="/contact" className="block hover:opacity-70 transition-opacity text-sm">
-            ▶ フォームから相談する
+          <Link href="/contact" className="block hover:opacity-70 transition-opacity">
+            ▶ 相談する
           </Link>
         </div>
       </section>
