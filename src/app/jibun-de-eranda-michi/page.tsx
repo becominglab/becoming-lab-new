@@ -69,17 +69,20 @@ export default function KataribePage() {
                 ))}
             </div>
           </div>
-          </div>
         </div>
       </section>
 
       <section className="py-16 bg-[#1B6B7A] text-white">
         <div className="max-w-2xl mx-auto px-8 space-y-4">
-          <Link href="/contact" className="block hover:opacity-70 transition-opacity">
-            ▶ 自分で選んだ道に参加する
+          <p className="text-sm opacity-80 mb-6">参加した仲間と、ここで続けよう</p>
+          <Link href="/jibun-de-eranda-michi/join?vol=2" className="block w-full py-3 bg-white text-[#1B6B7A] text-center font-medium rounded-lg hover:opacity-90 transition-opacity">
+            → SNSで仲間と繋がる（vol.2参加者向け）
           </Link>
-          <Link href="/contact" className="block hover:opacity-70 transition-opacity">
-            ▶ 開催情報を受け取る
+          <Link href="/jibun-de-eranda-michi/join?vol=1" className="block hover:opacity-70 transition-opacity text-sm">
+            → vol.1参加者はこちら
+          </Link>
+          <Link href="/contact" className="block hover:opacity-70 transition-opacity text-sm">
+            → 開催情報を受け取る
           </Link>
         </div>
       </section>
