@@ -1,70 +1,136 @@
 import Link from "next/link";
+import Reveal from "@/components/Reveal";
+import { events, formatDate } from "@/content/events";
+import "@/styles/becoming.css";
 
 export const metadata = {
-  title: "コミュニティメンバー",
-  description: "becoming labには、それぞれの人生を自分で選び、更新し続けようとしている人たちが集まっています。",
+  title: "語った人たち",
+  description: "「自分で選んだ道」で人生の途中を語った方々。完成した人ではなく、途中のまま語る人たちです。becoming lab。",
 };
 
-const members = [
-  {
-    slug: "tachikawa",
-    name: "立川さん",
-    role: "Story Teller / Challenger",
-    path: "猟師として生きる道",
-    description: "国立大卒・ベンチャー企業のエースから、秩父の猟師へ。24歳が選んだ、自分の志の物語。",
-  },
-  {
-    slug: "yamashiro",
-    name: "山岸穂高",
-    role: "Story Teller / Challenger",
-    path: "アスリートとして世界を目指す道",
-    description: "プロトライアスリート。ロングディスタンス日本チャンピオンとして、挑戦し続ける姿をコミュニティに示す。",
-  },
+const rings = (cx: number, cy: number, count: number, step: number) =>
+  Array.from({ length: count }, (_, i) => (
+    <circle
+      key={i}
+      cx={cx}
+      cy={cy}
+      r={step * (i + 1)}
+      fill="none"
+      stroke="var(--bc-mist)"
+      strokeWidth="1"
+      opacity={Math.max(0.1, 0.9 - i * 0.13)}
+      style={{ animationDelay: `${i * 70}ms` }}
+    />
+  ));
+
+const gifts = [
+  { title: "人生が整理される", body: "話すために振り返ると、点だった出来事が、線になって見えてきます。" },
+  { title: "経験が意味に変わる", body: "自分では失敗だと思っていたことが、聴いた人の一歩になることがあります。" },
+  { title: "自分の歩みが肯定される", body: "評価されず、比較されず、ただ聴かれる。それ自体が、深い経験になります。" },
 ];
 
 export default function MembersPage() {
+  const speakers = events.filter((e) => e.guest && e.date).slice().reverse();
+  const today = new Date().toISOString().slice(0, 10);
+
   return (
-    <>
-      {/* ヘッダー */}
-      <section className="pt-32 pb-12">
-        <div className="max-w-2xl mx-auto px-8">
-          <p className="text-xs tracking-widest text-gray-400 mb-4">COMMUNITY MEMBERS</p>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Community Members</h1>
-          <p className="text-gray-600 leading-relaxed">
-            becoming labには、それぞれの人生を自分で選び、更新し続けようとしている人たちが集まっています。<br />
-            ここでは、コミュニティメンバーの「人生の途中の物語」を紹介しています。
-          </p>
+    <div className="bc">
+      <section className="bc-hero bc-hero-sub">
+        <svg
+          className="bc-hero-rings"
+          viewBox="0 0 680 300"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+        >
+          {rings(600, 150, 6, 46)}
+        </svg>
+        <div className="bc-wrap bc-hero-inner">
+          <p className="bc-eyebrow">SPEAKERS</p>
+          <h1>語った人たち</h1>
+          <p className="bc-voice">完成した人ではありません。途中のまま話してくれた人たちです。</p>
         </div>
       </section>
 
-      {/* メンバー一覧 */}
-      <section className="pb-20">
-        <div className="max-w-2xl mx-auto px-8">
-          <div className="space-y-8">
-            {members.map((member) => (
-              <Link key={member.slug} href={`/members/${member.slug}`} className="block group">
-                <div className="border border-stone-200 p-8 hover:border-stone-400 transition-colors duration-300">
-                  <p className="text-xs tracking-widest text-stone-400 mb-2">{member.role}</p>
-                  <h2 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#1B6B7A] transition-colors">{member.name}</h2>
-                  <p className="text-sm text-stone-500 mb-4">自分で選んだ道：{member.path}</p>
-                  <p className="text-gray-600 text-sm leading-relaxed">{member.description}</p>
-                  <p className="text-sm text-[#1B6B7A] mt-4">▶ 詳しく読む</p>
+      <section className="bc-wrap bc-block">
+        <div className="bc-speakers">
+          {speakers.map((e, i) => {
+            const upcoming = e.date! >= today;
+            return (
+              <Reveal key={e.vol} delay={i * 90}>
+                <div className="bc-speaker">
+                  <div className="bc-speaker-meta">
+                    <span className="bc-speaker-vol">
+                      vol.{String(e.vol).padStart(2, "0")}
+                    </span>
+                    <span>{formatDate(e.date)}</span>
+                    {upcoming && <span className="bc-speaker-next">次回</span>}
+                  </div>
+                  <h2 className="bc-speaker-name">{e.guest}</h2>
+                  <p className="bc-speaker-theme">{e.theme}</p>
+                  <div className="bc-speaker-links">
+                    {e.profile && <Link href={e.profile}>この人の物語を読む →</Link>}
+                    {e.href && <Link href={e.href}>この回を見る →</Link>}
+                  </div>
                 </div>
-              </Link>
-            ))}
+              </Reveal>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="bc-band">
+        <div className="bc-wrap">
+          <Reveal>
+            <p className="bc-eyebrow">SPEAKING</p>
+            <h2 className="bc-h2">スピーカーという在り方</h2>
+            <div className="bc-prose">
+              <p>スピーカーは、完成した人ではありません。途中のまま語る人です。</p>
+              <p>語ることで輪郭が生まれ、聴くことで重なり、次の語りが生まれます。</p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="bc-wrap bc-block">
+        <Reveal>
+          <h2 className="bc-h2">語る側に、起きること</h2>
+          <p className="bc-lead">
+            聴く人のためだけの時間ではありません。いちばん変わるのは、話した本人であることが多いです。
+          </p>
+        </Reveal>
+        <div className="bc-stack">
+          {gifts.map((g, i) => (
+            <Reveal key={g.title} delay={i * 130}>
+              <div className="bc-gift">
+                <span className="bc-line-num">{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <p className="bc-gift-title">{g.title}</p>
+                  <p className="bc-gift-body">{g.body}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      <section className="bc-cta">
+        <div className="bc-wrap">
+          <p className="bc-cta-kicker">NEXT SPEAKER</p>
+          <h2>次に語るのは、あなたかもしれません。</h2>
+          <p className="bc-cta-sub">
+            実績も、肩書きも要りません。まだ途中である、ということだけが条件です。
+          </p>
+          <div className="bc-cta-actions">
+            <Link className="bc-btn bc-btn-invert" href="/contact">
+              話してみる
+            </Link>
+            <p className="bc-cta-note">まずは一度、聴きに来ていただくのがおすすめです</p>
+            <div className="bc-letter-signup">
+              <Link href="/jibun-de-eranda-michi">▶ 「自分で選んだ道」について</Link>
+            </div>
           </div>
         </div>
       </section>
-
-      {/* フッターCTA */}
-      <section className="py-16 bg-stone-50">
-        <div className="max-w-2xl mx-auto px-8 text-center">
-          <p className="text-gray-600 mb-6">あなたも、becoming labの一員として<br />自分の物語を歩みませんか。</p>
-          <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B6B7A] text-white hover:bg-[#155a67] transition-colors duration-300 text-sm">
-            <span>▶</span> まず話してみる
-          </Link>
-        </div>
-      </section>
-    </>
+    </div>
   );
 }

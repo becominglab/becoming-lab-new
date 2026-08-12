@@ -874,6 +874,90 @@
   }
 }
 
+
+/* --- speakers ------------------------------------------------------------ */
+
+.bc-speakers {
+  display: flex;
+  flex-direction: column;
+}
+
+.bc-speaker {
+  padding: 26px 0;
+  border-bottom: 1px solid rgba(0, 108, 133, 0.12);
+}
+
+.bc-speaker-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--bc-muted);
+  margin: 0 0 8px;
+}
+
+.bc-speaker-vol {
+  font-family: var(--bc-mono);
+  color: var(--bc-teal);
+}
+
+.bc-speaker-next {
+  background: var(--bc-teal);
+  color: #fff;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-size: 10px;
+}
+
+.bc-speaker-name {
+  font-size: clamp(20px, 2.8vw, 24px);
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.bc-speaker-theme {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--bc-body);
+  margin: 0 0 14px;
+  max-width: 560px;
+}
+
+.bc-speaker-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.bc-speaker-links a {
+  font-size: 13px;
+  color: var(--bc-teal);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+}
+
+.bc-gift {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(0, 108, 133, 0.12);
+}
+
+.bc-gift-title {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.bc-gift-body {
+  margin: 0;
+  font-size: 13px;
+  line-height: 2;
+  color: var(--bc-body);
+}
+
 /* --- responsive --------------------------------------------------------- */
 
 @media (max-width: 720px) {

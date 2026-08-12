@@ -6,6 +6,8 @@ export type BecomingEvent = {
   theme: string | null;
   /** 各回の詳細ページ。あれば線の点がリンクになる */
   href?: string;
+  /** スピーカーの紹介ページ。あれば members から個別ページへ繋がる */
+  profile?: string;
   subtitle?: string;
   time?: string;
   doorsOpen?: string;
@@ -28,6 +30,7 @@ export const events: BecomingEvent[] = [
     guest: '立川雄介',
     theme: '圧倒的成果を手放し、山へ還った24歳',
     href: '/jibun-de-eranda-michi/vol1',
+    profile: '/members/tachikawa',
   },
   {
     vol: 2,
@@ -35,6 +38,7 @@ export const events: BecomingEvent[] = [
     guest: '山岸穂高',
     theme: 'ロングディスタンス日本一。そしてプロアスリートへ。',
     href: '/jibun-de-eranda-michi/vol2',
+    profile: '/members/yamashiro',
   },
   {
     vol: 3,
