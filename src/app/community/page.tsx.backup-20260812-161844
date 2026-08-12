@@ -82,16 +82,23 @@ export default function CommunityPage() {
             <p className="text-gray-500">ここは、自分を整えながら、他者と重なっていく場です。</p>
           </div>
 
-          {/* 道 */}
+          {/* 主な活動 */}
           <div className="mb-16">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">主な活動</h2>
-            <div className="space-y-4 text-gray-600 leading-relaxed mb-6">
-              <p>月に一度のトークイベント「自分で選んだ道」を起点に、走る会、食事会、勉強会や対話会、合宿など、いくつかの集まりが続いています。</p>
-              <p className="text-gray-500">それぞれの日程と参加のしかたは、「道」にまとめています。</p>
+            <h2 className="text-xl font-bold text-gray-900 mb-8">主な活動</h2>
+            <div className="space-y-8">
+              {[
+                { title: "自分で選んだ道（月1回）", body: "人生の途中を語り、聴き合う時間。すべての活動の起点です。" },
+                { title: "食事会", body: "肩書きや役割を外し、同じテーブルを囲んで言葉を交わします。" },
+                { title: "ウォーキング・ランニング・トライアスロン", body: "ウォーキングや皇居ラン、トライアスロン練習体験会など、身体を動かしながら、自分と向き合う時間。初心者の方も歓迎しています。機材のレンタルに対応できることもありますので、お気軽にご相談ください。" },
+                { title: "勉強会・対話会", body: "仕事・家族・人生について、正解を探すのではなく、問いを深める場。" },
+                { title: "合宿・リトリート（不定期）", body: "日常を離れ、人生全体を見渡すための時間。" },
+              ].map((act, i) => (
+                <div key={i}>
+                  <h3 className="font-bold text-gray-900 mb-2">{act.title}</h3>
+                  <p className="text-gray-600 text-sm">{act.body}</p>
+                </div>
+              ))}
             </div>
-            <Link href="/michi" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
-              ▶ 道を見る
-            </Link>
           </div>
 
           {/* コミュニティとの関わり方 */}
