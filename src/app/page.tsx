@@ -127,6 +127,23 @@ export default function Home() {
         ))}
       </section>
 
+      <section className="bc-ways">
+        <div className="bc-wrap">
+          <p className="bc-eyebrow">道は、一つではない。</p>
+          <div className="bc-ways-list">
+            <Link href="/michi/au" className="bc-way">
+              <span className="bc-way-verb">会う。</span>
+              <span className="bc-way-note">毎月一度、皇居に集まる</span>
+            </Link>
+            <Link href="/michi/kakomu" className="bc-way">
+              <span className="bc-way-verb">囲む。</span>
+              <span className="bc-way-note">8名で、テーブルを囲む</span>
+            </Link>
+          </div>
+          <Link href="/michi" className="bc-ways-more">道を見る →</Link>
+        </div>
+      </section>
+
       <section className="bc-letter">
         <svg
           className="bc-letter-rings"
