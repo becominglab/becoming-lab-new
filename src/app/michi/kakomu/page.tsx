@@ -1,13 +1,51 @@
 import Link from "next/link";
+import JsonLd from "@/components/JsonLd";
 
 export const metadata = {
-  title: "その道を、囲む",
-  description: "8名で、一つのテーブルを囲みます。肩書きも名刺交換もない、月に一度の食事会。becoming lab 主催、2026年9月より。",
+  title: "その道を、囲む ｜ 8名だけの食事会",
+  description:
+    "8名で、一つのテーブルを囲む月に一度の食事会。肩書きを言わず、名刺交換もしません。営業の場ではありません。東京・神田／日本橋周辺で、2026年9月より開催します。",
+  keywords: ["少人数 食事会 東京", "神田 交流会", "名刺交換なし 交流", "対話の場"],
+  alternates: { canonical: "https://becominglab.life/michi/kakomu" },
+  openGraph: {
+    title: "その道を、囲む ｜ becoming lab",
+    description: "8名で、一つのテーブルを囲みます。肩書きも、名刺交換もありません。",
+    url: "https://becominglab.life/michi/kakomu",
+    type: "website",
+  },
 };
 
 export default function KakomuPage() {
+  const event = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: "その道を、囲む ─ 8名だけの食事会",
+    description:
+      "8名で、一つのテーブルを囲む月に一度の食事会。肩書きを言わず、名刺交換もしません。問いを一つ、全員で持ちます。",
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    maximumAttendeeCapacity: 8,
+    location: {
+      "@type": "Place",
+      name: "東京・神田／日本橋周辺",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "千代田区",
+        addressRegion: "東京都",
+        addressCountry: "JP",
+      },
+    },
+    organizer: {
+      "@type": "Organization",
+      name: "becoming lab",
+      url: "https://becominglab.life",
+    },
+    url: "https://becominglab.life/michi/kakomu",
+  };
+
   return (
     <>
+      <JsonLd data={event} />
       <section className="pt-32 pb-12">
         <div className="max-w-2xl mx-auto px-8">
           <p className="text-xs tracking-widest text-gray-400 mb-4">MICHI</p>

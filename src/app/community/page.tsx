@@ -4,8 +4,17 @@ import Cycle from "@/components/Cycle";
 import "@/styles/becoming.css";
 
 export const metadata = {
-  title: "コミュニティ",
-  description: "語り、聴き、一緒に過ごす場。becoming labのコミュニティで、日常が少しずつ更新されていく。",
+  title: "コミュニティ ｜ 東京・神田で人生を語り合う場",
+  description:
+    "becoming lab は、東京・神田を拠点に、自分で選んだ道を尊重し合うコミュニティです。会う、整う、更新する。入会手続きも会費もありません。迷っている人、挑戦の途中の人が集まっています。",
+  keywords: ["コミュニティ 東京", "神田 コミュニティ", "社会人 コミュニティ", "対話 コミュニティ", "自分で選んだ道"],
+  alternates: { canonical: "https://becominglab.life/community" },
+  openGraph: {
+    title: "コミュニティ ｜ becoming lab",
+    description: "会う、整う、更新する。一度きりでは、終わりません。",
+    url: "https://becominglab.life/community",
+    type: "website",
+  },
 };
 
 const rings = (cx: number, cy: number, count: number, step: number) =>

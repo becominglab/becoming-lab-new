@@ -1,13 +1,55 @@
 import Link from "next/link";
+import JsonLd from "@/components/JsonLd";
+import { upcoming } from "@/content/michi";
 
 export const metadata = {
-  title: "その道で、会う",
-  description: "毎月一度、皇居に集まります。走っても、歩いても、懇親会だけでも。錦町ランニングクラブへの参加を、becoming lab では「その道で、会う」として案内しています。",
+  title: "その道で、会う ｜ 皇居ラン・ウォーキングと勉強会",
+  description:
+    "毎月一度、皇居に集まります。走っても、歩いても、懇親会だけでも。走力は問いません。一人での参加が大半です。勉強会は無料。東京・神田の錦町ランニングクラブへの参加案内です。",
+  keywords: ["皇居ラン", "皇居ランニング 初心者", "神田 ランニングクラブ", "ウォーキング 東京", "社会人 交流"],
+  alternates: { canonical: "https://becominglab.life/michi/au" },
+  openGraph: {
+    title: "その道で、会う ｜ becoming lab",
+    description: "毎月一度、皇居に集まります。走っても、歩いても、懇親会だけでも。",
+    url: "https://becominglab.life/michi/au",
+    type: "website",
+  },
 };
 
 export default function AuPage() {
+  const next = upcoming.find((e) => e.slug === "au");
+
+  const event = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: "その道で、会う ─ 錦町ランニングクラブ",
+    description:
+      "毎月一度、皇居に集まります。走っても、歩いても、懇親会だけでも。走力は問いません。一人での参加が大半です。",
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    startDate: next?.date ?? undefined,
+    location: {
+      "@type": "Place",
+      name: "皇居周辺",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "千代田区",
+        addressRegion: "東京都",
+        addressCountry: "JP",
+      },
+    },
+    organizer: {
+      "@type": "Organization",
+      name: "becoming lab",
+      url: "https://becominglab.life",
+    },
+    isAccessibleForFree: true,
+    url: "https://becominglab.life/michi/au",
+  };
+
   return (
     <>
+      <JsonLd data={event} />
       <section className="pt-32 pb-12">
         <div className="max-w-2xl mx-auto px-8">
           <p className="text-xs tracking-widest text-gray-400 mb-4">MICHI</p>

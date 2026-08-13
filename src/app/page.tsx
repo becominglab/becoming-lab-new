@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import JsonLd from '@/components/JsonLd';
 import RingMark from '@/components/RingMark';
 import Timeline from '@/components/Timeline';
 import Voices from '@/components/Voices';
@@ -85,8 +86,40 @@ const pillars = [
 export default function Home() {
   const next = nextEvent();
 
+  const org = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'becoming lab',
+    alternateName: 'ビカミングラボ',
+    url: 'https://becominglab.life',
+    logo: 'https://becominglab.life/images/logo.png',
+    description:
+      '東京・神田錦町を拠点に、自分で選んだ道を語り合うコミュニティ。月に一度のトークイベント「自分で選んだ道」を中心に、会う・整う・更新するを重ねています。',
+    founder: [
+      { '@type': 'Person', name: '大塚貴生' },
+      { '@type': 'Person', name: '大塚昌代' },
+    ],
+    areaServed: { '@type': 'City', name: '東京' },
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: '千代田区',
+      addressRegion: '東京都',
+      addressCountry: 'JP',
+    },
+  };
+
+  const site = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'becoming lab',
+    url: 'https://becominglab.life',
+    inLanguage: 'ja',
+  };
+
   return (
     <div className="bc">
+      <JsonLd data={org} />
+      <JsonLd data={site} />
       <section className="bc-hero">
         <svg
           className="bc-hero-rings"

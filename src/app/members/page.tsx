@@ -4,8 +4,17 @@ import { events, formatDate } from "@/content/events";
 import "@/styles/becoming.css";
 
 export const metadata = {
-  title: "語った人たち",
-  description: "「自分で選んだ道」で人生の途中を語った方々。完成した人ではなく、途中のまま語る人たちです。becoming lab。",
+  title: "語った人たち ｜ 「自分で選んだ道」スピーカー",
+  description:
+    "becoming lab のトークイベント「自分で選んだ道」で人生の途中を語った方々。猟師、プロトライアスリート、経営者、都市デザイナー。完成した人ではなく、途中のまま語る人たちの一覧です。",
+  keywords: ["自分で選んだ道", "トークイベント 東京", "神田 イベント", "生き方 講演", "becoming lab"],
+  alternates: { canonical: "https://becominglab.life/members" },
+  openGraph: {
+    title: "語った人たち ｜ becoming lab",
+    description: "完成した人ではありません。途中のまま話してくれた人たちです。",
+    url: "https://becominglab.life/members",
+    type: "website",
+  },
 };
 
 const rings = (cx: number, cy: number, count: number, step: number) =>
