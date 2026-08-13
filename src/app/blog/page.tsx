@@ -35,6 +35,9 @@ const rings = (cx: number, cy: number, count: number, step: number) =>
     />
   ));
 
+const noteKeyOf = (link: string) =>
+  (link.match(/\/n\/(n[0-9a-z]+)/) || [])[1] ?? null;
+
 export default async function BlogPage() {
   const posts = await fetchNotePosts();
 
@@ -82,15 +85,29 @@ export default async function BlogPage() {
         ) : (
           <>
             <div className="bc-posts">
-              {posts.map((p, i) => (
-                <Reveal key={p.link} delay={i * 80}>
-                  <a className="bc-post" href={p.link} target="_blank" rel="noreferrer">
+              {posts.map((p, i) => {
+                const k = noteKeyOf(p.link);
+                const inner = (
+                  <>
                     <p className="bc-post-date">{p.date}</p>
                     <h2 className="bc-post-title">{p.title}</h2>
                     {p.excerpt && <p className="bc-post-excerpt">{p.excerpt}</p>}
-                  </a>
-                </Reveal>
-              ))}
+                  </>
+                );
+                return (
+                  <Reveal key={p.link} delay={i * 80}>
+                    {k ? (
+                      <Link className="bc-post" href={`/blog/${k}`}>
+                        {inner}
+                      </Link>
+                    ) : (
+                      <a className="bc-post" href={p.link} target="_blank" rel="noreferrer">
+                        {inner}
+                      </a>
+                    )}
+                  </Reveal>
+                );
+              })}
             </div>
             <Reveal delay={300}>
               <p className="bc-more">
