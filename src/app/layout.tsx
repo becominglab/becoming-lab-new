@@ -4,11 +4,54 @@ import "./globals.css";
 import ConditionalShell from "@/components/ConditionalShell";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://becominglab.life"),
   title: {
     default: "becoming lab | 更新を重ねる人生を",
     template: "%s | becoming lab",
   },
-  description: "人生の途中にいる人が、自分の物語を語り、次の一歩を見つけていくための対話の場です。",
+  description:
+    "人生の途中にいる人が、自分の物語を語り、次の一歩を見つけていくための対話の場です。東京・神田錦町を拠点に、会う・整う・更新するを重ねています。",
+  applicationName: "becoming lab",
+  authors: [{ name: "大塚貴生" }, { name: "大塚昌代" }],
+  creator: "becoming lab",
+  publisher: "becoming lab",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    url: "https://becominglab.life",
+    siteName: "becoming lab",
+    title: "becoming lab | 更新を重ねる人生を",
+    description:
+      "人は、いつからでも選び直せる。仲間がいれば、何度でも。東京・神田で、会う・整う・更新するを重ねているコミュニティです。",
+    images: [
+      {
+        url: "/images/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "becoming lab",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "becoming lab | 更新を重ねる人生を",
+    description: "人は、いつからでも選び直せる。仲間がいれば、何度でも。",
+    images: ["/images/logo.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   verification: {
     google: "grgFKqkwOPmHyXiBsIxG8o3Upo0FlbVa28IEjgc84jo",
   },
