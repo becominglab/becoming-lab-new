@@ -43,9 +43,6 @@ export default function Footer() {
           <Link href="/blog" className="hover:opacity-100 transition-opacity">
             読みもの
           </Link>
-          <Link href="/mypage" className="hover:opacity-100 transition-opacity">
-            マイページ
-          </Link>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm opacity-70 mb-12">
           <a
