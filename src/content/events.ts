@@ -38,7 +38,7 @@ export const events: BecomingEvent[] = [
     guest: '山岸穂高',
     theme: 'ロングディスタンス日本一。そしてプロアスリートへ。',
     href: '/jibun-de-eranda-michi/vol2',
-    profile: '/members/yamashiro',
+    profile: '/members/yamagishi',
   },
   {
     vol: 3,

@@ -31,7 +31,7 @@ const MOCK_MEMBERS: CommunityMember[] = [
     latestUpdate:
       "シーズン開幕まであと2ヶ月。今日のバイク練習で自己ベストを更新。長い冬のトレーニングが少しずつ実を結んでいる。",
     date: "2026-03-12",
-    slug: "yamashiro",
+    slug: "yamagishi",
   },
   {
     id: "m3",
