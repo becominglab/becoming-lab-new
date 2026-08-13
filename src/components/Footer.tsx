@@ -41,7 +41,7 @@ export default function Footer() {
             Contact
           </Link>
           <Link href="/blog" className="hover:opacity-100 transition-opacity">
-            書きもの
+            読みもの
           </Link>
           <Link href="/mypage" className="hover:opacity-100 transition-opacity">
             マイページ

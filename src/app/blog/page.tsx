@@ -6,12 +6,12 @@ import "@/styles/becoming.css";
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "書きもの ｜ note",
+  title: "読みもの ｜ note",
   description:
     "becoming lab の note。人生の途中で考えていること、月に一つの問い、会のあとに残った言葉を書いています。東京・神田のコミュニティ becoming lab。",
   alternates: { canonical: "https://becominglab.life/blog" },
   openGraph: {
-    title: "書きもの ｜ becoming lab",
+    title: "読みもの ｜ becoming lab",
     description: "人生の途中で考えていることを、note に書いています。",
     url: "https://becominglab.life/blog",
     type: "website",
@@ -51,7 +51,7 @@ export default async function BlogPage() {
         </svg>
         <div className="bc-wrap bc-hero-inner">
           <p className="bc-eyebrow">NOTE</p>
-          <h1>書きもの</h1>
+          <h1>読みもの</h1>
           <p className="bc-voice">考えている途中のことを、そのまま置いています。</p>
         </div>
       </section>
@@ -88,7 +88,6 @@ export default async function BlogPage() {
                     <p className="bc-post-date">{p.date}</p>
                     <h2 className="bc-post-title">{p.title}</h2>
                     {p.excerpt && <p className="bc-post-excerpt">{p.excerpt}</p>}
-                    <span className="bc-post-more">note で読む →</span>
                   </a>
                 </Reveal>
               ))}

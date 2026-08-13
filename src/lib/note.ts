@@ -22,6 +22,8 @@ const pick = (block: string, tag: string) => {
 const stripTags = (s: string) =>
   s
     .replace(/<[^>]+>/g, "")
+    .replace(/続きをみる/g, "")
+    .replace(/続きを読む/g, "")
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
