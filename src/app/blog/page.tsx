@@ -63,7 +63,7 @@ export default async function BlogPage() {
         <Reveal>
           <div className="bc-prose">
             <p>
-              会のできごとは<Link href="/michi/kiroku">あの日の記録</Link>に、
+              会のできごとは<Link href="/michi">道</Link>に、
               考えていることは note に書いています。
             </p>
           </div>

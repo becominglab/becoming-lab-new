@@ -48,7 +48,6 @@ export default function Header() {
   };
 
   const navItems = [
-    { href: "/mypage", label: "マイページ" },
     { href: "/concept", label: "Concept" },
     { href: "/michi", label: "道" },
     { href: "/community", label: "Community" },
