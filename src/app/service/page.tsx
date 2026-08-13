@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "サービス",
-  description: "1on1セッション・神夫養成研究所。自分の在り方を整え、人生の軸を見つけるプログラム。becoming lab。",
+  description: "1on1セッションと、夫婦関係の講座。自分の在り方を整え、人生の軸を見つけていくためのプログラムです。東京・神田の becoming lab。",
 };
 
 export default function ServicePage() {
@@ -46,32 +46,47 @@ export default function ServicePage() {
 
           <div className="pt-16 border-t border-stone-200">
             <p className="text-xs tracking-widest text-gray-400 mb-3">02　夫婦で向き合う</p>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">神夫養成研究所</h2>
-            <p className="text-sm text-gray-400 mb-6">by 大塚昌代　― 幸せは家庭から ―</p>
-            <div className="space-y-4 text-gray-600 leading-relaxed mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">夫婦のことを、話してみる</h2>
+
+            <div className="space-y-4 text-gray-600 leading-relaxed mb-8">
               <p>
-                夫婦関係を通じて人生を整え、家庭から幸せの循環を広げていくための学びの場です。
+                自分ひとりで整えるには、限界があるところがあります。いちばん近い人との関係は、特にそうかもしれません。
+              </p>
+              <p>
+                相手を変えることからではなく、自分の在り方を整えることから始める。互いを尊重し、支え合い、「この人と出会えてよかった」と思える関係を、少しずつ育てていく。
               </p>
               <p className="py-4 border-l-2 border-stone-200 pl-6 text-gray-500">
-                在り方が、家庭を変える。<br />
-                家庭が、世界を照らす。
+                幸せは家庭から。
               </p>
               <p>
-                「相手を変えること」ではなく、自分の在り方を整えることから始めます。夫を変える場所ではなく、あなた自身が整い、本来の輝きを取り戻す場所です。
-              </p>
-              <p className="text-gray-500 text-sm">
-                覚醒期・共鳴期・神化期という三つの段階を通して、夫婦が互いを通して成長し合う関係へと進んでいきます。
+                becoming lab の運営者が、夫婦関係をテーマにした講座を別に開いています。
+                <span className="text-gray-500">「神夫養成研究所」</span>
+                という名前です。
               </p>
             </div>
-            <a
-              href="https://kamiotto.jp/koza"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm hover:opacity-70 transition-opacity"
-              style={{ color: "#1B6B7A" }}
-            >
-              ▶ 講座の詳細はこちら
-            </a>
+
+            <div className="space-y-3">
+              <p>
+                <a
+                  href="https://kamiotto.jp/koza"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm hover:opacity-70 transition-opacity"
+                  style={{ color: "#1B6B7A" }}
+                >
+                  ▶ 講座について見る
+                </a>
+              </p>
+              <p>
+                <Link
+                  href="/contact"
+                  className="text-sm hover:opacity-70 transition-opacity"
+                  style={{ color: "#1B6B7A" }}
+                >
+                  ▶ まず、話を聞いてみる
+                </Link>
+              </p>
+            </div>
           </div>
 
         </div>
