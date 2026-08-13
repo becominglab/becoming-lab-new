@@ -91,10 +91,10 @@ export default function Header() {
               </button>
             ) : (
               <Link
-                href="/login"
+                href="/blog"
                 className="px-4 py-2 bg-[#1B6B7A] text-white rounded hover:bg-[#155a67] transition-colors text-xs"
               >
-                ログイン
+                読みもの
               </Link>
             )}
           </li>
@@ -138,11 +138,11 @@ export default function Header() {
                 </button>
               ) : (
                 <Link
-                  href="/login"
+                  href="/blog"
                   className="inline-block px-4 py-2 bg-[#1B6B7A] text-white rounded hover:bg-[#155a67] transition-colors text-sm"
                   onClick={() => setIsOpen(false)}
                 >
-                  ログイン
+                  読みもの
                 </Link>
               )}
             </li>
