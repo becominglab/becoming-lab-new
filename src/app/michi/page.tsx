@@ -4,7 +4,7 @@ import { upcoming, jpDate } from "@/content/michi";
 export const metadata = {
   title: "道 ｜ 東京・神田のコミュニティ活動",
   description:
-    "東京・神田を拠点とするコミュニティ becoming lab の活動一覧。月1回のトークイベント「自分で選んだ道」、皇居ランと勉強会、8名の食事会。申込フォームはありません。一言のご連絡で参加できます。",
+    "東京・神田を拠点とするコミュニティ becoming lab の活動一覧。月1回のトークイベント「自分で選んだ道」、皇居ランと勉強会、8名の食事会。走る会と食事会は、一言のご連絡で参加できます。",
   alternates: { canonical: "https://becominglab.life/michi" },
   openGraph: {
     title: "道 ｜ becoming lab",
@@ -105,7 +105,7 @@ export default function MichiPage() {
           </div>
           <div className="mt-8 pt-6 border-t border-stone-200">
             <p className="text-sm text-gray-600 leading-relaxed mb-4">
-              フォームから、ひとこと「行きます」とお送りください。それだけで十分です。
+              走る会と食事会のご連絡は、こちらのフォームから。ひとこと「行きます」で十分です。
             </p>
             <Link href="/contact" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
               ▶ 連絡する
