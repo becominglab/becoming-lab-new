@@ -12,7 +12,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/michi", priority: 0.9, freq: "weekly" },
     { path: "/michi/au", priority: 0.8, freq: "monthly" },
     { path: "/michi/kakomu", priority: 0.8, freq: "monthly" },
-    { path: "/michi/kiroku", priority: 0.7, freq: "weekly" },
     { path: "/jibun-de-eranda-michi", priority: 0.9, freq: "monthly" },
     { path: "/jibun-de-eranda-michi/archive", priority: 0.8, freq: "monthly" },
     { path: "/concept", priority: 0.8, freq: "monthly" },

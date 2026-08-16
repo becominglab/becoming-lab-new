@@ -21,24 +21,6 @@ export const upcoming: MichiEvent[] = [
   },
 ];
 
-export type Record = {
-  /** URL に使う日付 */
-  date: string;
-  michi: 'au' | 'kakomu' | 'jibun-de-eranda-michi';
-  label: string;
-  question?: string;
-  /** 掲載の許可をいただいた言葉だけ */
-  voices?: { text: string; name?: string }[];
-};
-
-/**
- * あの日の記録。
- * 会の翌日に、ここへ1件足すだけで一覧と個別ページができます。
- * 載せるのは、掲載してよいと言っていただいた言葉だけです。
- * 匿名で構いません。name を省けば匿名で表示されます。
- */
-export const records: Record[] = [];
-
 export const formatDate = (iso: string) => iso.replace(/-/g, '.');
 
 export const jpDate = (iso: string) => {

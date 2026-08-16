@@ -161,8 +161,8 @@ export default function KakomuPage() {
 
       <section className="py-16 bg-stone-50">
         <div className="max-w-2xl mx-auto px-8 space-y-4">
-          <Link href="/michi/kiroku" className="block text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
-            ▶ あの日の記録を読む
+          <Link href="/blog" className="block text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
+            ▶ 会のあとに書いたもの
           </Link>
           <Link href="/michi" className="block text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
             ▶ ほかの道を見る
