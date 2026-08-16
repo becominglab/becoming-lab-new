@@ -8,6 +8,8 @@ export type BecomingEvent = {
   href?: string;
   /** スピーカーの紹介ページ。あれば members から個別ページへ繋がる */
   profile?: string;
+  /** 一覧に出す短い一行。省略すると theme が使われます */
+  short?: string;
   subtitle?: string;
   time?: string;
   doorsOpen?: string;
@@ -29,6 +31,7 @@ export const events: BecomingEvent[] = [
     date: '2026-03-12',
     guest: '立川雄介',
     theme: '圧倒的成果を手放し、山へ還った24歳',
+    short: '圧倒的成果を手放し、山へ還った24歳',
     href: '/jibun-de-eranda-michi/vol1',
     profile: '/members/tachikawa',
   },
@@ -37,14 +40,16 @@ export const events: BecomingEvent[] = [
     date: '2026-04-22',
     guest: '山岸穂高',
     theme: 'ロングディスタンス日本一。そしてプロアスリートへ。',
+    short: 'ロングディスタンス日本一。そしてプロへ',
     href: '/jibun-de-eranda-michi/vol2',
-    profile: '/members/yamagishi',
+    profile: '/members/yamashiro',
   },
   {
     vol: 3,
     date: '2026-05-19',
     guest: '山崎満広',
     theme: 'なぜ彼は、アメリカで道を切り拓けたのか',
+    short: 'なぜ彼は、アメリカで道を切り拓けたのか',
     href: '/jibun-de-eranda-michi/vol3',
   },
   {
@@ -52,6 +57,7 @@ export const events: BecomingEvent[] = [
     date: '2026-06-24',
     guest: '佐藤加奈子',
     theme: '最前線で戦う女性は、何を見ているのか',
+    short: '最前線で戦う女性は、何を見ているのか',
     href: '/jibun-de-eranda-michi/vol4',
   },
   {
@@ -59,6 +65,7 @@ export const events: BecomingEvent[] = [
     date: '2026-07-15',
     guest: '鬼木陽一',
     theme: '100億円の事業をつくった人が、それでも「何でもない自分」を、生きている',
+    short: '100億円をつくった人が、何でもない自分を生きている',
     href: '/jibun-de-eranda-michi/vol5',
   },
   {
@@ -66,6 +73,7 @@ export const events: BecomingEvent[] = [
     date: '2026-08-05',
     guest: '亀田憲',
     theme: '人生カスタマイズ時代を、どう生きるのか',
+    short: '人生カスタマイズ時代を、どう生きるのか',
     href: '/jibun-de-eranda-michi/vol6',
   },
   {
@@ -98,6 +106,15 @@ export const nextEvent = () => {
     [...events].reverse().find((e) => e.guest) ??
     null
   );
+};
+
+/** 開催済みの回を、新しい順に */
+export const pastEvents = () => {
+  const next = nextEvent();
+  return events
+    .filter((e) => e.guest && e.date && e.vol !== next?.vol)
+    .slice()
+    .reverse();
 };
 
 /** 線に表示する範囲。直近8回＋これから3枠に収める */

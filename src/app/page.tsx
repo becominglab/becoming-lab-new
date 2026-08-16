@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
 import RingMark from '@/components/RingMark';
-import Timeline from '@/components/Timeline';
+import NextAndPast from '@/components/NextAndPast';
 import Voices from '@/components/Voices';
 import { formatDate, nextEvent } from '@/content/events';
 import '@/styles/becoming.css';
@@ -144,7 +144,7 @@ export default function Home() {
         <p>会う、整う、更新する。</p>
       </section>
 
-      <Timeline />
+      <NextAndPast />
       <Voices />
 
       <section className="bc-pillars" aria-label="becoming labの3つの柱">
