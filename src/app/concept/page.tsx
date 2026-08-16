@@ -72,6 +72,39 @@ export default function ConceptPage() {
             </p>
           </div>
 
+          {/* Cultures */}
+          <div className="mb-16">
+            <p className="text-xs tracking-widest text-gray-400 mb-6">CULTURES</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">ここで大切にしていること</h2>
+            <p className="text-gray-600 leading-relaxed mb-10">
+              三つだけです。守ってもらうルールではなく、ここにいる人たちが自然とそうしていることです。
+            </p>
+            <div className="space-y-10">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">会う。</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  完成したふりをしなくていい。誰もが途中。
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">整う。</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  答えより、問いを。比べるなら、昨日の自分と。
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">更新する。</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  一点だけ、決める。動いた自分で、また会いにいく。
+                </p>
+              </div>
+            </div>
+            <p className="mt-8 text-sm text-gray-500 leading-relaxed">
+              三つ目が「また会いにいく」で終わるのは、一つ目に戻るからです。
+              一周したら、また始まります。何周しても構いません。
+            </p>
+          </div>
+
           {/* スピーカーという在り方 */}
           <div className="mb-16">
             <h2 className="text-xl font-bold text-gray-900 mb-6">スピーカーという在り方</h2>
@@ -141,35 +174,20 @@ export default function ConceptPage() {
         </div>
       </section>
 
-      {/* becoming lab 憲章 */}
       <section className="py-20 bg-stone-50">
         <div className="max-w-2xl mx-auto px-8">
-          <p className="text-xs tracking-widest text-gray-400 mb-4">CHARTER</p>
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">becoming lab 憲章</h2>
-          <p className="text-gray-600 leading-relaxed mb-10">
-            ルールというより、ここにいる人たちが自然と大切にしていることです。<br />
-            覚えなくて大丈夫です。来ればわかります。
-          </p>
-          <div className="space-y-10">
-            {[
-              { num: "1", title: "その人が選んだ道を、そのまま受け取る", body: "正しいとも、間違っているとも言いません。人の数だけ道があります。" },
-              { num: "2", title: "途中の話をする", body: "うまくいった話でなくて構いません。まだ続いている話のほうが、聞いていて面白い。" },
-              { num: "3", title: "評価しない、比べない", body: "誰が上でも下でもありません。隣の人の人生と、自分の人生を並べる必要もありません。" },
-              { num: "4", title: "話さなくてもいい", body: "聞いているだけで大丈夫です。うまくまとまっていなくても、途中でやめても構いません。" },
-              { num: "5", title: "挑戦している人を、応援する", body: "アドバイスより、まず「いいね」と言える場所でありたいと思っています。" },
-              { num: "6", title: "誰かの話は、持ち出さない", body: "ここで聞いた他の人の話は、外で話しません。自分の話は、自分で決めていい。写真や言葉をサイトやSNSに載せることもありますが、載せたくないときは、そう言ってくれれば載せません。あとからでも構いません。" },
-              { num: "7", title: "何度でも、選び直していい", body: "一度決めたことを変えても、誰も責めません。更新するために、ここにいます。" },
-            ].map((item) => (
-              <div key={item.num} className="flex gap-6">
-                <span className="text-2xl font-light text-stone-300 flex-shrink-0 w-6">{item.num}</span>
-                <div>
-                  <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{item.body}</p>
-                </div>
-              </div>
-            ))}
+          <p className="text-xs tracking-widest text-gray-400 mb-4">PROMISE</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">ひとつだけ、お約束</h2>
+          <div className="space-y-4 text-gray-600 leading-relaxed">
+            <p>
+              ここで聞いた他の人の話は、外では話しません。自分の話だけは、自分で決めていい。
+            </p>
+            <p>
+              その日の様子を note に書いたり、写真や言葉をサイトに載せたりすることがあります。
+              載せたくないときは、そう言ってくれれば載せません。あとからでも構いません。
+            </p>
           </div>
-          <div className="mt-16 pt-10 border-t border-stone-200 text-center text-stone-500 text-sm leading-relaxed">
+          <div className="mt-14 pt-10 border-t border-stone-200 text-center text-stone-500 text-sm leading-relaxed">
             <p className="font-medium text-gray-900 mb-2">becoming lab</p>
             <p>更新し続ける人が集まり、自分で選んだ道を尊重し、<br />互いの挑戦と自己実現を応援するコミュニティ。</p>
           </div>
