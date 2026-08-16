@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
 import RingMark from '@/components/RingMark';
-import NextAndPast from '@/components/NextAndPast';
+import Hero from '@/components/Hero';
+import PastSpeakers from '@/components/PastSpeakers';
 import Voices from '@/components/Voices';
 import { formatDate, nextEvent } from '@/content/events';
 import '@/styles/becoming.css';
@@ -120,31 +121,8 @@ export default function Home() {
     <div className="bc">
       <JsonLd data={org} />
       <JsonLd data={site} />
-      <section className="bc-hero">
-        <svg
-          className="bc-hero-rings"
-          viewBox="0 0 680 320"
-          preserveAspectRatio="xMidYMid slice"
-          aria-hidden="true"
-        >
-          {rings(606, 160, 7, 44)}
-        </svg>
-        <div className="bc-wrap bc-hero-inner">
-          <h1>
-            人は、いつからでも
-            <br />
-            選び直せる。
-          </h1>
-          <p className="bc-voice">仲間がいれば、何度でも。</p>
-        </div>
-      </section>
-
-      <section className="bc-wrap bc-triad">
-        <div className="bc-triad-rule" aria-hidden="true" />
-        <p>会う、整う、更新する。</p>
-      </section>
-
-      <NextAndPast />
+      <Hero />
+      <PastSpeakers />
       <Voices />
 
       <section className="bc-pillars" aria-label="becoming labの3つの柱">

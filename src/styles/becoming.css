@@ -1018,7 +1018,7 @@
 
 .bc-next {
   background: var(--bc-pale);
-  padding: 52px 0 48px;
+  padding: 44px 0 42px;
 }
 
 .bc-next-main {
@@ -1126,6 +1126,152 @@
 
   .bc-past-name {
     flex: none;
+  }
+}
+
+
+/* --- hero with next event ------------------------------------------------ */
+
+.bc-hero-main {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 0 52px;
+}
+
+.bc-hero-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.bc-hero-copy h1 {
+  font-family: var(--bc-serif);
+  font-size: clamp(28px, 3.8vw, 44px);
+  font-weight: 500;
+  line-height: 1.62;
+  letter-spacing: 0.01em;
+  margin: 0 0 20px;
+}
+
+.bc-hero-sub2 {
+  font-size: clamp(15px, 1.8vw, 18px);
+  line-height: 1.9;
+  color: var(--bc-teal);
+  margin: 0 0 30px;
+}
+
+.bc-triad-line {
+  margin: 0;
+  font-size: clamp(15px, 1.8vw, 18px);
+  letter-spacing: 0.24em;
+}
+
+.bc-hero-card {
+  background: #fff;
+  border: 1px solid rgba(0, 108, 133, 0.16);
+  border-radius: 14px;
+  padding: 26px 26px 24px;
+  box-shadow: 0 2px 14px rgba(18, 48, 60, 0.05);
+}
+
+.bc-card-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--bc-muted);
+  margin: 0 0 10px;
+}
+
+.bc-card-date {
+  font-family: var(--bc-mono);
+  font-size: clamp(20px, 2.4vw, 25px);
+  color: var(--bc-teal);
+  margin: 0 0 10px;
+}
+
+.bc-card-date span {
+  font-size: 12px;
+  margin-left: 8px;
+  color: var(--bc-muted);
+}
+
+.bc-card-name {
+  font-size: clamp(20px, 2.6vw, 25px);
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.bc-card-theme {
+  font-family: var(--bc-serif);
+  font-size: 16px;
+  line-height: 1.8;
+  margin: 0 0 20px;
+}
+
+.bc-card-details {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 7px 12px;
+  font-size: 12px;
+  margin: 0 0 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(0, 108, 133, 0.12);
+}
+
+.bc-card-details dt {
+  color: var(--bc-muted);
+}
+
+.bc-card-details dd {
+  margin: 0;
+  color: var(--bc-body);
+  line-height: 1.7;
+}
+
+.bc-card-btn {
+  display: block;
+  text-align: center;
+  padding: 13px 0;
+  font-size: 15px;
+}
+
+.bc-card-note {
+  margin: 12px 0 16px;
+  font-size: 11px;
+  color: var(--bc-muted);
+  text-align: center;
+}
+
+.bc-card-more {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  color: var(--bc-teal);
+  text-decoration: none;
+}
+
+.bc-past-top {
+  padding: 44px 0;
+  background: var(--bc-pale);
+}
+
+@media (max-width: 860px) {
+  .bc-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .bc-hero-main {
+    padding: 36px 0 40px;
+  }
+
+  .bc-hero-copy h1 {
+    margin-bottom: 16px;
+  }
+
+  .bc-hero-sub2 {
+    margin-bottom: 22px;
   }
 }
 
