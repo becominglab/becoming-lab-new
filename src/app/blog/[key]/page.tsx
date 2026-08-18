@@ -7,6 +7,8 @@ import {
   fetchNoteKeys,
   formatArticleDate,
 } from "@/lib/note-article";
+import JsonLd from "@/components/JsonLd";
+import { articleJsonLd, articleBreadcrumbJsonLd } from "@/content/article-schema";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -48,6 +50,8 @@ export default async function NoteArticlePage({ params }: any) {
 
   return (
     <article className="mx-auto max-w-[42rem] px-6 pt-32 pb-28">
+      <JsonLd data={articleJsonLd(a)} />
+      <JsonLd data={articleBreadcrumbJsonLd(a)} />
       <Link
         href="/blog"
         className="text-sm text-gray-400 hover:text-[#1B6B7A] transition-colors"
