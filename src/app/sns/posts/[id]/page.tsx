@@ -27,6 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${nickname}の更新 — Becoming SNS`,
     description: did ? did.slice(0, 100) : `${nickname}の更新投稿`,
     openGraph: {
+    images: [{ url: "/images/og.png", width: 1200, height: 630, alt: "becoming lab" }],
       title: `${nickname}の更新 — Becoming SNS`,
       description: did ? did.slice(0, 100) : `${nickname}の更新投稿`,
     },

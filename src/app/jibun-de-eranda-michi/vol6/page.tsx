@@ -1,8 +1,10 @@
 // src/app/jibun-de-eranda-michi/vol6/page.tsx
 import Link from 'next/link';
+import JsonLd from '@/components/JsonLd';
+import { eventJsonLd, breadcrumbJsonLd } from '@/content/event-schema';
 
 export const metadata = {
-title: '第六回 自分で選んだ道 vol.6 | becoming lab',
+title: '第六回 自分で選んだ道 vol.6',
 description: '産業能率大学教授・亀田憲さんが語る、自分を何度もupdateしつづけるキャリアの選び方。2026年8月5日、神田錦町にて開催。',
 };
 
@@ -11,6 +13,8 @@ const APPLY_URL = 'https://forms.gle/SfqWabaM28FxUYbw8';
 export default function JibunVol6() {
 return (
 <main className="min-h-screen bg-white text-stone-900">
+      <JsonLd data={eventJsonLd(6)} />
+      <JsonLd data={breadcrumbJsonLd([{ name: '自分で選んだ道', path: '/jibun-de-eranda-michi' }, { name: 'vol.6 亀田憲', path: '/jibun-de-eranda-michi/vol6' }])} />
 
 {/* ヒーローセクション */}
 <section className="relative min-h-[80vh] flex flex-col justify-center items-center px-6 py-24">

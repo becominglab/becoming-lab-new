@@ -8,6 +8,7 @@ export const metadata = {
   keywords: ["少人数 食事会 東京", "神田 交流会", "名刺交換なし 交流", "対話の場"],
   alternates: { canonical: "https://becominglab.life/michi/kakomu" },
   openGraph: {
+    images: [{ url: "/images/og.png", width: 1200, height: 630, alt: "becoming lab" }],
     title: "その道を、囲む ｜ becoming lab",
     description: "8名で、一つのテーブルを囲みます。肩書きも、名刺交換もありません。",
     url: "https://becominglab.life/michi/kakomu",

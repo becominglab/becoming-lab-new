@@ -10,6 +10,7 @@ export const metadata = {
   keywords: ["コミュニティ 東京", "神田 コミュニティ", "社会人 コミュニティ", "対話 コミュニティ", "自分で選んだ道"],
   alternates: { canonical: "https://becominglab.life/community" },
   openGraph: {
+    images: [{ url: "/images/og.png", width: 1200, height: 630, alt: "becoming lab" }],
     title: "コミュニティ ｜ becoming lab",
     description: "会う、整う、更新する。一度きりでは、終わりません。",
     url: "https://becominglab.life/community",

@@ -7,6 +7,7 @@ export const metadata = {
     "東京・神田を拠点とするコミュニティ becoming lab の活動一覧。月1回のトークイベント「自分で選んだ道」、皇居ランと勉強会、8名の食事会。申込フォームはありません。一言のご連絡で参加できます。",
   alternates: { canonical: "https://becominglab.life/michi" },
   openGraph: {
+    images: [{ url: "/images/og.png", width: 1200, height: 630, alt: "becoming lab" }],
     title: "道 ｜ becoming lab",
     description: "会う、整う、更新する。東京・神田で続いているコミュニティ活動です。",
     url: "https://becominglab.life/michi",

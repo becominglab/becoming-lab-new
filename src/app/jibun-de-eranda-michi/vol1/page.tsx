@@ -1,14 +1,18 @@
 // src/app/kataribe/vol1/page.tsx
 import Link from 'next/link';
+import JsonLd from '@/components/JsonLd';
+import { eventJsonLd, breadcrumbJsonLd } from '@/content/event-schema';
 
 export const metadata = {
-  title: '第一回 自分で選んだ道 | becoming lab',
+  title: '第一回 自分で選んだ道',
   description: '国立大卒、ベンチャー新規事業のエース。圧倒的成果を手放し、猟師として自給自足の道を選んだ24歳が語る「志」の物語。2026年3月12日、神田錦町にて開催。',
 };
 
 export default function KataribeVol1() {
   return (
     <main className="min-h-screen bg-white text-stone-900">
+      <JsonLd data={eventJsonLd(1)} />
+      <JsonLd data={breadcrumbJsonLd([{ name: '自分で選んだ道', path: '/jibun-de-eranda-michi' }, { name: 'vol.1 立川雄介', path: '/jibun-de-eranda-michi/vol1' }])} />
       
       {/* ヒーローセクション */}
       <section className="relative min-h-[80vh] flex flex-col justify-center items-center px-6 py-24">

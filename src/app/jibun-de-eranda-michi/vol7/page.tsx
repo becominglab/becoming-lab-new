@@ -1,8 +1,10 @@
 // src/app/jibun-de-eranda-michi/vol7/page.tsx
 import Link from 'next/link';
+import JsonLd from '@/components/JsonLd';
+import { eventJsonLd, breadcrumbJsonLd } from '@/content/event-schema';
 
 export const metadata = {
-title: '第七回 自分で選んだ道 vol.7 | becoming lab',
+title: '第七回 自分で選んだ道 vol.7',
 description: '一般社団法人学士会・村松健一さんが語る、目標を失って見つけた「人のために」という生き方。2026年9月17日、神田錦町にて開催。',
 };
 
@@ -11,6 +13,8 @@ const APPLY_URL = 'https://forms.gle/vniGBrjt6wHem4s9A';
 export default function JibunVol7() {
 return (
 <main className="min-h-screen bg-white text-stone-900">
+      <JsonLd data={eventJsonLd(7)} />
+      <JsonLd data={breadcrumbJsonLd([{ name: '自分で選んだ道', path: '/jibun-de-eranda-michi' }, { name: 'vol.7 村松健一', path: '/jibun-de-eranda-michi/vol7' }])} />
 
 {/* ヒーローセクション */}
 <section className="relative min-h-[80vh] flex flex-col justify-center items-center px-6 py-24">

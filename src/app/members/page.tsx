@@ -2,6 +2,8 @@ import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import { events, formatDate } from "@/content/events";
 import "@/styles/becoming.css";
+import JsonLd from '@/components/JsonLd';
+import { speakersJsonLd } from '@/content/event-schema';
 
 export const metadata = {
   title: "語った人たち ｜ 「自分で選んだ道」スピーカー",
@@ -10,6 +12,7 @@ export const metadata = {
   keywords: ["自分で選んだ道", "トークイベント 東京", "神田 イベント", "生き方 講演", "becoming lab"],
   alternates: { canonical: "https://becominglab.life/members" },
   openGraph: {
+    images: [{ url: "/images/og.png", width: 1200, height: 630, alt: "becoming lab" }],
     title: "語った人たち ｜ becoming lab",
     description: "完成した人ではありません。途中のまま話してくれた人たちです。",
     url: "https://becominglab.life/members",
@@ -44,6 +47,7 @@ export default function MembersPage() {
 
   return (
     <div className="bc">
+      <JsonLd data={speakersJsonLd} />
       <section className="bc-hero bc-hero-sub">
         <svg
           className="bc-hero-rings"

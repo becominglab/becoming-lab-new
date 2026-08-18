@@ -1,8 +1,10 @@
 // src/app/jibun-de-eranda-michi/vol4/page.tsx
 import Link from 'next/link';
+import JsonLd from '@/components/JsonLd';
+import { eventJsonLd, breadcrumbJsonLd } from '@/content/event-schema';
 
 export const metadata = {
-  title: '第四回 自分で選んだ道 vol.4 | becoming lab',
+  title: '第四回 自分で選んだ道 vol.4',
   description: '建設DX・ICT領域の最前線で活躍する法人営業リーダー・佐藤加奈子さんが語る、成果を出し続ける思考と在り方。2026年6月24日、神田錦町にて開催。',
 };
 
@@ -11,6 +13,8 @@ const APPLY_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfLLtEgLT6YTt1GbsieP
 export default function JibunVol4() {
   return (
     <main className="min-h-screen bg-white text-stone-900">
+      <JsonLd data={eventJsonLd(4)} />
+      <JsonLd data={breadcrumbJsonLd([{ name: '自分で選んだ道', path: '/jibun-de-eranda-michi' }, { name: 'vol.4 佐藤加奈子', path: '/jibun-de-eranda-michi/vol4' }])} />
 
       {/* ヒーローセクション */}
       <section className="relative min-h-[80vh] flex flex-col justify-center items-center px-6 py-24">

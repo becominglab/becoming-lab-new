@@ -1,14 +1,18 @@
 // src/app/jibun-de-eranda-michi/vol2/page.tsx
 import Link from 'next/link';
+import JsonLd from '@/components/JsonLd';
+import { eventJsonLd, breadcrumbJsonLd } from '@/content/event-schema';
 
 export const metadata = {
-  title: '第二回 自分で選んだ道 vol.2 | becoming lab',
+  title: '第二回 自分で選んだ道 vol.2',
   description: 'ロングディスタンス日本一。プロトライアスロン選手・山岸穂高さんが語る、挑戦し続ける思考と人生観。2026年4月22日、神田錦町にて開催。',
 };
 
 export default function JibunVol2() {
   return (
     <main className="min-h-screen bg-white text-stone-900">
+      <JsonLd data={eventJsonLd(2)} />
+      <JsonLd data={breadcrumbJsonLd([{ name: '自分で選んだ道', path: '/jibun-de-eranda-michi' }, { name: 'vol.2 山岸穂高', path: '/jibun-de-eranda-michi/vol2' }])} />
 
       {/* ヒーローセクション */}
       <section className="relative min-h-[80vh] flex flex-col justify-center items-center px-6 py-24">

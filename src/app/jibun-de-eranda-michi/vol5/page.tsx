@@ -1,8 +1,10 @@
 // src/app/jibun-de-eranda-michi/vol5/page.tsx
 import Link from 'next/link';
+import JsonLd from '@/components/JsonLd';
+import { eventJsonLd, breadcrumbJsonLd } from '@/content/event-schema';
 
 export const metadata = {
-title: '第五回 自分で選んだ道 vol.5 | becoming lab',
+title: '第五回 自分で選んだ道 vol.5',
 description: '100億円の事業をつくった鬼木陽一さんが語る、「何でもない自分」のまま生きるということ。2026年7月15日、神田錦町にて開催。',
 };
 
@@ -11,6 +13,8 @@ const APPLY_URL = 'https://forms.gle/irNRHhRizpNSZXBAA';
 export default function JibunVol5() {
 return (
 <main className="min-h-screen bg-white text-stone-900">
+      <JsonLd data={eventJsonLd(5)} />
+      <JsonLd data={breadcrumbJsonLd([{ name: '自分で選んだ道', path: '/jibun-de-eranda-michi' }, { name: 'vol.5 鬼木陽一', path: '/jibun-de-eranda-michi/vol5' }])} />
 
 {/* ヒーローセクション */}
 <section className="relative min-h-[80vh] flex flex-col justify-center items-center px-6 py-24">

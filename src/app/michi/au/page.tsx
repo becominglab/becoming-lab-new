@@ -9,6 +9,7 @@ export const metadata = {
   keywords: ["皇居ラン", "皇居ランニング 初心者", "神田 ランニングクラブ", "ウォーキング 東京", "社会人 交流"],
   alternates: { canonical: "https://becominglab.life/michi/au" },
   openGraph: {
+    images: [{ url: "/images/og.png", width: 1200, height: 630, alt: "becoming lab" }],
     title: "その道で、会う ｜ becoming lab",
     description: "毎月一度、皇居に集まります。走っても、歩いても、懇親会だけでも。",
     url: "https://becominglab.life/michi/au",

@@ -11,6 +11,7 @@ export const metadata = {
     "becoming lab の note。人生の途中で考えていること、月に一つの問い、会のあとに残った言葉を書いています。東京・神田のコミュニティ becoming lab。",
   alternates: { canonical: "https://becominglab.life/blog" },
   openGraph: {
+    images: [{ url: "/images/og.png", width: 1200, height: 630, alt: "becoming lab" }],
     title: "読みもの ｜ becoming lab",
     description: "人生の途中で考えていることを、note に書いています。",
     url: "https://becominglab.life/blog",

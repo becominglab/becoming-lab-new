@@ -1,8 +1,10 @@
 // src/app/jibun-de-eranda-michi/vol3/page.tsx
 import Link from 'next/link';
+import JsonLd from '@/components/JsonLd';
+import { eventJsonLd, breadcrumbJsonLd } from '@/content/event-schema';
 
 export const metadata = {
-  title: '第三回 自分で選んだ道 vol.3 | becoming lab',
+  title: '第三回 自分で選んだ道 vol.3',
   description: '街づくりのプロフェッショナル・山崎満広さんが語る、アメリカで道を切り拓いた葛藤と選択。2026年5月19日、神田錦町にて開催。',
 };
 
@@ -11,6 +13,8 @@ const APPLY_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf0rBBxobYHw1AMAYTAI
 export default function JibunVol3() {
   return (
     <main className="min-h-screen bg-white text-stone-900">
+      <JsonLd data={eventJsonLd(3)} />
+      <JsonLd data={breadcrumbJsonLd([{ name: '自分で選んだ道', path: '/jibun-de-eranda-michi' }, { name: 'vol.3 山崎満広', path: '/jibun-de-eranda-michi/vol3' }])} />
 
       {/* ヒーローセクション */}
       <section className="relative min-h-[80vh] flex flex-col justify-center items-center px-6 py-24">

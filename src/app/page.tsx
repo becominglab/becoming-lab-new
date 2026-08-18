@@ -6,6 +6,7 @@ import PastSpeakers from '@/components/PastSpeakers';
 import Voices from '@/components/Voices';
 import { formatDate, nextEvent } from '@/content/events';
 import '@/styles/becoming.css';
+import { faqJsonLd } from '@/content/event-schema';
 
 const rings = (cx: number, cy: number, count: number, step: number) =>
   Array.from({ length: count }, (_, i) => (
@@ -121,6 +122,7 @@ export default function Home() {
     <div className="bc">
       <JsonLd data={org} />
       <JsonLd data={site} />
+      <JsonLd data={faqJsonLd} />
       <Hero />
       <PastSpeakers />
       <Voices />

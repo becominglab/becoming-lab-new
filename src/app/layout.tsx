@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   creator: "becoming lab",
   publisher: "becoming lab",
   alternates: {
-    canonical: "/",
+    canonical: "./",
   },
   openGraph: {
     type: "website",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
       "人は、いつからでも選び直せる。仲間がいれば、何度でも。東京・神田で、会う・整う・更新するを重ねているコミュニティです。",
     images: [
       {
-        url: "/images/logo.png",
+        url: "/images/og.png",
         width: 1200,
         height: 630,
         alt: "becoming lab",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "becoming lab | 更新を重ねる人生を",
     description: "人は、いつからでも選び直せる。仲間がいれば、何度でも。",
-    images: ["/images/logo.png"],
+    images: ["/images/og.png"],
   },
   robots: {
     index: true,
