@@ -130,23 +130,55 @@ return (
 </div>
 </section>
 
-{/* 申し込み導線 */}
-<section className="px-6 py-24 bg-stone-900 text-white">
-<div className="max-w-2xl mx-auto text-center">
-<span className="text-xs tracking-[0.3em] text-stone-500 block mb-4">JOIN US</span>
-<h2 className="text-2xl font-light mb-8 tracking-tight">参加申し込み</h2>
-<Link
-href={APPLY_URL}
-target="_blank"
-rel="noopener noreferrer"
-className="inline-flex items-center gap-2 px-8 py-4 bg-white text-stone-900 hover:bg-stone-100 transition-colors duration-300"
->
-<span className="text-sm">▶</span>
-<span>参加を申し込む</span>
-</Link>
-<p className="text-sm text-stone-500 mt-8">※ 定員に達し次第、締め切らせていただきます</p>
-</div>
-</section>
+      {/* Report — 開催後に追加 */}
+      <section className="px-6 py-24 bg-stone-900 text-white">
+        <div className="max-w-2xl mx-auto">
+          <span className="text-xs tracking-[0.3em] text-stone-500 block mb-4">REPORT</span>
+          <h2 className="text-2xl font-light mb-4 tracking-tight">開催を終えて</h2>
+          <p className="text-sm text-stone-400 mb-12">この回は終了しました。2026年9月17日、村松健一さんをお迎えして開催しました。</p>
+
+          <p className="text-xl md:text-2xl font-light leading-relaxed mb-12 border-l-2 border-stone-600 pl-6">
+            私の人生を次へ進めてくれたのは、
+            <br />
+            いつも人でした。
+          </p>
+
+          <div className="space-y-6 text-stone-300 leading-relaxed">
+            <p>
+              8回の転職という歩み。その一つひとつの出来事とともに、人との出会いによって、ご自身の気持ちがどう変わっていったのかを聞かせてくださいました。
+            </p>
+            <p>
+              かつては、人と関わることを避け、自分の技術で生きていこうと考えていた村松さん。そんな村松さんに、日々自然に声をかけてくれた職場の人たち。一緒に仕事をつくってきた仲間。新しい挑戦に「僕は何をすればいい？」と力を貸してくれた先輩方。今の村松さんにつながる、たくさんの出会いがありました。
+            </p>
+            <p>
+              経歴だけでは見えない迷いや思い、そのとき支えてくれた人たちの存在。そこに触れることで、目の前のその人への理解が深まっていくのだと思います。
+            </p>
+            <p className="text-white">「この人のためなら、少し動いてみたい」</p>
+            <p>
+              大きな目標がまだ見つかっていなくても、自分を大切にしながら、目の前の誰かにできることをする。そんな小さな行動から、次の道が見えてくるのかもしれません。
+            </p>
+            <p>
+              最後は「最近、誰かのために使った時間」を思い出し、近くの方と分かち合う時間に。お話を聞いて終わるだけでなく、それぞれの経験を持ち寄って会話が生まれることも、becoming labで大切にしていきたいことです。
+            </p>
+            <p>村松さん、ご参加くださった皆さま、本当にありがとうございました。</p>
+            <p className="pt-8 text-sm text-stone-500">becoming lab 主宰</p>
+          </div>
+
+          <div className="mt-16 pt-8 border-t border-white/20 text-center">
+            <p className="text-xs tracking-[0.3em] text-stone-500 mb-4">NEXT</p>
+            <p className="text-stone-300 mb-6">
+              vol.8 は 2026年10月21日（水）、伊藤有梨花さん「心は、測れるのか。」
+            </p>
+            <Link
+              href="/jibun-de-eranda-michi/vol8"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-stone-900 hover:bg-stone-100 transition-colors duration-300"
+            >
+              <span className="text-sm">▶</span>
+              <span>次回の詳細を見る</span>
+            </Link>
+          </div>
+        </div>
+      </section>
 
 </main>
 );
