@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import { eventJsonLd, breadcrumbJsonLd } from "@/content/event-schema";
@@ -56,7 +57,9 @@ export default function Vol9Page() {
             <span className="font-normal">見えているものが違う？</span>
           </h1>
           <p className="text-base md:text-lg text-stone-600 leading-relaxed max-w-xl mx-auto">
-            アート鑑賞 × 対話 × 起業
+            アートに触れたとき、
+            <br />
+            あなたの新しい扉が開く。
           </p>
         </div>
         <div className="absolute bottom-12 left-1/2 -translate-x-1/2">
@@ -73,7 +76,10 @@ export default function Vol9Page() {
             <p className="text-lg font-light">村上 静香（むらかみ しずか）</p>
             <p>株式会社KYTE 代表。「大人のやさしいアートゼミ」主催。</p>
             <p>
-              大手デベロッパー、広報PR、人材育成ベンチャーを経て、2023年にKYTEを設立。対話で楽しむアート鑑賞を、仕事にしている。
+              愛知県豊橋市出身。法政大学で美術史や現代思想、芸術と社会の関係性を研究。大手デベロッパー、広報PR、人材育成ベンチャーを経て、2023年にKYTEを設立。
+            </p>
+            <p>
+              アート鑑賞を仕事にし、年間約80回・300名以上にセッションを提供。個人向けのほか、チームビルディングなどを目的とした法人向け研修も行う。
             </p>
             <p>
               どんな経験や想いが、アート鑑賞を仕事にする選択につながったのか。前回の「記憶とアイデンティティ」のお話にもつながる、その方ならではの選択の背景を伺います。
@@ -112,6 +118,15 @@ export default function Vol9Page() {
             <p>
               当日は、対話で楽しむアート鑑賞のミニ体験も予定しています。アートの知識がない方も、ご自身が感じたことを入り口にご参加いただけます。
             </p>
+          </div>
+          <div className="mt-12">
+            <Image
+              src="/images/jibun-de-eranda-michi/vol9.jpg"
+              alt="becoming lab vol.9 アートに触れたとき、あなたの新しい扉が開く。 村上静香"
+              width={360}
+              height={510}
+              className="w-full max-w-sm mx-auto h-auto border border-stone-200"
+            />
           </div>
         </div>
       </section>
