@@ -10,14 +10,8 @@ export const upcoming: MichiEvent[] = [
   {
     slug: 'au',
     title: 'その道で、会う ─ 錦町ランニングクラブ',
-    date: '2026-08-26',
+    date: '2026-10-28',
     summary: '17:00 勉強会／18:30 走る・歩く／20:00 懇親会',
-  },
-  {
-    slug: 'kakomu',
-    title: 'その道を、囲む ─ 8名だけの食事会',
-    date: null,
-    summary: '9月開催予定',
   },
 ];
 

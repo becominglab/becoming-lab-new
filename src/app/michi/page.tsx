@@ -4,7 +4,7 @@ import { upcoming, jpDate } from "@/content/michi";
 export const metadata = {
   title: "道 ｜ 東京・神田のコミュニティ活動",
   description:
-    "東京・神田を拠点とするコミュニティ becoming lab の活動一覧。月1回のトークイベント「自分で選んだ道」、皇居ランと勉強会、8名の食事会。申込フォームはありません。一言のご連絡で参加できます。",
+    "東京・神田を拠点とするコミュニティ becoming lab の活動一覧。月1回のトークイベント「自分で選んだ道」、皇居ランと勉強会。申込フォームはありません。一言のご連絡で参加できます。",
   alternates: { canonical: "https://becominglab.life/michi" },
   openGraph: {
     images: [{ url: "/images/og.png", width: 1200, height: 630, alt: "becoming lab" }],
@@ -21,11 +21,6 @@ const branches = [
     title: "その道で、会う",
     body: "毎月一度、皇居に集まります。走っても、歩いても、懇親会だけでも。",
   },
-  {
-    href: "/michi/kakomu",
-    title: "その道を、囲む",
-    body: "8名で、一つのテーブルを囲みます。大人数では話せないことを、話すために。",
-  },
 ];
 
 export default function MichiPage() {
@@ -38,7 +33,7 @@ export default function MichiPage() {
           <div className="space-y-4 text-gray-600 leading-relaxed">
             <p>自分で選んだ道は、一人で歩くものだと思っていました。</p>
             <p>でも、同じ道を歩いている人が、います。</p>
-            <p className="pt-2 text-gray-500">会う。囲む。becoming lab の、いくつかの道です。</p>
+            <p className="pt-2 text-gray-500">聴く。会う。becoming lab の、いくつかの道です。</p>
           </div>
         </div>
       </section>

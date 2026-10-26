@@ -105,8 +105,23 @@ export const events: BecomingEvent[] = [
     applyUrl: 'https://forms.gle/pZBGvGPBVkCWAWZd8',
     href: '/jibun-de-eranda-michi/vol8',
   },
-  { vol: 9, date: null, guest: null, theme: null },
+  {
+    vol: 9,
+    date: '2026-11-17',
+    guest: '村上静香',
+    theme: '同じ絵を見ているのに、見えているものが違う？',
+    subtitle: 'アート鑑賞 × 対話 × 起業。一枚の絵を前に、自分の見方のクセと、相手の視点に気づく夜',
+    short: '同じ絵を見ているのに、見えているものが違う？',
+    time: '19:30 – 21:30',
+    doorsOpen: '19:15',
+    venue: '神田SDGsコネクション 3階',
+    address: '東京都千代田区神田錦町2-9-15',
+    fee: '3,000円（税込・懇親会費を含みます）',
+    applyUrl: 'https://forms.gle/8x1qmNzxRV1buezH6',
+    href: '/jibun-de-eranda-michi/vol9',
+  },
   { vol: 10, date: null, guest: null, theme: null },
+  { vol: 11, date: null, guest: null, theme: null },
 ];
 
 export const formatDate = (iso: string | null) =>

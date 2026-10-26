@@ -156,7 +156,7 @@ export default function CommunityPage() {
           <h2 className="bc-h2">主な活動</h2>
           <div className="bc-prose">
             <p>
-              月に一度のトークイベント「自分で選んだ道」を起点に、走る会、食事会、勉強会や対話会、合宿など、いくつかの集まりが続いています。
+              月に一度のトークイベント「自分で選んだ道」を起点に、走る会、勉強会や対話会、合宿など、いくつかの集まりが続いています。
             </p>
           </div>
         </Reveal>
@@ -169,10 +169,6 @@ export default function CommunityPage() {
             <Link href="/michi/au" className="bc-way">
               <span className="bc-way-verb">会う。</span>
               <span className="bc-way-note">毎月一度、皇居に集まる</span>
-            </Link>
-            <Link href="/michi/kakomu" className="bc-way">
-              <span className="bc-way-verb">囲む。</span>
-              <span className="bc-way-note">8名で、テーブルを囲む</span>
             </Link>
           </div>
           <p className="bc-more">

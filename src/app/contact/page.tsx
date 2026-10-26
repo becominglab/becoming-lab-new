@@ -105,10 +105,6 @@ export default function ContactPage() {
                   その道で、会う（皇居ラン）
                 </label>
                 <label className="flex items-center gap-3 text-gray-600">
-                  <input type="checkbox" name="interest" value="その道を、囲む（食事会）" className="w-4 h-4" />
-                  その道を、囲む（食事会）
-                </label>
-                <label className="flex items-center gap-3 text-gray-600">
                   <input type="checkbox" name="interest" value="1on1セッション" className="w-4 h-4" />
                   1on1セッション
                 </label>

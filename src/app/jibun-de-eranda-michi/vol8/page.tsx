@@ -4,17 +4,15 @@ import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import { eventJsonLd, breadcrumbJsonLd } from "@/content/event-schema";
 
-const APPLY_URL = "https://forms.gle/pZBGvGPBVkCWAWZd8";
-
 export const metadata: Metadata = {
   title: "第八回 自分で選んだ道 vol.8",
   description:
-    "臨床心理士・公認心理師の伊藤有梨花さんをお迎えします。テーマは「心は、測れるのか。」。自伝的記憶の研究から、心を測る技術、そして起業へ。2026年10月21日（水）19:30より、神田錦町にて開催。",
+    "臨床心理士・公認心理師の伊藤有梨花さんをお迎えしました。テーマは「心は、測れるのか。」。記憶とアイデンティティ、そして組織の未来。2026年10月21日（水）、神田錦町にて開催（終了・開催報告あり）。",
   alternates: { canonical: "/jibun-de-eranda-michi/vol8" },
   openGraph: {
     title: "第八回 自分で選んだ道 vol.8｜心は、測れるのか。",
     description:
-      "臨床心理士・公認心理師の伊藤有梨花さんをお迎えします。2026年10月21日（水）19:30より、神田錦町にて開催。",
+      "臨床心理士・公認心理師の伊藤有梨花さんをお迎えしました。2026年10月21日（水）、神田錦町にて開催。開催報告を掲載しています。",
     url: "https://becominglab.life/jibun-de-eranda-michi/vol8",
     images: [{ url: "/images/og.png", width: 1200, height: 630, alt: "becoming lab" }],
   },
@@ -188,26 +186,65 @@ export default function Vol8Page() {
         </div>
       </section>
 
-      {/* Join */}
+      {/* Report — 開催後に追加 */}
       <section className="px-6 py-24 bg-stone-900 text-white">
-        <div className="max-w-2xl mx-auto text-center">
-          <span className="text-xs tracking-[0.3em] text-stone-500 block mb-4">JOIN US</span>
-          <h2 className="text-2xl font-light mb-8 tracking-tight">参加申し込み</h2>
-          <a
-            href={APPLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white text-stone-900 hover:bg-stone-100 transition-colors duration-300"
-          >
-            <span className="text-sm">▶</span>
-            <span>参加を申し込む</span>
-          </a>
-          <p className="text-sm text-stone-500 mt-8">※ 定員に達し次第、締め切らせていただきます</p>
-          <p className="mt-10">
-            <Link href="/jibun-de-eranda-michi" className="text-sm text-stone-400 hover:text-white transition-colors">
-              ← 「自分で選んだ道」一覧へ
-            </Link>
+        <div className="max-w-2xl mx-auto">
+          <span className="text-xs tracking-[0.3em] text-stone-500 block mb-4">REPORT</span>
+          <h2 className="text-2xl font-light mb-4 tracking-tight">開催を終えて</h2>
+          <p className="text-sm text-stone-400 mb-12">
+            この回は終了しました。2026年10月21日、伊藤有梨花さんをお迎えして開催しました。
           </p>
+
+          <p className="text-xl md:text-2xl font-light leading-relaxed mb-12 border-l-2 border-stone-600 pl-6">
+            自分をつくっているのは、
+            <br />
+            過去の記憶かもしれない。
+          </p>
+
+          <div className="space-y-6 text-stone-300 leading-relaxed">
+            <p>
+              テーマは「心は測れるのか？ 〜記憶とアイデンティティ、そして組織の未来〜」。臨床心理士・公認心理師としての専門性を持ち、心理測定や機械学習の研究に取り組む伊藤さんに、研究から起業へと続く道の途中を聞かせていただきました。
+            </p>
+            <p>
+              私たちは普段、自分の性格や価値観を、これまでの経験によって形成されたものだと考えています。けれど実際には「何を経験したか」だけでなく、「その経験をどう記憶し、どう意味づけているか」が、今の自分を形づくっているそうです。
+            </p>
+            <p className="text-white">
+              「過去の記憶の捉え方が変われば、今の自分も、未来の可能性も変わる」
+            </p>
+            <p>
+              同じ出来事でも、当時は失敗だと思っていたことが、今振り返ると人生の転機だったりする。辛かった経験も、時間が経ち、新しい視点を持つことで、自分にとっての意味が変わっていく。becoming labが大切にしている「更新を重ねる人生」にも、まっすぐつながる話でした。
+            </p>
+            <p>
+              伊藤さんが開発に取り組んでいる「レイヤースコープ」の話も印象的でした。経営層、管理職、現場。同じ組織にいても、立場によって見えている景色や判断基準は違う。それぞれが正しいと思って行動していても、その認識のズレが摩擦を生む。目に見えない心や認識の違いを可視化することで、組織のコミュニケーションを変えていく試みです。
+            </p>
+            <p>
+              後半は、自分自身の記憶を振り返るワークショップ。自分らしさを表す言葉は何か。その言葉につながる具体的な記憶は。その経験は、今の自分にどんな影響を与えているのか。今振り返ると、その出来事にはどんな意味があるのか。参加者同士で共有しながら、自分でも気づいていなかった価値観を見つめ直す時間になりました。
+            </p>
+            <p>
+              過去は変えられない。でも、過去の意味づけは変えられる。そして、その意味づけが変わることで、これからの選択も変わっていく。人は何歳からでも変われる。その可能性を、心理学という新しい視点から感じた夜でした。
+            </p>
+            <p>伊藤さん、ご参加くださった皆さま、本当にありがとうございました。</p>
+            <p className="pt-8 text-sm text-stone-500">becoming lab 主宰</p>
+          </div>
+
+          <div className="mt-16 pt-8 border-t border-white/20 text-center">
+            <p className="text-xs tracking-[0.3em] text-stone-500 mb-4">NEXT</p>
+            <p className="text-stone-300 mb-6">
+              vol.9 は 2026年11月17日（火）、村上静香さん「同じ絵を見ているのに、見えているものが違う？」
+            </p>
+            <Link
+              href="/jibun-de-eranda-michi/vol9"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-stone-900 hover:bg-stone-100 transition-colors duration-300"
+            >
+              <span className="text-sm">▶</span>
+              <span>次回の詳細を見る</span>
+            </Link>
+            <p className="mt-10">
+              <Link href="/jibun-de-eranda-michi" className="text-sm text-stone-400 hover:text-white transition-colors">
+                ← 「自分で選んだ道」一覧へ
+              </Link>
+            </p>
+          </div>
         </div>
       </section>
     </main>
