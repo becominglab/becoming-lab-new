@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
+import JsonLd from "@/components/JsonLd";
 
 export const metadata: Metadata = {
   title: "神夫養成講座",
@@ -91,8 +92,19 @@ export default function KamiottoPage() {
     },
   ];
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+
   return (
     <>
+      <JsonLd data={faqJsonLd} />
       {/* Hero Section */}
       <section className="min-h-[80vh] flex items-center relative overflow-hidden bg-gradient-to-br from-primary via-secondary to-primary">
         <div className="absolute inset-0 opacity-10">

@@ -5,15 +5,13 @@ export type MichiEvent = {
   summary: string;
 };
 
-/** 次に会える日。開催が決まったらここを更新する */
-export const upcoming: MichiEvent[] = [
-  {
-    slug: 'au',
-    title: 'その道で、会う ─ 錦町ランニングクラブ',
-    date: '2026-10-28',
-    summary: '17:00 勉強会／18:30 走る・歩く／20:00 懇親会',
-  },
-];
+/**
+ * 次に会える日。開催が決まったらここに1件足す。空のあいだ、/michi の枠は表示されません。
+ * 例:
+ *   { slug: 'au', title: 'その道で、会う ─ 錦町ランニングクラブ', date: '2026-10-28',
+ *     summary: '17:00 勉強会／18:30 走る・歩く／20:00 懇親会' },
+ */
+export const upcoming: MichiEvent[] = [];
 
 export const formatDate = (iso: string) => iso.replace(/-/g, '.');
 

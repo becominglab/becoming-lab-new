@@ -41,27 +41,29 @@ export default function MichiPage() {
         </div>
       </section>
 
-      <section className="pb-16">
-        <div className="max-w-2xl mx-auto px-8">
-          <div className="rounded-2xl border border-[#1B6B7A]/20 p-6 md:p-8" style={{ backgroundColor: "rgba(27,107,122,0.03)" }}>
-            <p className="text-[10px] tracking-[0.25em] uppercase mb-5" style={{ color: "#1B6B7A" }}>次に会える日</p>
-            <div className="space-y-6">
-              {upcoming.map((e) => (
-                <div key={e.slug}>
-                  <p className="text-sm text-gray-500 mb-1">
-                    {e.date ? jpDate(e.date) : "日程調整中"}
-                  </p>
-                  <h2 className="font-bold text-gray-900 mb-1">{e.title}</h2>
-                  <p className="text-sm text-gray-600 mb-2">{e.summary}</p>
-                  <Link href={`/michi/${e.slug}`} className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
-                    詳しく見る →
-                  </Link>
-                </div>
-              ))}
+      {upcoming.length > 0 && (
+        <section className="pb-16">
+          <div className="max-w-2xl mx-auto px-8">
+            <div className="rounded-2xl border border-[#1B6B7A]/20 p-6 md:p-8" style={{ backgroundColor: "rgba(27,107,122,0.03)" }}>
+              <p className="text-[10px] tracking-[0.25em] uppercase mb-5" style={{ color: "#1B6B7A" }}>次に会える日</p>
+              <div className="space-y-6">
+                {upcoming.map((e) => (
+                  <div key={e.slug}>
+                    <p className="text-sm text-gray-500 mb-1">
+                      {e.date ? jpDate(e.date) : "日程調整中"}
+                    </p>
+                    <h2 className="font-bold text-gray-900 mb-1">{e.title}</h2>
+                    <p className="text-sm text-gray-600 mb-2">{e.summary}</p>
+                    <Link href={`/michi/${e.slug}`} className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
+                      詳しく見る →
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="pb-16">
         <div className="max-w-2xl mx-auto px-8">

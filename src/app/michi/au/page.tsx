@@ -50,7 +50,8 @@ export default function AuPage() {
 
   return (
     <>
-      <JsonLd data={event} />
+      {/* 日程が決まっているときだけ Event として出す */}
+      {next?.date && <JsonLd data={event} />}
       <section className="pt-32 pb-12">
         <div className="max-w-2xl mx-auto px-8">
           <p className="text-xs tracking-widest text-gray-400 mb-4">MICHI</p>
