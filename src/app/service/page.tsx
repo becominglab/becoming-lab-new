@@ -1,4 +1,6 @@
 import Link from "next/link";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd } from "@/content/event-schema";
 
 export const metadata = {
   title: "サービス",
@@ -8,6 +10,7 @@ export const metadata = {
 export default function ServicePage() {
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd([{ name: "サービス", path: "/service" }])} />
       <section className="pt-32 pb-12">
         <div className="max-w-2xl mx-auto px-8">
           <p className="text-xs tracking-widest text-gray-400 mb-4">SERVICE</p>

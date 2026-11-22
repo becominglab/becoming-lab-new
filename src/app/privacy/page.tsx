@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
-  description: "Becoming Labのプライバシーポリシー。個人情報の取り扱いについて。",
+  description: "becoming labのプライバシーポリシー。個人情報の取り扱いについて。",
 };
 
 export default function PrivacyPage() {
@@ -18,7 +18,7 @@ export default function PrivacyPage() {
 
         <div className="prose prose-gray max-w-none">
           <p className="text-gray-600 mb-8">
-            Becoming Lab（以下「当社」）は、お客様の個人情報の保護に努めております。
+            becoming lab（以下「当社」）は、お客様の個人情報の保護に努めております。
             本プライバシーポリシーでは、当社が収集する個人情報の種類、利用目的、管理方法等について説明いたします。
           </p>
 
@@ -105,7 +105,7 @@ export default function PrivacyPage() {
               個人情報の取り扱いに関するお問い合わせは、下記までご連絡ください。
             </p>
             <div className="bg-gray-50 p-6 rounded-xl">
-              <p className="text-gray-700 font-medium">Becoming Lab</p>
+              <p className="text-gray-700 font-medium">becoming lab</p>
               <p className="text-gray-600">メール: contact@becominglab.jp</p>
             </div>
           </section>

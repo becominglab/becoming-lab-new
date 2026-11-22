@@ -121,3 +121,83 @@ export const speakersJsonLd = {
       },
     })),
 };
+
+/** シリーズ全体（/jibun-de-eranda-michi）。各回を subEvent として束ねる */
+export const seriesJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'EventSeries',
+  name: '自分で選んだ道',
+  description:
+    'becoming lab が月に一度ひらくトークイベント。一人のスピーカーが人生の途中を語ります。成功談ではなく、未完成のままの物語です。',
+  url: `${SITE_URL}/jibun-de-eranda-michi`,
+  location: VENUE,
+  organizer: ORGANIZER,
+  inLanguage: 'ja',
+  subEvent: events
+    .filter((e) => e.date && e.guest && e.href)
+    .map((e) => ({
+      '@type': 'Event',
+      name: `自分で選んだ道 vol.${e.vol}｜${e.theme ?? ''}`,
+      startDate: `${e.date}T19:30:00+09:00`,
+      url: `${SITE_URL}${e.href}`,
+      performer: { '@type': 'Person', name: e.guest },
+      location: VENUE,
+    })),
+};
+
+/** 思想ページ（/concept）。運営者と団体の関係を明示する */
+export const aboutJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'becoming lab の思想',
+  url: `${SITE_URL}/concept`,
+  inLanguage: 'ja',
+  mainEntity: {
+    '@type': 'Organization',
+    name: 'becoming lab',
+    alternateName: 'ビカミングラボ',
+    url: SITE_URL,
+    description:
+      'becoming lab は、更新し続ける人が集まり、自分で選んだ道を尊重し、互いの挑戦と自己実現を応援し合うコミュニティです。',
+    founder: [
+      { '@type': 'Person', name: '大塚貴生' },
+      { '@type': 'Person', name: '大塚昌代' },
+    ],
+    sameAs: ['https://note.com/becominglab'],
+  },
+};
+
+/** be / com / ing の定義。/concept の本文と同じ文言にそろえる */
+export const becomingTerms = [
+  {
+    term: 'be',
+    label: 'どうありたいか',
+    text: '自分が向かいたい在り方を、自分の言葉で決めること。何を成し遂げるかの前に、どうありたいかを置きます。',
+  },
+  {
+    term: 'com',
+    label: '仲間',
+    text: '自分ひとりでは見えないものを、仲間が映してくれること。becoming lab の中心にあるのは、この仲間（コミュニティ）そのものです。',
+  },
+  {
+    term: 'ing',
+    label: '更新し続ける',
+    text: '一度決めて終わりにしないこと。仲間と会いながら、何度でも選び直し、更新を重ねます。',
+  },
+];
+
+export const becomingTermsJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'DefinedTermSet',
+  name: 'be / com / ing',
+  description:
+    'be / com / ing（ビー・カム・イング）は、becoming lab の考え方を三つに分けた言葉です。becoming という一語を、be・com・ing に区切っています。',
+  url: `${SITE_URL}/concept#be-com-ing`,
+  inLanguage: 'ja',
+  hasDefinedTerm: becomingTerms.map((t) => ({
+    '@type': 'DefinedTerm',
+    name: t.term,
+    alternateName: t.label,
+    description: t.text,
+  })),
+};

@@ -4,11 +4,15 @@ export const metadata = {
 };
 
 import Link from "next/link";
+import JsonLd from "@/components/JsonLd";
+import { seriesJsonLd, breadcrumbJsonLd } from "@/content/event-schema";
 import { events, formatDate } from "@/content/events";
 
 export default function KataribePage() {
   return (
     <>
+      <JsonLd data={seriesJsonLd} />
+      <JsonLd data={breadcrumbJsonLd([{ name: "自分で選んだ道", path: "/jibun-de-eranda-michi" }])} />
       <section className="pt-32 pb-12">
         <div className="max-w-2xl mx-auto px-8">
           <p className="text-xs tracking-widest text-gray-400 mb-4">自分で選んだ道</p>

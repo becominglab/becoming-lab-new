@@ -1,4 +1,6 @@
 import Link from "next/link";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd } from "@/content/event-schema";
 import { events, formatDate } from "@/content/events";
 
 export const metadata = {
@@ -11,6 +13,7 @@ export default function ArchivePage() {
 
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd([{ name: "自分で選んだ道", path: "/jibun-de-eranda-michi" }, { name: "これまでのスピーカー", path: "/jibun-de-eranda-michi/archive" }])} />
       <section className="pt-32 pb-12">
         <div className="max-w-2xl mx-auto px-8">
           <p className="text-xs tracking-widest text-gray-400 mb-4">ARCHIVE</p>

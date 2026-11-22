@@ -1,4 +1,6 @@
 import Link from "next/link";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd } from "@/content/event-schema";
 import Reveal from "@/components/Reveal";
 import Cycle from "@/components/Cycle";
 import "@/styles/becoming.css";
@@ -54,6 +56,7 @@ const distances = [
 export default function CommunityPage() {
   return (
     <div className="bc">
+      <JsonLd data={breadcrumbJsonLd([{ name: "コミュニティ", path: "/community" }])} />
       <section className="bc-hero bc-hero-sub">
         <svg
           className="bc-hero-rings"

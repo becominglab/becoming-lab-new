@@ -1,4 +1,6 @@
 import Link from "next/link";
+import JsonLd from "@/components/JsonLd";
+import { aboutJsonLd, breadcrumbJsonLd, becomingTerms, becomingTermsJsonLd } from "@/content/event-schema";
 
 export const metadata = {
   title: "コンセプト",
@@ -8,6 +10,9 @@ export const metadata = {
 export default function ConceptPage() {
   return (
     <>
+      <JsonLd data={aboutJsonLd} />
+      <JsonLd data={becomingTermsJsonLd} />
+      <JsonLd data={breadcrumbJsonLd([{ name: "コンセプト", path: "/concept" }])} />
       {/* ヘッダー */}
       <section className="pt-32 pb-12">
         <div className="max-w-2xl mx-auto px-8">
@@ -70,6 +75,26 @@ export default function ConceptPage() {
               ロゴの「i」の上に置いた円環は、この3つが回り続けることを表しています。
               到達点ではなく、回り続けるプロセスそのものが becoming lab です。
             </p>
+          </div>
+
+          {/* be / com / ing */}
+          <div className="mb-16" id="be-com-ing">
+            <p className="text-xs tracking-widest text-gray-400 mb-4">METHOD</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">be / com / ing とは</h2>
+            <p className="text-gray-600 leading-relaxed mb-10">
+              be / com / ing（ビー・カム・イング）は、becoming lab の考え方を三つに分けた言葉です。
+              becoming という一語を、be・com・ing に区切っています。
+            </p>
+            <div className="space-y-8">
+              {becomingTerms.map((t) => (
+                <div key={t.term}>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                    {t.term} ── {t.label}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">{t.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Cultures */}

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd } from "@/content/event-schema";
 import { upcoming, jpDate } from "@/content/michi";
 
 export const metadata = {
@@ -26,6 +28,7 @@ const branches = [
 export default function MichiPage() {
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd([{ name: "道", path: "/michi" }])} />
       <section className="pt-32 pb-12">
         <div className="max-w-2xl mx-auto px-8">
           <p className="text-xs tracking-widest text-gray-400 mb-4">MICHI</p>
