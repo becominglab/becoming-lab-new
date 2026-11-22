@@ -120,8 +120,23 @@ export const events: BecomingEvent[] = [
     applyUrl: 'https://forms.gle/8x1qmNzxRV1buezH6',
     href: '/jibun-de-eranda-michi/vol9',
   },
-  { vol: 10, date: null, guest: null, theme: null },
+  {
+    vol: 10,
+    date: '2026-12-17',
+    guest: '山川胡桃',
+    theme: '人と人を繋ぎ、人に与える生き方',
+    subtitle: '営業代行 × MC × 起業。人をつなぐ胡桃さんの、まず自分から与える姿勢の原点へ',
+    short: '人と人を繋ぎ、人に与える生き方',
+    time: '19:30 – 21:30',
+    doorsOpen: '19:15',
+    venue: '神田SDGsコネクション 3階',
+    address: '東京都千代田区神田錦町2-9-15',
+    fee: '3,000円（税込・懇親会費を含みます）',
+    applyUrl: 'https://forms.gle/y2NegAebsgLGruJn9',
+    href: '/jibun-de-eranda-michi/vol10',
+  },
   { vol: 11, date: null, guest: null, theme: null },
+  { vol: 12, date: null, guest: null, theme: null },
 ];
 
 export const formatDate = (iso: string | null) =>

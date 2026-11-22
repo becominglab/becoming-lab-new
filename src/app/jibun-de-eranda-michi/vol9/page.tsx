@@ -4,17 +4,15 @@ import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import { eventJsonLd, breadcrumbJsonLd } from "@/content/event-schema";
 
-const APPLY_URL = "https://forms.gle/8x1qmNzxRV1buezH6";
-
 export const metadata: Metadata = {
   title: "第九回 自分で選んだ道 vol.9",
   description:
-    "株式会社KYTE代表・「大人のやさしいアートゼミ」主催の村上静香さんをお迎えします。テーマは「同じ絵を見ているのに、見えているものが違う？」。対話で楽しむアート鑑賞のミニ体験つき。2026年11月17日（火）19:30より、神田錦町にて開催。",
+    "株式会社KYTE代表・「大人のやさしいアートゼミ」主催の村上静香さんをお迎えしました。テーマは「同じ絵を見ているのに、見えているものが違う？」。アートを通じて「見る力」を考える夜。2026年11月17日（火）、神田錦町にて開催（終了・開催報告あり）。",
   alternates: { canonical: "/jibun-de-eranda-michi/vol9" },
   openGraph: {
     title: "第九回 自分で選んだ道 vol.9｜同じ絵を見ているのに、見えているものが違う？",
     description:
-      "株式会社KYTE代表・村上静香さんをお迎えします。対話で楽しむアート鑑賞のミニ体験つき。2026年11月17日（火）19:30より、神田錦町にて開催。",
+      "株式会社KYTE代表・村上静香さんをお迎えしました。2026年11月17日（火）、神田錦町にて開催。開催報告を掲載しています。",
     url: "https://becominglab.life/jibun-de-eranda-michi/vol9",
     images: [{ url: "/images/og.png", width: 1200, height: 630, alt: "becoming lab" }],
   },
@@ -116,7 +114,7 @@ export default function Vol9Page() {
               一枚の絵を前に、「何が見える？」「どこからそう感じた？」と対話してみる。そこには、自分の見方のクセや、相手の視点に気づくヒントがあります。
             </p>
             <p>
-              当日は、対話で楽しむアート鑑賞のミニ体験も予定しています。アートの知識がない方も、ご自身が感じたことを入り口にご参加いただけます。
+              当日は、対話で楽しむアート鑑賞のミニ体験も行いました。
             </p>
           </div>
           <div className="mt-12">
@@ -207,26 +205,71 @@ export default function Vol9Page() {
         </div>
       </section>
 
-      {/* Join */}
+      {/* Report */}
       <section className="px-6 py-24 bg-stone-900 text-white">
-        <div className="max-w-2xl mx-auto text-center">
-          <span className="text-xs tracking-[0.3em] text-stone-500 block mb-4">JOIN US</span>
-          <h2 className="text-2xl font-light mb-8 tracking-tight">参加申し込み</h2>
-          <a
-            href={APPLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white text-stone-900 hover:bg-stone-100 transition-colors duration-300"
-          >
-            <span className="text-sm">▶</span>
-            <span>参加を申し込む</span>
-          </a>
-          <p className="text-sm text-stone-500 mt-8">※ 定員に達し次第、締め切らせていただきます</p>
-          <p className="mt-10">
-            <Link href="/jibun-de-eranda-michi" className="text-sm text-stone-400 hover:text-white transition-colors">
-              ← 「自分で選んだ道」一覧へ
-            </Link>
+        <div className="max-w-2xl mx-auto">
+          <span className="text-xs tracking-[0.3em] text-stone-500 block mb-4">REPORT</span>
+          <h2 className="text-2xl font-light mb-4 tracking-tight">開催を終えて</h2>
+          <p className="text-sm text-stone-400 mb-12">
+            この回は終了しました。2026年11月17日、村上静香さんをお迎えして開催しました。
           </p>
+
+          <p className="text-xl md:text-2xl font-light leading-relaxed mb-12 border-l-2 border-stone-600 pl-6">
+            人生は何歳からでも変えられる。
+            <br />
+            そして、世界の見え方も変えられる。
+          </p>
+
+          <div className="space-y-6 text-stone-300 leading-relaxed">
+            <p>
+              前半は、静香さんの人生とキャリアのお話。映画の宣伝、英会話、まちづくり、ベンチャー企業など、さまざまな仕事を経験され、40歳を迎えたときに自分の事業を立ち上げることを決意。現在は、大好きだったアートを仕事にされています。
+            </p>
+            <p>
+              印象的だったのは、「80歳まで楽しく働く」という人生の目標を持っていらっしゃること。私たちはつい、年齢や過去の経験、社会の常識によって、自分の可能性に制限をかけてしまいがちです。でも、人生の選択肢は本当はもっと自由で、いくつになっても広げることができる。
+            </p>
+            <p>
+              一見、遠回りに思えるキャリアも、好きなことや大切にしたい価値観を探し続けることで、一つの道につながっていく。そんな静香さんの歩みに、人生を自分らしく選び続けることの大切さを感じました。
+            </p>
+            <p>
+              後半は、アートを通じて「見る力」を考える時間。実際に一枚の絵を鑑賞するワークも体験しました。同じ絵を見ているのに、人によって注目するところも、感じることも、想像するストーリーもまったく違う。そして、自分が「見えている」と思っていることの中にも、実は思い込みがたくさんある。
+            </p>
+            <p className="text-white">
+              私たちは無意識のうちに、「事実」と「自分の解釈」を混同してしまう。
+            </p>
+            <p>
+              これは、仕事でも、夫婦関係でも、子育てでも、日常のあらゆる場面に通じることだと感じました。自分と違う見方に出会ったとき、それを否定するのではなく、「そんな見方もあるんだ！」と面白がれること。その積み重ねが、人への理解を深め、より豊かな人間関係や、寛容な社会につながっていくのだと思います。
+            </p>
+            <p>
+              詳しいワークの内容はここでは控えますが、頭で理解するのと実際に体験するのとでは、気づきの深さがまったく違いました。
+            </p>
+            <p>
+              そして、懇親会。becoming labで大切にしたい時間の一つです。年齢も仕事も、人生経験も違う人たちが集まり、それぞれの視点や価値観に触れる。誰かの話を聞きながら自分自身を振り返ったり、自分の考えを話すことで、初めて気づくことがあったり。アート鑑賞で学んだ「違う視点に触れることの価値」を、人との交流を通じても感じられる時間でした。
+            </p>
+            <p>
+              人は、学びによって視野が広がり、出会いによって人生の可能性が広がっていく。そんなことを改めて実感した夜でした。
+            </p>
+            <p>静香さん、ご参加くださった皆さま、本当にありがとうございました。</p>
+            <p className="pt-8 text-sm text-stone-500">becoming lab 主宰</p>
+          </div>
+
+          <div className="mt-16 pt-8 border-t border-white/20 text-center">
+            <p className="text-xs tracking-[0.3em] text-stone-500 mb-4">NEXT</p>
+            <p className="text-stone-300 mb-6">
+              vol.10 は 2026年12月17日（木）、山川胡桃さん「人と人を繋ぎ、人に与える生き方」
+            </p>
+            <Link
+              href="/jibun-de-eranda-michi/vol10"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-stone-900 hover:bg-stone-100 transition-colors duration-300"
+            >
+              <span className="text-sm">▶</span>
+              <span>次回の詳細を見る</span>
+            </Link>
+            <p className="mt-10">
+              <Link href="/jibun-de-eranda-michi" className="text-sm text-stone-400 hover:text-white transition-colors">
+                ← 「自分で選んだ道」一覧へ
+              </Link>
+            </p>
+          </div>
         </div>
       </section>
     </main>
