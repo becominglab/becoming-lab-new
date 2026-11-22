@@ -51,6 +51,7 @@ export default function Header() {
     { href: "/concept", label: "Concept" },
     { href: "/michi", label: "道" },
     { href: "/community", label: "Community" },
+    { href: "/guide", label: "手引き" },
     { href: "/service", label: "Service" },
   ];
 

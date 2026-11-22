@@ -50,7 +50,7 @@ export default function Hero() {
 
         {next && (
           <div className="bc-hero-card">
-            <p className="bc-card-label">次に会えるのは</p>
+            <h2 className="bc-card-label">次に会えるのは</h2>
             <p className="bc-card-date">
               {formatDate(next.date)}
               <span>{next.date ? weekday(next.date) : ''}</span>

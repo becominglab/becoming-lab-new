@@ -1337,3 +1337,20 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --- 見出しタグにした小見出しの見た目を、これまでの <p> と同じに保つ ------------- */
+
+.bc h2.bc-eyebrow,
+.bc h2.bc-card-label,
+.bc h2.bc-past-label {
+  font-family: inherit;
+  font-weight: 400;
+  line-height: inherit;
+}
+
+.bc-letter h2.bc-eyebrow {
+  font-size: 14px;
+  line-height: 2.1;
+  color: var(--bc-body);
+  margin: 0 0 16px;
+}

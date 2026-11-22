@@ -35,3 +35,21 @@ export const posts: Post[] = [...ALL].sort((a, b) =>
 );
 
 export const findPost = (key: string) => posts.find((p) => p.key === key) ?? null;
+
+/** 読みもの → 関連する手引き（/guide/[slug]）。記事の末尾に案内を出す */
+export const relatedGuideSlug: Record<string, string> = {
+  n844e5e4283fd: "hitori-sanka-community-tokyo",
+  n1571dd809b94: "hitori-sanka-community-tokyo",
+  n518896855552: "hansei-tanaoroshi",
+  nf8c3104ab635: "jinsei-wo-kataru",
+  ncefcebd992a2: "90kg-kara-hashiru",
+  n3171c15e34aa: "90kg-kara-hashiru",
+  n0793e8882ae6: "erabinaosu-40-50",
+  nda0632c5f6b9: "erabinaosu-40-50",
+  ncdfe7fd34734: "jinsei-wo-kataru",
+  n0fdd9dd0b463: "hitori-sanka-community-tokyo",
+  n2de3d0e6a249: "triathlon-50dai-hajimekata",
+  nf9c361eed92b: "90kg-kara-hashiru",
+  n70f6eb7ecc79: "erabinaosu-40-50",
+  nfc680ed998b2: "jinsei-wo-kataru",
+};

@@ -142,7 +142,7 @@ export default function Home() {
 
       <section className="bc-ways">
         <div className="bc-wrap">
-          <p className="bc-eyebrow">道は、一つではない。</p>
+          <h2 className="bc-eyebrow">道は、一つではない。</h2>
           <div className="bc-ways-list">
             <Link href="/michi/au" className="bc-way">
               <span className="bc-way-verb">会う。</span>
@@ -163,7 +163,7 @@ export default function Home() {
           {rings(640, 130, 4, 48)}
         </svg>
         <div className="bc-wrap bc-letter-inner">
-          <p className="bc-eyebrow">なぜ、二人ではじめたのか</p>
+          <h2 className="bc-eyebrow">なぜ、二人ではじめたのか</h2>
           <p className="bc-voice bc-letter-lead">
             自分で選んだ道を、誰かと更新していく。
             <br />
@@ -184,7 +184,7 @@ export default function Home() {
 
       <section className="bc-faq">
         <div className="bc-wrap">
-          <p className="bc-eyebrow">はじめての方から、よく聞かれること</p>
+          <h2 className="bc-eyebrow">はじめての方から、よく聞かれること</h2>
           {faqs.map((f, i) => (
             <details key={f.q} open={i === 0}>
               <summary>{f.q}</summary>

@@ -10,6 +10,8 @@ import {
 } from "@/lib/note-article";
 import JsonLd from "@/components/JsonLd";
 import { articleJsonLd, articleBreadcrumbJsonLd } from "@/content/article-schema";
+import { relatedGuideSlug } from "@/content/posts";
+import { findGuide } from "@/content/guides";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -49,6 +51,7 @@ export default async function NoteArticlePage({ params }: any) {
   const { key } = await params;
   const a = await fetchNoteArticle(key);
   if (!a) notFound();
+  const guide = a.local ? findGuide(relatedGuideSlug[a.key] ?? "") : null;
 
   return (
     <article className="mx-auto max-w-[42rem] px-6 pt-32 pb-28">
@@ -92,6 +95,26 @@ export default async function NoteArticlePage({ params }: any) {
           [&_li]:mb-2"
         dangerouslySetInnerHTML={{ __html: a.bodyHtml }}
       />
+
+      {guide && (
+        <aside
+          className="mt-16 rounded-2xl border border-[#1B6B7A]/20 p-6 md:p-8"
+          style={{ backgroundColor: "rgba(27,107,122,0.03)" }}
+        >
+          <p className="text-[10px] tracking-[0.25em] mb-3" style={{ color: "#1B6B7A" }}>
+            手引き
+          </p>
+          <p className="text-sm leading-relaxed text-gray-600 mb-2">
+            この話に関わる「やり方」を、手順としてまとめています。
+          </p>
+          <Link
+            href={`/guide/${guide.slug}`}
+            className="font-bold text-gray-900 underline underline-offset-4 hover:text-[#1B6B7A] transition-colors"
+          >
+            {guide.title}
+          </Link>
+        </aside>
+      )}
 
       <footer className="mt-20 border-t border-gray-200 pt-8">
         {a.local ? (

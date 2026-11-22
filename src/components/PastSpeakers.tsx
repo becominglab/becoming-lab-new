@@ -9,9 +9,9 @@ export default function PastSpeakers() {
       <div className="bc-wrap">
         {past.length > 0 && (
           <div className="bc-past">
-            <p className="bc-past-label">
+            <h2 className="bc-past-label">
               これまで、{past.length}人が語りました
-            </p>
+            </h2>
             <ul className="bc-past-list">
               {past.map((e) => (
                 <li key={e.vol}>

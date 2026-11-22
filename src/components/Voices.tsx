@@ -30,7 +30,7 @@ export default function Voices() {
   return (
     <section className="bc-voices" aria-label="参加した方が持ち帰った言葉">
       <div className="bc-wrap">
-        <p className="bc-eyebrow">その日、持ち帰ったもの</p>
+        <h2 className="bc-eyebrow">その日、持ち帰ったもの</h2>
         <p
           className={`bc-voice bc-voice-text${fading ? ' bc-fade-out' : ''}`}
           aria-live="polite"
