@@ -6,6 +6,7 @@ import {
   fetchNoteArticle,
   fetchNoteKeys,
   formatArticleDate,
+  canonicalUrlFor,
 } from "@/lib/note-article";
 import JsonLd from "@/components/JsonLd";
 import { articleJsonLd, articleBreadcrumbJsonLd } from "@/content/article-schema";
@@ -22,15 +23,16 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { key } = await params;
   const a = await fetchNoteArticle(key);
   if (!a) return { title: "読みもの" };
+  const url = canonicalUrlFor(a);
   return {
     title: a.title,
     description: a.excerpt || undefined,
-    alternates: { canonical: a.noteUrl },
+    alternates: { canonical: url },
     openGraph: {
       type: "article",
       title: a.title,
       description: a.excerpt || undefined,
-      url: a.noteUrl,
+      url,
       images: a.eyecatch ? [a.eyecatch] : undefined,
       publishedTime: a.publishedAt || undefined,
     },
@@ -92,19 +94,47 @@ export default async function NoteArticlePage({ params }: any) {
       />
 
       <footer className="mt-20 border-t border-gray-200 pt-8">
-        <p className="text-sm leading-relaxed text-gray-500">
-          この記事は note に書いたものです。
-          <br />
-          スキやコメントは note からどうぞ。
-        </p>
-        <a
-          href={a.noteUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-4 inline-block text-sm text-[#1B6B7A] underline underline-offset-4"
-        >
-          note で読む →
-        </a>
+        {a.local ? (
+          <>
+            <p className="text-sm leading-relaxed text-gray-500">
+              becoming lab は、東京・神田錦町を拠点に、月に一度のトークイベント「自分で選んだ道」をひらいているコミュニティです。
+            </p>
+            <Link
+              href="/jibun-de-eranda-michi"
+              className="mt-3 inline-block text-sm text-[#1B6B7A] underline underline-offset-4"
+            >
+              「自分で選んだ道」について →
+            </Link>
+            <p className="mt-8 text-sm leading-relaxed text-gray-500">
+              スキやコメントは{" "}
+              <a
+                href={a.noteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#1B6B7A] underline underline-offset-4"
+              >
+                note
+              </a>{" "}
+              からどうぞ。
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-sm leading-relaxed text-gray-500">
+              この記事は note に書いたものです。
+              <br />
+              スキやコメントは note からどうぞ。
+            </p>
+            <a
+              href={a.noteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-block text-sm text-[#1B6B7A] underline underline-offset-4"
+            >
+              note で読む →
+            </a>
+          </>
+        )}
       </footer>
     </article>
   );

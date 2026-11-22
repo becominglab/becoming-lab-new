@@ -6,12 +6,48 @@ export const metadata = {
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import { seriesJsonLd, breadcrumbJsonLd } from "@/content/event-schema";
-import { events, formatDate } from "@/content/events";
+import { events, formatDate, nextEvent } from "@/content/events";
 
 export default function KataribePage() {
+  // 概要とFAQは、直近の回の情報（content/events.ts）から組み立てる
+  const n = nextEvent();
+  const venue = n?.venue ?? "神田SDGsコネクション 3階";
+  const address = n?.address ?? "東京都千代田区神田錦町2-9-15";
+  const time = n?.time ?? "19:30 – 21:30";
+  const doors = n?.doorsOpen ?? "19:15";
+  const fee = n?.fee ?? "3,000円（税込・懇親会費を含みます）";
+  const upcoming = n?.date && n.date >= new Date().toISOString().slice(0, 10) ? n : null;
+
+  const overview = [
+    { k: "頻度", v: "月に一度" },
+    { k: "時間", v: `${time}（開場 ${doors}）` },
+    { k: "会場", v: `${venue}（${address}）` },
+    { k: "参加費", v: fee },
+    { k: "申込", v: "各回のページにある申込フォームから" },
+  ];
+
+  const faqs = [
+    { q: "「自分で選んだ道」は、どんなイベントですか。", a: "becoming lab が東京・神田錦町で月に一度ひらくトークイベントです。一人のスピーカーが、成功談ではなく、人生の途中を未完成のまま語ります。" },
+    { q: "どこで開催していますか。", a: `${venue}です。住所は${address}です。` },
+    { q: "何時から何時までですか。", a: `${time}です。開場は${doors}です。` },
+    { q: "参加費はいくらですか。", a: `${fee}。` },
+    { q: "どうやって申し込みますか。", a: "各回のページにある申込フォームからお申し込みください。" },
+    { q: "一人でも参加できますか。", a: "ほとんどの方が一人で来ます。開始前に運営が必ず声をかけ、席も組みます。" },
+  ];
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+
   return (
     <>
       <JsonLd data={seriesJsonLd} />
+      <JsonLd data={faqJsonLd} />
       <JsonLd data={breadcrumbJsonLd([{ name: "自分で選んだ道", path: "/jibun-de-eranda-michi" }])} />
       <section className="pt-32 pb-12">
         <div className="max-w-2xl mx-auto px-8">
@@ -25,9 +61,29 @@ export default function KataribePage() {
           <div className="mb-16">
             <h2 className="text-xl font-bold text-gray-900 mb-6">自分で選んだ道とは</h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
+              <p>「自分で選んだ道」は、becoming lab が東京・神田錦町で月に一度ひらくトークイベントです。</p>
               <p>月に一度、一人のスピーカーが人生の途中を語ります。</p>
               <p>成功談ではありません。未完成のままの物語です。</p>
             </div>
+          </div>
+
+          <div className="mb-16">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">開催概要</h2>
+            <dl className="space-y-3 text-gray-600">
+              {overview.map((r) => (
+                <div key={r.k} className="flex gap-6">
+                  <dt className="w-16 shrink-0 text-gray-400">{r.k}</dt>
+                  <dd>{r.v}</dd>
+                </div>
+              ))}
+            </dl>
+            {upcoming?.href && (
+              <p className="mt-6">
+                <Link href={upcoming.href} className="text-sm hover:opacity-70 transition-opacity" style={{ color: "#1B6B7A" }}>
+                  次回 vol.{upcoming.vol}（{formatDate(upcoming.date)}）{upcoming.guest}さんの回を見る →
+                </Link>
+              </p>
+            )}
           </div>
 
           <div className="mb-16">
@@ -73,6 +129,20 @@ export default function KataribePage() {
                 ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="pb-20">
+        <div className="max-w-2xl mx-auto px-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">よくある質問</h2>
+          <dl className="space-y-8">
+            {faqs.map((f) => (
+              <div key={f.q}>
+                <dt className="font-bold text-gray-900 mb-2">{f.q}</dt>
+                <dd className="text-gray-600 leading-relaxed">{f.a}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 

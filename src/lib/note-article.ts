@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { posts, findPost } from "@/content/posts";
+
 const USER = "becominglab";
+const SITE_URL = "https://becominglab.life";
 const UA = "Mozilla/5.0 (compatible; becominglab-site/1.0)";
 const REVALIDATE = 3600;
 
@@ -12,7 +15,14 @@ export type NoteArticle = {
   publishedAt: string | null;
   noteUrl: string;
   bodyHtml: string;
+  /** サイト側に全文を保存してある記事（正規URLはサイト） */
+  local?: boolean;
 };
+
+/** その記事の正規URL。サイトに全文があればサイト、無ければ note */
+export function canonicalUrlFor(a: NoteArticle) {
+  return a.local ? `${SITE_URL}/blog/${a.key}` : a.noteUrl;
+}
 
 export function noteUrlFor(key: string) {
   return `https://note.com/${USER}/n/${key}`;
@@ -38,6 +48,12 @@ export function sanitizeNoteBody(html: string): string {
 
 /** 記事キーの一覧。ビルド時の静的生成に使う */
 export async function fetchNoteKeys(limit = 24): Promise<string[]> {
+  const localKeys = posts.map((p) => p.key);
+  const remote = await fetchRemoteNoteKeys(limit);
+  return [...new Set([...localKeys, ...remote])];
+}
+
+async function fetchRemoteNoteKeys(limit: number): Promise<string[]> {
   try {
     const res = await fetch(
       `https://note.com/api/v2/creators/${USER}/contents?kind=note&page=1`,
@@ -58,6 +74,19 @@ export async function fetchNoteKeys(limit = 24): Promise<string[]> {
 /** 単記事の全文 */
 export async function fetchNoteArticle(key: string): Promise<NoteArticle | null> {
   if (!/^n[0-9a-z]+$/.test(key)) return null;
+  const local = findPost(key);
+  if (local) {
+    return {
+      key: local.key,
+      title: local.title,
+      excerpt: local.excerpt,
+      eyecatch: local.eyecatch,
+      publishedAt: local.publishedAt,
+      noteUrl: local.noteUrl,
+      bodyHtml: local.bodyHtml,
+      local: true,
+    };
+  }
   try {
     const res = await fetch(`https://note.com/api/v3/notes/${key}`, {
       headers: { "User-Agent": UA },

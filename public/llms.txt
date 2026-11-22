@@ -48,6 +48,32 @@ becoming という一語を、be・com・ing に区切っています。
 - vol.10（2026-12-17 木 19:30-21:30）山川胡桃「人と人を繋ぎ、人に与える生き方」
   https://becominglab.life/jibun-de-eranda-michi/vol10
 
+## 手引き（主宰者の実体験にもとづく実践記事）
+
+- https://becominglab.life/guide/90kg-kara-hashiru  体重90キロからのランニングの始め方：膝を守るために、まず走らなかった
+- https://becominglab.life/guide/erabinaosu-40-50  40代・50代で人生を選び直すには、何から始めるか
+- https://becominglab.life/guide/hansei-tanaoroshi  半生の棚卸しのやり方：5枚のシート
+- https://becominglab.life/guide/hitori-sanka-community-tokyo  一人で参加できる社会人コミュニティの選び方（東京）
+- https://becominglab.life/guide/jinsei-wo-kataru  人前で自分の人生を語ると、何が起きるか
+- https://becominglab.life/guide/triathlon-50dai-hajimekata  50代からトライアスロンを始める手順
+
+## 読みもの（主宰者が書いた記事。全文をサイトに掲載）
+
+- https://becominglab.life/blog/nfc680ed998b2  誰かのために、少し動いてみる — becoming lab「自分で選んだ道」vol.7
+- https://becominglab.life/blog/n70f6eb7ecc79  本田直之さんの『セカンドハーフ戦略』を読んで 、20年前は驚き、今は重なった。
+- https://becominglab.life/blog/nf9c361eed92b  90キロの体で、まず「走らない」ことから決めた
+- https://becominglab.life/blog/n2de3d0e6a249  先に申し込んだ、その後の話。
+- https://becominglab.life/blog/n0fdd9dd0b463  走りながら話すと、思考が整う理由
+- https://becominglab.life/blog/ncdfe7fd34734  点と点は、待っていてもつながらない — becoming lab 「自分で選んだ道」vol.6
+- https://becominglab.life/blog/nda0632c5f6b9  家族を幸せにするために働いていたのに、家族との時間がなくなっていた。
+- https://becominglab.life/blog/n0793e8882ae6  50代から人生を変えるのは、遅くない。
+- https://becominglab.life/blog/n3171c15e34aa  意志が弱いから、先に大会に申し込んだ。
+- https://becominglab.life/blog/ncefcebd992a2  25キロ痩せて、手に入れたもの。
+- https://becominglab.life/blog/nf8c3104ab635  なぜ、「自分で選んだ道」という会を始めたのか
+- https://becominglab.life/blog/n518896855552  「お言葉ですが」と、業界のレジェンドに言った日。
+- https://becominglab.life/blog/n1571dd809b94  神田に、大人の「部活」をつくりました
+- https://becominglab.life/blog/n844e5e4283fd  なぜ、夫婦で becoming lab を始めたのか？
+
 ## 主要ページ
 
 - https://becominglab.life/            トップ。全体像と直近の開催情報
@@ -57,6 +83,7 @@ becoming という一語を、be・com・ing に区切っています。
 - https://becominglab.life/jibun-de-eranda-michi  トークイベントシリーズ
 - https://becominglab.life/members     語った人たち
 - https://becominglab.life/service     1on1セッション、夫婦関係の講座
+- https://becominglab.life/guide       手引き。やり方を手順としてまとめた記事
 - https://becominglab.life/blog        読みもの
 - https://becominglab.life/contact     お問い合わせ
 

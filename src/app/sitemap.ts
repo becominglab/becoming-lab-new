@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { events } from "@/content/events";
+import { guides } from "@/content/guides";
+import { posts } from "@/content/posts";
 
 const BASE = "https://becominglab.life";
 
@@ -16,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/concept", priority: 0.8, freq: "monthly" },
     { path: "/community", priority: 0.8, freq: "monthly" },
     { path: "/members", priority: 0.8, freq: "monthly" },
+    { path: "/guide", priority: 0.8, freq: "weekly" },
     { path: "/blog", priority: 0.7, freq: "weekly" },
     { path: "/service", priority: 0.7, freq: "monthly" },
     { path: "/contact", priority: 0.6, freq: "yearly" },
@@ -46,6 +49,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: s.freq,
       priority: s.priority,
+    })),
+    ...guides.map((g) => ({
+      url: `${BASE}/guide/${g.slug}`,
+      lastModified: new Date(g.updated),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+    ...posts.map((p) => ({
+      url: `${BASE}/blog/${p.key}`,
+      lastModified: new Date(p.publishedAt ?? Date.now()),
+      changeFrequency: "yearly" as const,
+      priority: 0.6,
     })),
     ...volPages,
     ...profilePages,

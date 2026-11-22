@@ -1,5 +1,5 @@
 // 読みもの（note 記事）の構造化データ
-import type { NoteArticle } from "@/lib/note-article";
+import { canonicalUrlFor, type NoteArticle } from "@/lib/note-article";
 
 const SITE_URL = "https://becominglab.life";
 
@@ -15,22 +15,28 @@ const PUBLISHER = {
 
 /**
  * 記事本体の構造化データ。
- * canonical が note を指しているため mainEntityOfPage も note に揃えます。
+ * 正規URL（サイトに全文があればサイト、無ければ note）に mainEntityOfPage を揃えます。
  */
 export function articleJsonLd(a: NoteArticle) {
   const published = a.publishedAt ?? undefined;
+  const url = canonicalUrlFor(a);
+  const eyecatch = a.eyecatch
+    ? a.eyecatch.startsWith("/")
+      ? `${SITE_URL}${a.eyecatch}`
+      : a.eyecatch
+    : null;
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: a.title.slice(0, 110),
     description: a.excerpt || undefined,
-    image: a.eyecatch ? [a.eyecatch] : [`${SITE_URL}/images/og.png`],
+    image: eyecatch ? [eyecatch] : [`${SITE_URL}/images/og.png`],
     datePublished: published,
     dateModified: published,
     author: PUBLISHER,
     publisher: PUBLISHER,
-    url: a.noteUrl,
-    mainEntityOfPage: { "@type": "WebPage", "@id": a.noteUrl },
+    url,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
     inLanguage: "ja",
     isPartOf: {
       "@type": "Blog",

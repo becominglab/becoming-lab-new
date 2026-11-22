@@ -1,19 +1,21 @@
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import { fetchNotePosts } from "@/lib/note";
+import { posts as sitePosts } from "@/content/posts";
+import { formatArticleDate } from "@/lib/note-article";
 import "@/styles/becoming.css";
 
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "読みもの ｜ note",
+  title: "読みもの",
   description:
-    "becoming lab の note。人生の途中で考えていること、月に一つの問い、会のあとに残った言葉を書いています。東京・神田のコミュニティ becoming lab。",
+    "becoming lab の読みもの。人生の途中で考えていること、月に一つの問い、会のあとに残った言葉を書いています。東京・神田のコミュニティ becoming lab。",
   alternates: { canonical: "https://becominglab.life/blog" },
   openGraph: {
     images: [{ url: "/images/og.png", width: 1200, height: 630, alt: "becoming lab" }],
     title: "読みもの ｜ becoming lab",
-    description: "人生の途中で考えていることを、note に書いています。",
+    description: "人生の途中で考えていることを、そのまま書いています。",
     url: "https://becominglab.life/blog",
     type: "website",
   },
@@ -40,7 +42,21 @@ const noteKeyOf = (link: string) =>
   (link.match(/\/n\/(n[0-9a-z]+)/) || [])[1] ?? null;
 
 export default async function BlogPage() {
-  const posts = await fetchNotePosts();
+  // サイトに全文がある記事を並べ、note にだけある新しい記事があれば先頭に足す
+  const siteKeys = new Set(sitePosts.map((p) => p.key));
+  const fresh = (await fetchNotePosts()).filter((p) => {
+    const k = noteKeyOf(p.link);
+    return !k || !siteKeys.has(k);
+  });
+  const posts = [
+    ...fresh,
+    ...sitePosts.map((p) => ({
+      title: p.title,
+      link: `https://note.com/becominglab/n/${p.key}`,
+      date: formatArticleDate(p.publishedAt),
+      excerpt: p.excerpt.length > 90 ? `${p.excerpt.slice(0, 90)}…` : p.excerpt,
+    })),
+  ];
 
   return (
     <div className="bc">
@@ -54,7 +70,7 @@ export default async function BlogPage() {
           {rings(600, 150, 6, 46)}
         </svg>
         <div className="bc-wrap bc-hero-inner">
-          <p className="bc-eyebrow">NOTE</p>
+          <p className="bc-eyebrow">BLOG</p>
           <h1>読みもの</h1>
           <p className="bc-voice">考えている途中のことを、そのまま置いています。</p>
         </div>
@@ -65,7 +81,10 @@ export default async function BlogPage() {
           <div className="bc-prose">
             <p>
               会のできごとは<Link href="/michi">道</Link>に、
-              考えていることは note に書いています。
+              考えていることは、ここに書いています。
+            </p>
+            <p>
+              やり方を手順としてまとめた記事は、<Link href="/guide">手引き</Link>に置いています。
             </p>
           </div>
         </Reveal>
@@ -113,7 +132,7 @@ export default async function BlogPage() {
             <Reveal delay={300}>
               <p className="bc-more">
                 <a href={NOTE_URL} target="_blank" rel="noreferrer">
-                  note ですべて読む →
+                  note でも書いています →
                 </a>
               </p>
             </Reveal>
