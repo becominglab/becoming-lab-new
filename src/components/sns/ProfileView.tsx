@@ -245,9 +245,17 @@ export default function ProfileView({ userId, currentUserId }: Props) {
               {PHASE_LABELS[profile.update_phase]}
               {profile.seeking && ` · ${SEEKING_LABELS[profile.seeking]}`}
             </p>
-            {profile.bio && (
+            {profile.bio ? (
               <p className="text-sm text-stone-600 mt-2 leading-relaxed">{profile.bio}</p>
-            )}
+            ) : isOwn ? (
+              <a
+                href="#profile-edit"
+                className="inline-flex items-center gap-1 mt-2 text-xs text-stone-400 hover:text-teal-600 transition-colors group"
+              >
+                <span className="w-4 h-4 rounded-full border border-dashed border-stone-300 group-hover:border-teal-400 flex items-center justify-center text-[10px]">+</span>
+                自己紹介を追加する
+              </a>
+            ) : null}
 
             {/* 挑戦タグ */}
             {profile.challenge_tags?.length > 0 && (
@@ -270,7 +278,61 @@ export default function ProfileView({ userId, currentUserId }: Props) {
             </div>
           </div>
         </div>
+
+        {/* プロフィール充実度プロンプト（自分のみ・未完成時） */}
+        {isOwn && (() => {
+          const score = [
+            !!profile.avatar_url,
+            !!profile.bio,
+            profile.challenge_tags.length > 0,
+            !!profile.seeking,
+          ].filter(Boolean).length;
+          if (score >= 4) return null;
+          const pct = Math.round((score / 4) * 100);
+          return (
+            <div className="mt-4 pt-4 border-t border-stone-100">
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-xs font-medium text-stone-500">プロフィール充実度</p>
+                <p className="text-xs font-bold text-teal-600">{pct}%</p>
+              </div>
+              <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden mb-2">
+                <div className="h-full bg-teal-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {!profile.avatar_url && (
+                  <a href="#profile-edit" className="text-[10px] px-2 py-0.5 bg-stone-100 text-stone-500 rounded-full hover:bg-teal-50 hover:text-teal-600 transition-colors">+ アバター</a>
+                )}
+                {!profile.bio && (
+                  <a href="#profile-edit" className="text-[10px] px-2 py-0.5 bg-stone-100 text-stone-500 rounded-full hover:bg-teal-50 hover:text-teal-600 transition-colors">+ 自己紹介</a>
+                )}
+                {profile.challenge_tags.length === 0 && (
+                  <a href="#profile-edit" className="text-[10px] px-2 py-0.5 bg-stone-100 text-stone-500 rounded-full hover:bg-teal-50 hover:text-teal-600 transition-colors">+ 挑戦タグ</a>
+                )}
+                {!profile.seeking && (
+                  <a href="#profile-edit" className="text-[10px] px-2 py-0.5 bg-stone-100 text-stone-500 rounded-full hover:bg-teal-50 hover:text-teal-600 transition-colors">+ 求めていること</a>
+                )}
+              </div>
+            </div>
+          );
+        })()}
       </div>
+
+      {/* 友達招待カード（自分のプロフィールのみ） */}
+      {isOwn && (
+        <button
+          onClick={handleShareProfile}
+          className="w-full flex items-center gap-3 bg-gradient-to-r from-stone-800 to-stone-700 rounded-xl px-4 py-3 text-white hover:from-stone-700 hover:to-stone-600 transition-all active:scale-[0.98] group"
+        >
+          <div className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center shrink-0 group-hover:bg-white/20 transition-colors">
+            <Share2 size={16} />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="text-sm font-semibold">友達を招待する</p>
+            <p className="text-xs opacity-70">プロフィールリンクをシェア</p>
+          </div>
+          <span className="text-xs opacity-60">→</span>
+        </button>
+      )}
 
       {/* プロフィールタブ */}
       <div className="flex gap-1 bg-white rounded-xl border border-stone-200 p-1">

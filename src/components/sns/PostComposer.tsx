@@ -19,9 +19,18 @@ interface Props {
   onPosted?: () => void;
   /** チェックインやチャレンジ連携時の初期プロンプト */
   initialPrompt?: string;
+  /** 展開状態で最初から表示する (FABからの呼び出しなど) */
+  defaultExpanded?: boolean;
+  /** 折りたたみ状態のプレースホルダー文言 */
+  collapsedPlaceholder?: string;
 }
 
-export default function PostComposer({ onPosted, initialPrompt }: Props) {
+export default function PostComposer({
+  onPosted,
+  initialPrompt,
+  defaultExpanded,
+  collapsedPlaceholder = "今日の更新・宣言・達成を記録する...",
+}: Props) {
   const { showToast } = useToast();
   const searchParams = useSearchParams();
   const challengeTitle = searchParams.get("challenge");
@@ -31,7 +40,7 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
     ? `「${challengeTitle}」進捗${challengeProgress ? ` ${challengeProgress}%` : ""}`
     : "";
 
-  const [expanded, setExpanded] = useState(!!(challengeTitle || initialPrompt));
+  const [expanded, setExpanded] = useState(!!(challengeTitle || initialPrompt || defaultExpanded));
   const [did, setDid] = useState(defaultDid);
   const [learned, setLearned] = useState("");
   const [tomorrow, setTomorrow] = useState("");
@@ -210,7 +219,27 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
         setDraftRestored(false);
         clearDraft();
         showToast("投稿しました！", "success");
+        // フィードに再取得を通知
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("sns:post-created"));
+        }
         onPosted?.();
+        // バッジ獲得チェック（非同期・非ブロッキング）
+        fetch("/api/sns/badges/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ categories: ["social", "story"] }),
+        })
+          .then((r) => r.json())
+          .then((d) => {
+            const earned: Array<{ name: string; icon: string }> = d.newly_earned || [];
+            earned.slice(0, 2).forEach((badge, i) => {
+              setTimeout(() => {
+                showToast(`🏅 バッジ獲得！「${badge.icon}${badge.name}」`, "success");
+              }, i * 1500);
+            });
+          })
+          .catch(() => {});
       } else {
         const data = await res.json();
         showToast(data.error || "投稿に失敗しました", "error");
@@ -226,10 +255,13 @@ export default function PostComposer({ onPosted, initialPrompt }: Props) {
     return (
       <button
         onClick={() => setExpanded(true)}
-        className="w-full p-4 bg-white rounded-xl border border-stone-200 text-left text-sm text-stone-400 hover:border-teal-200 hover:text-stone-500 transition-colors flex items-center gap-2"
+        className="w-full p-4 bg-white rounded-xl border border-stone-200 text-left text-sm text-stone-400 hover:border-teal-300 hover:bg-stone-50 hover:text-stone-500 transition-all flex items-center gap-3 group"
       >
-        <span className="text-lg">✏️</span>
-        今日の更新・宣言・達成を記録する...
+        <span className="w-8 h-8 rounded-full bg-teal-50 border border-teal-200 flex items-center justify-center text-base flex-shrink-0 group-hover:bg-teal-100 transition-colors">
+          ✏️
+        </span>
+        <span className="flex-1">{collapsedPlaceholder}</span>
+        <span className="text-xs text-stone-300 group-hover:text-teal-400 transition-colors">タップして記録</span>
       </button>
     );
   }

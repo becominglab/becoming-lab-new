@@ -63,20 +63,9 @@ function renderPostItems(
           onUpdated={onUpdated}
           onCommentClick={onCommentClick}
         />
-        {/* 2投稿目の後にPostComposerを差し込む（フィルター無効時のみ） */}
-        {i === 1 && !typeFilter && (
-          <div className="mt-4">
-            <PostComposer onPosted={onPosted} initialPrompt={composerPrompt} />
-          </div>
-        )}
         {/* 5投稿目の後におすすめユーザーを差し込む */}
         {i === 4 && <div className="mt-4"><RecommendedUsers /></div>}
       </div>
-    );
-  }
-  if (posts.length <= 1 && !typeFilter) {
-    items.push(
-      <PostComposer key="bottom-composer" onPosted={onPosted} initialPrompt={composerPrompt} />
     );
   }
   return items;
@@ -102,6 +91,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
   const [newPostCount, setNewPostCount] = useState(0);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [welcomeBack, setWelcomeBack] = useState(false);
+  const [showFirstPostCelebration, setShowFirstPostCelebration] = useState(false);
   const filterInitialized = useRef(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -161,6 +151,16 @@ export default function FeedTimeline({ currentUserId }: Props) {
 
   useEffect(() => {
     fetchPosts(null, null);
+  }, [fetchPosts]);
+
+  // FABや他コンポーネントから投稿された場合にフィードを更新
+  useEffect(() => {
+    const handler = () => {
+      setComposerPrompt(undefined);
+      fetchPosts(null, null);
+    };
+    window.addEventListener("sns:post-created", handler);
+    return () => window.removeEventListener("sns:post-created", handler);
   }, [fetchPosts]);
 
   // typeFilterが変わったらリセットして再取得（初回マウント時は初期ロードと重複するためスキップ）
@@ -269,7 +269,19 @@ export default function FeedTimeline({ currentUserId }: Props) {
 
   const handlePosted = () => {
     setComposerPrompt(undefined);
+    // 初回投稿の場合は祝福バナーを表示
+    if (posts.length === 0 && !localStorage.getItem("sns_first_posted")) {
+      try { localStorage.setItem("sns_first_posted", "1"); } catch { /* ignore */ }
+      setShowFirstPostCelebration(true);
+      setTimeout(() => setShowFirstPostCelebration(false), 12000);
+    }
     fetchPosts();
+  };
+
+  // チェックイン後: composerPrompt をセットしてトップへスクロール
+  const handleCheckinAndPost = (prompt: string) => {
+    setComposerPrompt(prompt);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDeleted = (postId: string) => {
@@ -324,10 +336,45 @@ export default function FeedTimeline({ currentUserId }: Props) {
         </div>
       )}
 
-      {/* デイリーチェックイン（最上部に配置） */}
-      <DailyCheckin
-        onCheckinAndPost={(prompt) => setComposerPrompt(prompt)}
-      />
+      {/* 初回投稿祝福バナー */}
+      {showFirstPostCelebration && (
+        <div className="bg-gradient-to-r from-teal-500 to-emerald-500 rounded-2xl p-4 text-white animate-fade-in-up">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1 flex-1">
+              <p className="text-base font-bold">🎉 はじめての投稿おめでとう！</p>
+              <p className="text-xs opacity-90">続けることで仲間に刺激を与えられます。次は仲間を見つけてみましょう！</p>
+              <Link
+                href="/sns/search"
+                className="inline-flex items-center gap-1 mt-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-full text-xs font-medium transition-colors"
+              >
+                仲間を探す →
+              </Link>
+            </div>
+            <button
+              onClick={() => setShowFirstPostCelebration(false)}
+              className="ml-2 p-1 opacity-70 hover:opacity-100 transition-opacity"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* デイリーチェックイン */}
+      <DailyCheckin onCheckinAndPost={handleCheckinAndPost} />
+
+      {/* 投稿コンポーザー（常に上部に表示） */}
+      {!typeFilter && (
+        <PostComposer
+          onPosted={handlePosted}
+          initialPrompt={composerPrompt}
+          collapsedPlaceholder={
+            composerPrompt
+              ? "チェックイン完了！今日の学びを記録しよう ✨"
+              : "今日の更新・宣言・達成を記録する..."
+          }
+        />
+      )}
 
       {/* 投稿タイプフィルター */}
       {posts.length > 0 && (
@@ -378,11 +425,34 @@ export default function FeedTimeline({ currentUserId }: Props) {
             </div>
           ) : (
             <>
-              {/* 空フィード: おすすめユーザー */}
-              <div className="text-center py-6 space-y-2">
-                <p className="text-2xl">🌱</p>
-                <p className="text-stone-500 text-sm font-medium">まだ投稿がありません</p>
-                <p className="text-stone-400 text-xs">仲間をフォローするとここに投稿が流れてきます</p>
+              {/* 空フィード: 3ステップガイド */}
+              <div className="space-y-3">
+                <div className="text-center py-4">
+                  <p className="text-2xl mb-1">🌱</p>
+                  <p className="text-stone-700 text-sm font-semibold mb-0.5">はじめの一歩を踏み出そう</p>
+                  <p className="text-stone-400 text-xs">仲間を見つけてフォローすると投稿が流れてきます</p>
+                </div>
+                <div className="space-y-2">
+                  {[
+                    { step: "1", emoji: "✏️", title: "今日の更新を投稿する", desc: "上のフォームから1つ記録してみよう", href: null },
+                    { step: "2", emoji: "🔍", title: "仲間を見つける", desc: "共通のタグで志を同じくする人を探そう", href: "/sns/search" },
+                    { step: "3", emoji: "💪", title: "応援し合う", desc: "仲間の投稿にリアクションすると繋がりが深まる", href: "/sns/search" },
+                  ].map(({ step, emoji, title, desc, href }) => (
+                    <div key={step} className="flex items-center gap-3 bg-white rounded-xl border border-stone-100 p-3">
+                      <div className="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center text-xs font-bold text-stone-500 shrink-0">
+                        {step}
+                      </div>
+                      <div className="text-lg shrink-0">{emoji}</div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-stone-700">{title}</p>
+                        <p className="text-xs text-stone-400">{desc}</p>
+                      </div>
+                      {href && (
+                        <Link href={href} className="text-xs text-teal-600 font-medium shrink-0">→</Link>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}
@@ -424,7 +494,11 @@ export default function FeedTimeline({ currentUserId }: Props) {
 
           {/* フィルター中は投稿フォームを先頭に固定表示 */}
           {typeFilter && (
-            <PostComposer onPosted={handlePosted} initialPrompt={composerPrompt} />
+            <PostComposer
+              onPosted={handlePosted}
+              initialPrompt={composerPrompt}
+              collapsedPlaceholder="今日の更新・宣言・達成を記録する..."
+            />
           )}
 
           {renderPostItems(posts, currentUserId, composerPrompt, typeFilter, handlePosted, handleDeleted, handleUpdated, setCommentPostId)}
@@ -452,7 +526,7 @@ export default function FeedTimeline({ currentUserId }: Props) {
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-24 right-4 w-10 h-10 bg-white border border-stone-200 rounded-full shadow-md flex items-center justify-center text-stone-500 hover:text-teal-600 hover:border-teal-200 transition-all z-40"
+          className="fixed bottom-36 right-4 w-10 h-10 bg-white border border-stone-200 rounded-full shadow-md flex items-center justify-center text-stone-500 hover:text-teal-600 hover:border-teal-200 transition-all z-40"
           aria-label="トップに戻る"
         >
           <ChevronUp size={18} />

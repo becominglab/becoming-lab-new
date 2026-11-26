@@ -35,20 +35,22 @@ export default async function SnsProfilePage() {
       ) : (
         <>
           {/* オンボーディングヘッダー */}
-          <div className="text-center mb-8">
-            <div className="text-4xl mb-3">🌱</div>
-            <h1 className="text-xl font-bold text-stone-900 mb-2">はじめまして！</h1>
+          <div className="text-center mb-6">
+            <div className="text-5xl mb-3">🌱</div>
+            <h1 className="text-xl font-bold text-stone-900 mb-1.5">ようこそ、becoming へ！</h1>
             <p className="text-sm text-stone-500 leading-relaxed">
-              挑戦を続ける仲間とつながるために<br />
-              まずプロフィールを設定しましょう
+              挑戦タグを設定すると、同じ目標を持つ仲間が<br />
+              自動でマッチングされます
             </p>
           </div>
 
-          {/* ステップ表示 */}
-          <div className="flex items-center gap-2 mb-6">
-            <div className="flex-1 h-1 bg-teal-500 rounded-full" />
-            <span className="text-xs text-stone-400 shrink-0">STEP 1 / 1</span>
-            <div className="flex-1 h-1 bg-stone-100 rounded-full" />
+          {/* 仕組みのヒント */}
+          <div className="flex items-start gap-3 bg-teal-50 border border-teal-100 rounded-xl px-3 py-3 mb-6">
+            <span className="text-lg shrink-0">✨</span>
+            <p className="text-xs text-teal-700 leading-relaxed">
+              <span className="font-semibold">挑戦タグ・更新フェーズ・求めていること</span>を入力するほど、
+              ぴったりな仲間と出会えます
+            </p>
           </div>
 
           <ProfileSetupForm />

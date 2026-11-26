@@ -49,7 +49,7 @@ export default function BadgeGrid({ userId, compact }: Props) {
 
   const togglePin = async (badgeId: string, currentPinned: boolean) => {
     if (!currentPinned && pinned.length >= 3) {
-      showToast("ピン留めは最大3件までです", "info");
+      showToast("プロフィールに固定できるバッジは3個までです。固定中のバッジを外してから試してください", "info");
       return;
     }
 
@@ -118,6 +118,9 @@ export default function BadgeGrid({ userId, compact }: Props) {
           バッジ <span className="text-stone-400 font-normal">{earnedCount}/{badges.length}</span>
         </h3>
       </div>
+      {!userId && (
+        <p className="text-xs text-stone-400 -mt-2">最大3個まで固定できます</p>
+      )}
 
       {Object.entries(grouped).map(([category, categoryBadges]) => (
         <div key={category}>
